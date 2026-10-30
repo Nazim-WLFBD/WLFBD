@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# We Learn French BD — website
 
-## Getting Started
+Next.js 15 site in English and Bangla (`/en`, `/bn`): courses, schedule, CRS calculator, quizzes and mock tests, recorded courses with bKash payment, student accounts, and an admin portal.
 
-First, run the development server:
+## Run it on your computer
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000. Without Firebase settings the public site works with its built-in content; login, saving and the admin portal show a "coming soon" notice.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Go live (one-time setup)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. Firebase (free Spark plan)
+1. Create a project at https://console.firebase.google.com.
+2. **Authentication → Sign-in method**: enable **Email/Password** and **Google**. Add your domain under **Authorized domains**.
+3. **Firestore Database → Create database** (production mode).
+4. **Project settings → Your apps → Web (</>)**: copy the config values into the `NEXT_PUBLIC_FIREBASE_*` variables.
+5. **Project settings → Service accounts → Generate new private key**: paste the whole JSON (one line) into `FIREBASE_SERVICE_ACCOUNT`.
+6. Publish the security rules and index:
+   ```bash
+   npx firebase login
+   npx firebase deploy --only firestore --project YOUR_PROJECT_ID
+   ```
 
-## Learn More
+### 2. Email (Gmail)
+Turn on 2-step verification on the sending Gmail, create an **App Password**, and set `SMTP_USER` / `SMTP_PASS`. Without it, the site still works; emails are just skipped.
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Hosting on Vercel (free)
+1. Push this folder to a GitHub repository and import it at https://vercel.com/new.
+2. Add every variable from `.env.example` under **Settings → Environment Variables**.
+3. Deploy, then add your domain (welearnfrenchbd.com) under **Settings → Domains**.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4. First login as admin
+Sign in with **Google** using one of the `SUPER_ADMIN_EMAILS` (Google accounts count as verified). The shield icon in the header opens **/admin**. From there:
+- **Recorded courses → Import built-in courses**, then replace the placeholder YouTube links with your real lesson videos.
+- **FAQ / Reviews / Batches → Import built-in** to start editing them.
+- **Payments**: check each TrxID in the bKash app, then Approve (unlocks the course and emails the student).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Useful commands
 
-## Deploy on Vercel
+| Command | What it does |
+|---|---|
+| `npm run dev` | Local development server |
+| `npm run build` | Production build |
+| `npm run lint` | Code checks |
+| `npm run seed` | Copies built-in batches, FAQ, reviews and recorded courses into Firestore (only fills empty collections) |
+| `npm run emulators` | Local Firebase for testing without a real project (needs Java 17+). Copy `.env.emulator` to `.env.local` first. |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Where things live
+- Course, FAQ, review, quiz and schedule content: `src/data/`
+- Page text in both languages: `src/content/`
+- Contact numbers, social links, Facebook Pixel: `src/lib/brand.ts`
+- Security rules: `firestore.rules`
