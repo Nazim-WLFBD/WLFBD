@@ -1,0 +1,144 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { Command } from 'cmdk';
+import * as Dialog from '@radix-ui/react-dialog';
+import { ArrowRight, CornerDownLeft, Search } from 'lucide-react';
+import { useRouter } from '@/i18n/navigation';
+import { useT, type L } from '@/i18n/t';
+import { COURSES_DATA } from '@/data/courses';
+import { RECORDED_COURSES } from '@/data/recordedCourses';
+import { FAQ_DATA } from '@/data/faq';
+import { QUIZ_CATEGORIES } from '@/data/quizData';
+import { SECTIONS, MEGA } from '@/content/nav';
+import { quizHref } from '@/lib/quiz';
+import { Icon } from '@/components/ui/Icon';
+
+const EVENT = 'wlf:palette';
+export const openPalette = () => window.dispatchEvent(new Event(EVENT));
+
+const GROUPS = {
+  pages: { en: 'Jump to section', bn: 'সেকশনে যান' },
+  courses: { en: 'Courses', bn: 'কোর্স' },
+  tools: { en: 'Tools & practice', bn: 'টুলস ও প্র্যাকটিস' },
+  quizzes: { en: 'Quizzes & mock tests', bn: 'কুইজ ও মক টেস্ট' },
+  faq: { en: 'Answers', bn: 'উত্তর' },
+  placeholder: {
+    en: 'Search courses, quizzes, tools, answers…',
+    bn: 'কোর্স, কুইজ, টুলস, উত্তর খুঁজুন…',
+  },
+  empty: { en: 'Nothing found. Try “A2”, “CRS” or “recording”.', bn: 'কিছু পাওয়া যায়নি। “A2”, “CRS” বা “রেকর্ডিং” লিখে দেখুন।' },
+} satisfies Record<string, L>;
+
+export function CommandPalette() {
+  const t = useT();
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setOpen((o) => !o);
+      }
+    };
+    const onOpen = () => setOpen(true);
+    window.addEventListener('keydown', onKey);
+    window.addEventListener(EVENT, onOpen);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener(EVENT, onOpen);
+    };
+  }, []);
+
+  const go = (href: string) => {
+    setOpen(false);
+    router.push(href);
+  };
+
+  const item = 'flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] text-fg data-[selected=true]:bg-ink data-[selected=true]:text-white';
+
+  return (
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-[90] bg-ink/60 backdrop-blur-sm" />
+        <Dialog.Content
+          className="fixed top-[12vh] left-1/2 z-[91] w-[min(640px,calc(100vw-24px))] -translate-x-1/2 overflow-hidden rounded-3xl border border-line bg-surface shadow-2xl"
+          aria-describedby={undefined}
+        >
+          <Dialog.Title className="sr-only">Search the site</Dialog.Title>
+          <Command label="Search the site" className="flex flex-col">
+            <div className="flex items-center gap-3 border-b border-line px-5">
+              <Search size={18} className="text-muted" />
+              <Command.Input
+                autoFocus
+                placeholder={t(GROUPS.placeholder)}
+                className="h-14 w-full bg-transparent text-[15px] text-fg outline-none placeholder:text-muted"
+              />
+              <kbd className="rounded-md border border-line px-1.5 py-0.5 text-[10px] text-muted">ESC</kbd>
+            </div>
+            <Command.List className="max-h-[min(60vh,460px)] overflow-y-auto p-2">
+              <Command.Empty className="p-6 text-center text-sm text-muted">{t(GROUPS.empty)}</Command.Empty>
+
+              <Command.Group heading={t(GROUPS.courses)} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-muted [&_[cmdk-group-heading]]:uppercase">
+                {COURSES_DATA.map((c) => (
+                  <Command.Item key={c.id} value={`${c.title} ${c.banglaTitle} ${c.code}`} onSelect={() => go(`/courses/${c.id}`)} className={item}>
+                    <span className="font-display flex h-8 w-8 items-center justify-center rounded-lg bg-rouge text-[11px] font-bold text-white">{c.code}</span>
+                    <span className="flex-1">{c.title}</span>
+                    <ArrowRight size={14} className="opacity-50" />
+                  </Command.Item>
+                ))}
+                {RECORDED_COURSES.map((r) => (
+                  <Command.Item key={r.id} value={`${r.title} ${r.banglaTitle} recorded`} onSelect={() => go(`/recorded/${r.slug}`)} className={item}>
+                    <Icon name="video" size={16} className="mx-2" />
+                    <span className="flex-1">{r.title}</span>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+
+              <Command.Group heading={t(GROUPS.tools)} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-muted [&_[cmdk-group-heading]]:uppercase">
+                {MEGA.tools.map((tool) => (
+                  <Command.Item key={tool.href} value={`${tool.t.en} ${tool.t.bn}`} onSelect={() => go(tool.href)} className={item}>
+                    <Icon name={tool.icon} size={16} className="mx-2" />
+                    <span className="flex-1">{t(tool.t)}</span>
+                  </Command.Item>
+                ))}
+                <Command.Item value="enroll admission ভর্তি" onSelect={() => go('/enroll')} className={item}>
+                  <Icon name="cap" size={16} className="mx-2" />
+                  <span className="flex-1">{t({ en: 'Enroll / Admission', bn: 'ভর্তি' })}</span>
+                </Command.Item>
+              </Command.Group>
+
+              <Command.Group heading={t(GROUPS.pages)} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-muted [&_[cmdk-group-heading]]:uppercase">
+                {SECTIONS.map((s) => (
+                  <Command.Item key={s.id} value={`${s.label.en} ${s.label.bn} section`} onSelect={() => go(`/#${s.id}`)} className={item}>
+                    <CornerDownLeft size={14} className="mx-2.5 opacity-60" />
+                    <span className="flex-1">{t(s.label)}</span>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+
+              <Command.Group heading={t(GROUPS.quizzes)} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-muted [&_[cmdk-group-heading]]:uppercase">
+                {QUIZ_CATEGORIES.map((q) => (
+                  <Command.Item key={q.id} value={`${q.title} ${q.banglaTitle} quiz`} onSelect={() => go(quizHref(q.slug))} className={item}>
+                    <Icon name="clipboard" size={16} className="mx-2" />
+                    <span className="flex-1">{t.locale === 'bn' ? q.banglaTitle : q.title}</span>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+
+              <Command.Group heading={t(GROUPS.faq)} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-muted [&_[cmdk-group-heading]]:uppercase">
+                {FAQ_DATA.map((f) => (
+                  <Command.Item key={f.id} value={`${f.question} ${f.banglaQuestion} ${f.answer}`} onSelect={() => go(`/#faq-${f.id}`)} className={item}>
+                    <Icon name="message" size={16} className="mx-2" />
+                    <span className="flex-1">{t.locale === 'bn' ? f.banglaQuestion : f.question}</span>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+            </Command.List>
+          </Command>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
