@@ -41,7 +41,13 @@ export function CrudTab({ path, fields, columns, seed, seedId, newDefaults = {},
   }, [path]);
 
   useEffect(() => {
-    load().catch((e) => setErr(String(e)));
+    load().catch((e) =>
+      setErr(
+        String(e).includes('permission-denied')
+          ? 'The database rules for this section have not been deployed yet. Run: npx firebase deploy --only firestore:rules,firestore:indexes,storage --project we-learn-french-bd'
+          : String(e),
+      ),
+    );
   }, [load]);
 
   const save = async () => {
