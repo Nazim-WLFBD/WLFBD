@@ -41,13 +41,19 @@ export function CourseDetail({ course: c }: { course: Course }) {
           <span className="font-display text-3xl font-semibold text-gold">{fee}</span>
           {!c.isCustomPricing && <span className="text-white/45 line-through">{taka(c.regularPrice, t.locale)}</span>}
           <span className="text-sm text-white/60">
-            · {x.duration} · {num(c.classCount, t.locale)} {t(copy.sessions)}
+            · {x.duration}{!c.whatsappOnly && <> · {num(c.classCount, t.locale)} {t(copy.sessions)}</>}
           </span>
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
+          {c.whatsappOnly ? (
+          <a href={waLink(t(c.whatsappMessage!))} target="_blank" rel="noopener" className={btn('rouge', 'lg', '')}>
+            <WhatsAppGlyph size={18} /> {t({ en: 'Contact via WhatsApp', bn: 'WhatsApp-এ যোগাযোগ করুন' })}
+          </a>
+          ) : (
           <Link href={{ pathname: '/enroll', query: { course: c.id } }} className={btn('rouge', 'lg')}>
             {t(copy.enroll)} <ArrowRight size={17} />
           </Link>
+          )}
           <a
             href={waLink(waText)}
             target="_blank"
@@ -66,7 +72,7 @@ export function CourseDetail({ course: c }: { course: Course }) {
             <Reveal className="grid grid-cols-2 gap-3 md:grid-cols-4">
               {[
                 [t(copy.duration), bn ? x.duration : c.duration],
-                [t(copy.live), `${num(c.classCount, t.locale)} ${t(copy.sessions)}`],
+                [t(copy.live), c.whatsappOnly ? t({ en: 'Flexible', bn: 'ফ্লেক্সিবল' }) : `${num(c.classCount, t.locale)} ${t(copy.sessions)}`],
                 [t(copy.perWeek), x.classesPerWeek],
                 [t(copy.target), x.targetClb ?? c.cefrLevel],
               ].map(([k, v]) => (
@@ -140,7 +146,7 @@ export function CourseDetail({ course: c }: { course: Course }) {
                   <Plane size={20} className="mb-3 text-gold" />
                   <div className="text-right">
                     <p className="text-[10px] tracking-widest text-white/50 uppercase">{t({ en: 'To', bn: 'গন্তব্য' })}</p>
-                    <p className="font-display text-4xl font-semibold">{c.isCustomPricing ? c.targetClb : c.code}</p>
+                    <p className="font-display text-4xl font-semibold">{c.isCustomPricing && !c.whatsappOnly ? c.targetClb : c.code}</p>
                   </div>
                 </div>
               </div>
@@ -153,9 +159,15 @@ export function CourseDetail({ course: c }: { course: Course }) {
                     {taka(c.regularPrice - c.offerPrice, t.locale)}
                   </p>
                 )}
+                {c.whatsappOnly ? (
+                <a href={waLink(t(c.whatsappMessage!))} target="_blank" rel="noopener" className={btn('rouge', 'md', 'mt-6 w-full')}>
+            <WhatsAppGlyph size={18} /> {t({ en: 'Contact via WhatsApp', bn: 'WhatsApp-এ যোগাযোগ করুন' })}
+          </a>
+                ) : (
                 <Link href={{ pathname: '/enroll', query: { course: c.id } }} className={btn('rouge', 'md', 'mt-6 w-full')}>
                   {t(copy.enroll)} <ArrowRight size={16} />
                 </Link>
+                )}
                 <Link href={{ pathname: '/', hash: 'schedule' }} className={btn('ghost-light', 'md', 'mt-2 w-full')}>
                   {t(copy.schedule)}
                 </Link>

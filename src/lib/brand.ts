@@ -29,6 +29,8 @@ export const BRAND_SOCIAL_LINKS = {
   youtube: 'https://www.youtube.com/@welearnfrenchbd',
   instagram: 'https://www.instagram.com/welearnfrenchbd',
   linkedin: 'https://www.linkedin.com/company/we-learn-french-bd',
+  x: 'https://x.com/welearnfrenchbd',
+  messenger: 'https://m.me/WeLearnFrenchBD',
 };
 
 export const BRAND_META = {

@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { notFound } from 'next/navigation';
 import Script from 'next/script';
-import { Fraunces, Hind_Siliguri, Plus_Jakarta_Sans, Tiro_Bangla } from 'next/font/google';
+import { Fraunces, Hind_Siliguri, Plus_Jakarta_Sans } from 'next/font/google';
+import localFont from 'next/font/local';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
@@ -20,14 +21,22 @@ import { Providers } from '@/components/Providers';
 const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-fraunces', axes: ['opsz', 'SOFT'], display: 'swap' });
 const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-jakarta', display: 'swap' });
 const hind = Hind_Siliguri({ subsets: ['bengali', 'latin'], weight: ['400', '500', '600', '700'], variable: '--font-hind', display: 'swap' });
-const tiro = Tiro_Bangla({ subsets: ['bengali'], weight: '400', style: ['normal', 'italic'], variable: '--font-tiro', display: 'swap' });
+// Bangla digits (০–৯) only, from Hind Siliguri Bold: listed first in every font stack so numbers always render bold
+const bnDigits = localFont({
+  src: '../../fonts/hind-siliguri-bengali-700.woff2',
+  weight: '100 900',
+  variable: '--font-bn-digits',
+  display: 'swap',
+  preload: false,
+  declarations: [{ prop: 'unicode-range', value: 'U+09E6-09EF' }],
+});
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
 export const viewport: Viewport = {
-  themeColor: '#0a1230',
+  themeColor: '#0e1a2f',
   width: 'device-width',
   initialScale: 1,
 };
@@ -110,7 +119,7 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       suppressHydrationWarning
-      className={`${fraunces.variable} ${jakarta.variable} ${hind.variable} ${tiro.variable}`}
+      className={`${fraunces.variable} ${jakarta.variable} ${hind.variable} ${bnDigits.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />

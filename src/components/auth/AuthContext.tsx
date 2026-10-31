@@ -28,6 +28,8 @@ interface AuthState {
   user: User | null;
   profile: UserProfile | null;
   isAdmin: boolean;
+  /** 'approved' unless an admin has yet to approve (or has rejected) this account. */
+  approval: 'pending' | 'approved' | 'rejected';
   signUp: (email: string, password: string, extra: Partial<EditableProfile>) => Promise<void>;
   logIn: (email: string, password: string) => Promise<void>;
   logInWithGoogle: () => Promise<void>;
@@ -64,7 +66,7 @@ async function ensureProfile(u: User, extra: Partial<EditableProfile> = {}) {
         updatedAt: serverTimestamp(),
         lastLoginAt: serverTimestamp(),
         // Only set on a brand-new doc: rules forbid students touching these once they exist
-        ...(snap.exists() ? {} : { role: 'student', enrolledCourses: [] }),
+        ...(snap.exists() ? {} : { role: 'student', enrolledCourses: [], approval: 'pending', locale: document.documentElement.lang === 'bn' ? 'bn' : 'en' }),
       },
       { merge: true },
     );
@@ -129,6 +131,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     profile,
     isAdmin: role === 'admin' || role === 'superAdmin' || profile?.role === 'admin' || profile?.role === 'superAdmin',
+    approval: role !== 'student' ? 'approved' : (profile?.approval ?? 'approved'),
     async signUp(email, password, extra) {
       const { auth } = need();
       const cred = await createUserWithEmailAndPassword(auth, email, password);

@@ -204,7 +204,7 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
                           [
                             [t(copy.target), (c) => courseText(c, t.locale).targetClb ?? c.cefrLevel],
                             [t(copy.duration), (c) => (bn ? courseText(c, 'bn').duration : c.duration)],
-                            [t(copy.schedule), (c) => `${num(c.classCount, t.locale)} · ${courseText(c, t.locale).classesPerWeek}`],
+                            [t(copy.schedule), (c) => (c.whatsappOnly ? courseText(c, t.locale).classesPerWeek : `${num(c.classCount, t.locale)} · ${courseText(c, t.locale).classesPerWeek}`)],
                             [t(copy.fee), (c) => (c.isCustomPricing ? t(copy.feeCustom) : taka(c.offerPrice, t.locale))],
                             [t({ en: 'Audience', bn: 'কাদের জন্য' }), (c) => courseText(c, t.locale).targetAudience],
                           ] as [string, (c: (typeof compared)[number]) => string][]

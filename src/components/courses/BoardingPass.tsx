@@ -5,7 +5,7 @@ import { Link } from '@/i18n/navigation';
 import { useT } from '@/i18n/t';
 import { btn } from '@/components/ui/Button';
 import { courses as copy } from '@/content/home';
-import { BRAND_CONTACT } from '@/lib/brand';
+import { BRAND_CONTACT, waLink } from '@/lib/brand';
 import { cn, num, taka } from '@/lib/utils';
 import type { Course } from '@/types';
 
@@ -17,6 +17,7 @@ export const FROM_LEVEL: Record<string, string> = {
   'delf-b2': 'B1',
   'tef-canada': 'B1',
   'tcf-canada': 'B1',
+  'one-to-one': 'A0+',
 };
 
 /** Course copy in the given locale, falling back to English where no Bangla field is set. */
@@ -59,7 +60,7 @@ export function BoardingPass({ course: c, comparing, onCompare, notchClass = 'bg
   const t = useT();
   const bn = t.locale === 'bn';
   const x = courseText(c, t.locale);
-  const to = c.isCustomPricing ? c.targetClb ?? c.code : c.code;
+  const to = c.isCustomPricing && !c.whatsappOnly ? c.targetClb ?? c.code : c.code;
 
   return (
     <article
@@ -107,7 +108,7 @@ export function BoardingPass({ course: c, comparing, onCompare, notchClass = 'bg
           </div>
           <div className="border-x border-line">
             <dt className="text-[9px] font-bold tracking-widest text-muted uppercase">{t(copy.schedule)}</dt>
-            <dd className="mt-0.5 text-[13px] font-bold">{num(c.classCount, t.locale)}</dd>
+            <dd className="mt-0.5 text-[13px] font-bold">{c.whatsappOnly ? t({ en: 'Flexible', bn: 'ফ্লেক্সিবল' }) : num(c.classCount, t.locale)}</dd>
           </div>
           <div>
             <dt className="text-[9px] font-bold tracking-widest text-muted uppercase">{t({ en: '/ wk', bn: 'প্রতি সপ্তাহে' })}</dt>
@@ -161,9 +162,15 @@ export function BoardingPass({ course: c, comparing, onCompare, notchClass = 'bg
           <Barcode className="text-fg/70" />
         </div>
         <div className="mt-5 grid grid-cols-2 gap-2">
-          <Link href={{ pathname: '/enroll', query: { course: c.id } }} className={btn('rouge', 'sm', 'w-full')}>
-            {t(copy.enroll)}
-          </Link>
+          {c.whatsappOnly ? (
+            <a href={waLink(t(c.whatsappMessage!))} target="_blank" rel="noopener" className={btn('ink', 'sm', 'w-full bg-[#1f9d55] hover:bg-[#178244]')}>
+              {t({ en: 'WhatsApp us', bn: 'WhatsApp করুন' })}
+            </a>
+          ) : (
+            <Link href={{ pathname: '/enroll', query: { course: c.id } }} className={btn('rouge', 'sm', 'w-full')}>
+              {t(copy.enroll)}
+            </Link>
+          )}
           <Link href={`/courses/${c.id}`} className={btn('ghost', 'sm', 'w-full')}>
             {t(copy.details)}
             <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />

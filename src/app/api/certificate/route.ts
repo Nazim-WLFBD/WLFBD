@@ -13,6 +13,7 @@ const Body = z.object({ courseId: z.string().min(1).max(80) });
 export async function POST(req: Request) {
   const caller = await getCaller(req);
   if (!caller) return json({ error: 'Unauthorized' }, 401);
+  if (!caller.approved) return json({ error: 'Your account is awaiting admin approval.', code: 'not_approved' }, 403);
   const p = Body.safeParse(await req.json().catch(() => null));
   if (!p.success) return json({ error: 'Bad request' }, 400);
   if (!(await rateLimit(`cert:${caller.uid}`, 10, 3600))) return json({ error: 'Too many attempts. Try again later.', code: 'rate_limited' }, 429);

@@ -35,6 +35,8 @@ export interface Caller {
   uid: string;
   email: string;
   role: Role;
+  /** Staff are always approved; students need an admin's approval (missing field = approved). */
+  approved: boolean;
 }
 
 /** Verifies the Firebase ID token in the Authorization header (signature checked). */
@@ -50,7 +52,9 @@ export async function getCaller(req: Request): Promise<Caller | null> {
     // A suspended account is treated as signed out everywhere on the server
     const profile = await adminDb().collection('users').doc(d.uid).get();
     if (profile.data()?.status === 'Suspended' && role !== 'superAdmin') return null;
-    return { uid: d.uid, email, role };
+    const approval = profile.data()?.approval;
+    const approved = role !== 'student' || approval === undefined || approval === 'approved';
+    return { uid: d.uid, email, role, approved };
   } catch {
     return null;
   }

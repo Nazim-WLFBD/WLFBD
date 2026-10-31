@@ -7,16 +7,16 @@ export default function RootNotFound() {
   const button = { color: '#fff', padding: '12px 22px', borderRadius: 999, textDecoration: 'none', display: 'inline-block' } as const;
   return (
     <html lang="en">
-      <body style={{ margin: 0, background: '#0a1230', color: '#fff', fontFamily: 'system-ui, sans-serif' }}>
+      <body style={{ margin: 0, background: '#0e1a2f', color: '#fff', fontFamily: 'system-ui, sans-serif' }}>
         <main style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', textAlign: 'center', padding: 24 }}>
           <div>
-            <p style={{ letterSpacing: '0.3em', color: '#e8b64a', fontSize: 13 }}>GATE 404</p>
+            <p style={{ letterSpacing: '0.3em', color: '#c99a3b', fontSize: 13 }}>GATE 404</p>
             <h1 style={{ fontSize: 40, margin: '12px 0 4px' }}>Page not found</h1>
             <p lang="bn" style={{ fontSize: 22, margin: '0 0 12px', opacity: 0.8 }}>
               পেজটি পাওয়া যায়নি
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center', marginTop: 12 }}>
-              <Link href="/en" style={{ ...button, background: '#e0243a' }}>
+              <Link href="/en" style={{ ...button, background: '#d52b1e' }}>
                 Back to home
               </Link>
               <Link href="/bn" lang="bn" style={{ ...button, background: 'rgba(255,255,255,.12)' }}>

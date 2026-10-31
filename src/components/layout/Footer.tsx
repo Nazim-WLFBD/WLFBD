@@ -1,13 +1,12 @@
 'use client';
 
-import { ArrowUpRight, Globe, Mail, Phone } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { useT } from '@/i18n/t';
 import { Logo } from '@/components/ui/Logo';
 import { btn } from '@/components/ui/Button';
-import { BRAND_CONTACT, BRAND_SOCIAL_LINKS, BRAND_TAGLINE_BANGLA, waLink, waMessage } from '@/lib/brand';
+import { BRAND_SOCIAL_LINKS, BRAND_TAGLINE_BANGLA } from '@/lib/brand';
 import { footer, ui } from '@/content/home';
-import { WhatsAppGlyph } from './FloatingActions';
 import { Flag } from '@/components/ui/Flag';
 
 const ABOUT_LINKS = [
@@ -19,11 +18,20 @@ const ABOUT_LINKS = [
   { href: { pathname: '/', hash: 'faq' }, l: { en: 'Exam FAQs', bn: 'পরীক্ষা সংক্রান্ত প্রশ্নোত্তর' } },
 ] as const;
 
+const LEARN_LINKS = [
+  { href: '/free-class', l: { en: 'Free Class Registration', bn: 'ফ্রি ক্লাস রেজিস্ট্রেশন' } },
+  { href: '/quiz/placement-test', l: { en: 'Free Level Test', bn: 'ফ্রি লেভেল টেস্ট' } },
+  { href: '/courses/one-to-one', l: { en: 'One-to-One Sessions', bn: 'ওয়ান-টু-ওয়ান সেশন' } },
+  { href: '/recorded', l: { en: 'Recorded Courses', bn: 'রেকর্ডেড কোর্স' } },
+  { href: '/blog', l: { en: 'Blog', bn: 'ব্লগ' } },
+] as const;
+
 const SOCIALS = [
   { href: BRAND_SOCIAL_LINKS.facebook, label: 'Facebook', path: 'M14 8h3V4h-3c-2.8 0-4.5 1.8-4.5 4.6V11H7v4h2.5v9h4v-9h3l.5-4h-3.5V8.8c0-.5.3-.8.5-.8Z' },
   { href: BRAND_SOCIAL_LINKS.youtube, label: 'YouTube', path: 'M23 7.5a3 3 0 0 0-2.1-2.1C19 5 12 5 12 5s-7 0-8.9.4A3 3 0 0 0 1 7.5 31 31 0 0 0 .6 12a31 31 0 0 0 .4 4.5 3 3 0 0 0 2.1 2.1C5 19 12 19 12 19s7 0 8.9-.4a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .4-4.5 31 31 0 0 0-.4-4.5ZM9.8 15V9l5.2 3-5.2 3Z' },
   { href: BRAND_SOCIAL_LINKS.instagram, label: 'Instagram', path: 'M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 8.2a3.2 3.2 0 1 1 0-6.4 3.2 3.2 0 0 1 0 6.4ZM17.3 5.5a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4ZM12 2.2c2.7 0 3 0 4 .1 2.7.1 4 1.4 4.1 4.1.1 1 .1 1.3.1 4s0 3-.1 4c-.1 2.7-1.4 4-4.1 4.1-1 .1-1.3.1-4 .1s-3 0-4-.1c-2.7-.1-4-1.4-4.1-4.1-.1-1-.1-1.3-.1-4s0-3 .1-4c.1-2.7 1.4-4 4.1-4.1 1-.1 1.3-.1 4-.1Z' },
   { href: BRAND_SOCIAL_LINKS.linkedin, label: 'LinkedIn', path: 'M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.5h4V21H3V9.5Zm6.5 0h3.8v1.6h.1c.5-1 1.8-2 3.8-2 4 0 4.8 2.6 4.8 6V21h-4v-5.1c0-1.2 0-2.8-1.7-2.8s-2 1.3-2 2.7V21h-4V9.5Z' },
+  { href: BRAND_SOCIAL_LINKS.x, label: 'X (Twitter)', path: 'M17.75 3h3.07l-6.7 7.66L22 21h-6.17l-4.83-6.32L5.47 21H2.4l7.17-8.2L2 3h6.33l4.37 5.78L17.75 3Zm-1.08 16.17h1.7L7.4 4.74H5.58l11.09 14.43Z' },
 ];
 
 export function Footer() {
@@ -31,7 +39,7 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer id="contact" className="relative overflow-hidden bg-ink pb-28 text-white lg:pb-0">
+    <footer className="relative overflow-hidden bg-ink pb-28 text-white lg:pb-0">
       <span className="tricolor absolute inset-x-0 top-0 h-1" />
 
       {/* Closing CTA */}
@@ -49,9 +57,9 @@ export function Footer() {
             <Link href="/enroll" className={btn('rouge', 'lg')}>
               {t(ui.enroll)} <ArrowUpRight size={17} />
             </Link>
-            <a href={waLink(waMessage('enroll', t.locale))} target="_blank" rel="noopener" className={btn('ghost-light', 'lg')}>
-              <WhatsAppGlyph size={18} /> {BRAND_CONTACT.whatsapp}
-            </a>
+            <Link href="/free-class" className={btn('ghost-light', 'lg')}>
+              {t({ en: 'Book a free class', bn: 'ফ্রি ক্লাসে রেজিস্টার করুন' })}
+            </Link>
           </div>
         </div>
       </div>
@@ -96,26 +104,12 @@ export function Footer() {
           ))}
         </FooterCol>
 
-        <FooterCol title={t(footer.contactTitle)} className="col-span-2 lg:col-span-1">
-          <a href={`tel:${BRAND_CONTACT.phone}`} className="footer-link flex items-center gap-2.5">
-            <Phone size={15} className="text-gold" /> {BRAND_CONTACT.phone}
-          </a>
-          <a href={BRAND_CONTACT.whatsappUrl} target="_blank" rel="noopener" className="footer-link flex items-center gap-2.5">
-            <span className="text-[#25d366]">
-              <WhatsAppGlyph size={15} />
-            </span>
-            {t(ui.whatsapp)}: {BRAND_CONTACT.whatsapp}
-          </a>
-          <a href={`tel:${BRAND_CONTACT.bkashPersonal}`} className="footer-link flex items-center gap-2.5">
-            <span className="flex h-[18px] w-[18px] items-center justify-center rounded bg-bkash text-[8px] font-black">bK</span>
-            {t(footer.bkash)}: {BRAND_CONTACT.bkashPersonal}
-          </a>
-          <a href={`mailto:${BRAND_CONTACT.email}`} className="footer-link flex items-center gap-2.5">
-            <Mail size={15} className="text-gold" /> {BRAND_CONTACT.email}
-          </a>
-          <a href={BRAND_CONTACT.website} className="footer-link flex items-center gap-2.5">
-            <Globe size={15} className="text-gold" /> {BRAND_CONTACT.displayWebsite}
-          </a>
+        <FooterCol title={t({ en: 'Start learning', bn: 'শেখা শুরু করুন' })} className="col-span-2 lg:col-span-1">
+          {LEARN_LINKS.map((a) => (
+            <Link key={a.href} href={a.href} className="footer-link">
+              {t(a.l)}
+            </Link>
+          ))}
         </FooterCol>
       </div>
 

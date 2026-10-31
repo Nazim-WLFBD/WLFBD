@@ -4,38 +4,40 @@
 
 /* ── Tokens ─────────────────────────────────────────────── */
 :root {
-  /* Surfaces (light: "papier") */
-  --bg: #f4efe4;
-  --surface: #fffcf5;
-  --surface-2: #ebe3d3;
-  --text: #0b1433;
-  --muted: #59607a;
-  --line: rgba(11, 20, 51, 0.12);
+  /* Direction: ~70% Canadian (clean, bright, institutional, maple red) + ~30% French (editorial serif, navy, refined detail) */
+  /* Surfaces: cool, clean whites */
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --surface-2: #edf0f4;
+  --text: #101828;
+  --muted: #5a6474;
+  --line: rgba(16, 24, 40, 0.1);
 
   /* Brand — constant across themes */
-  --ink: #0a1230;
-  --ink-2: #131e4a;
-  --ink-3: #1c2a62;
-  --bleu: #2747d8;
-  --rouge: #e0243a;
-  --maple: #d71920;
-  --gold: #e8b64a;
-  --mint: #1b9c6b;
+  --ink: #0e1a2f; /* deep institutional navy */
+  --ink-2: #16243d;
+  --ink-3: #20314f;
+  --bleu: #1d3f8f; /* French navy blue */
+  --rouge: #d52b1e; /* Canadian flag red */
+  --maple: #d52b1e;
+  --gold: #c99a3b; /* muted brass accent */
+  --mint: #1a8a5e;
   --bkash: #e2136e;
 
-  --radius: 22px;
-  --shadow-lift: 0 30px 60px -30px rgba(10, 18, 48, 0.45);
+  --radius: 18px;
+  --shadow-lift: 0 24px 48px -28px rgba(16, 24, 40, 0.28);
   color-scheme: light;
 }
 
 [data-theme="dark"] {
-  --bg: #060b20;
-  --surface: #0d1534;
-  --surface-2: #142049;
-  --text: #edf0fa;
-  --muted: #9aa3c2;
-  --line: rgba(237, 240, 250, 0.1);
-  --bleu: #6f8bff;
+  --bg: #0b1220;
+  --surface: #111a2c;
+  --surface-2: #18233a;
+  --text: #eef1f6;
+  --muted: #9aa5b8;
+  --line: rgba(238, 241, 246, 0.1);
+  --bleu: #7c9cff;
+  --gold: #d8ab4f;
   --shadow-lift: 0 30px 60px -30px rgba(0, 0, 0, 0.8);
   color-scheme: dark;
 }
@@ -57,9 +59,10 @@
   --color-mint: var(--mint);
   --color-bkash: var(--bkash);
 
-  --font-display: var(--font-fraunces), var(--font-tiro), ui-serif, Georgia, serif;
-  --font-sans: var(--font-jakarta), var(--font-hind), ui-sans-serif, system-ui, sans-serif;
-  --font-bangla: var(--font-hind), sans-serif;
+  /* Bangla glyphs in headings fall through to Hind Siliguri; Bangla digits always use the bold digit face */
+  --font-display: var(--font-bn-digits), var(--font-fraunces), var(--font-hind), ui-serif, Georgia, serif;
+  --font-sans: var(--font-bn-digits), var(--font-jakarta), var(--font-hind), ui-sans-serif, system-ui, sans-serif;
+  --font-bangla: var(--font-bn-digits), var(--font-hind), sans-serif;
 
   --animate-marquee: marquee 38s linear infinite;
   --animate-float: float 7s ease-in-out infinite;
@@ -89,25 +92,24 @@ body {
   overflow-x: clip;
 }
 
-/* Bangla: body copy reads better in Hind Siliguri first */
+/* Bangla: Hind Siliguri for body copy and for every heading/title */
 html[lang="bn"] body {
-  font-family: var(--font-hind), var(--font-jakarta), sans-serif;
+  font-family: var(--font-bn-digits), var(--font-hind), var(--font-jakarta), sans-serif;
+}
+html[lang="bn"] :is(h1, h2, h3, h4, h5, h6, .font-display) {
+  font-family: var(--font-bn-digits), var(--font-hind), var(--font-jakarta), sans-serif;
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+/* Bangla script needs a little more air between lines than Latin */
+html[lang="bn"] p,
+html[lang="bn"] li {
+  line-height: 1.75;
 }
 
 ::selection {
   background: var(--gold);
   color: var(--ink);
-}
-
-/* Paper grain over everything (very subtle) */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 100;
-  opacity: 0.045;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 :focus-visible {
@@ -130,7 +132,7 @@ body::after {
 @utility font-display {
   font-family: var(--font-display);
   font-optical-sizing: auto;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
 }
 
 @utility tricolor {

@@ -24,6 +24,10 @@ export interface Course {
   banglaTag?: string;
   tagColor: string;
   isCustomPricing?: boolean;
+  /** Booked by WhatsApp inquiry instead of the enrollment form (e.g. One-to-One Sessions). */
+  whatsappOnly?: boolean;
+  /** Pre-filled WhatsApp inquiry for whatsappOnly courses. */
+  whatsappMessage?: { en: string; bn: string };
   priceNotice?: string;
 }
 
@@ -105,6 +109,8 @@ export interface BatchSchedule {
   status: 'Open' | 'Filling Fast' | 'Almost Full' | 'Closed';
 }
 
+export type Approval = 'pending' | 'approved' | 'rejected';
+
 export interface UserProfile {
   uid: string;
   email: string;
@@ -113,6 +119,9 @@ export interface UserProfile {
   photoURL?: string;
   role?: 'superAdmin' | 'admin' | 'instructor' | 'student';
   status?: 'Active' | 'Suspended' | 'Pending';
+  /** Admin approval of new accounts. Missing = approved (accounts created before approval existed). */
+  approval?: Approval;
+  locale?: 'en' | 'bn';
   lastLoginAt?: string;
   authProvider?: string;
   targetGoal?: string;

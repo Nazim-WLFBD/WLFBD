@@ -225,7 +225,7 @@ function GlobeFallback() {
       <defs>
         <radialGradient id="gf" cx="40%" cy="35%">
           <stop offset="0" stopColor="#1c2a62" />
-          <stop offset="1" stopColor="#0a1230" />
+          <stop offset="1" stopColor="#0e1a2f" />
         </radialGradient>
       </defs>
       <circle cx="200" cy="200" r="150" fill="url(#gf)" stroke="rgba(91,124,255,.45)" />
@@ -235,7 +235,7 @@ function GlobeFallback() {
       {[0, 30, 60, 90, 120, 150].map((a) => (
         <ellipse key={a} cx="200" cy="200" rx={Math.abs(150 * Math.cos((a * Math.PI) / 180))} ry="150" fill="none" stroke="rgba(159,179,255,.14)" />
       ))}
-      <path d="M300 230 Q 240 110 190 150" fill="none" stroke="#e8b64a" strokeWidth="2.5" strokeDasharray="6 7" />
+      <path d="M300 230 Q 240 110 190 150" fill="none" stroke="#c99a3b" strokeWidth="2.5" strokeDasharray="6 7" />
       <path d="M190 150 Q 140 90 95 170" fill="none" stroke="#ff3b4f" strokeWidth="2.5" strokeDasharray="6 7" />
       {[
         { x: 300, y: 230, c: '#1b9c6b', l: 'DAC' },

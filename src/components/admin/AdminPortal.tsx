@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { collection, getCountFromServer, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
+import { collection, doc, getCountFromServer, getDocs, limit, orderBy, query, updateDoc, where } from 'firebase/firestore';
 import { Check, Loader2, RefreshCw, X } from 'lucide-react';
 import { btn } from '@/components/ui/Button';
 import { useAuth } from '@/components/auth/AuthContext';
@@ -15,7 +15,7 @@ import { CrudTab } from './CrudTab';
 import { RecordedEditor } from './RecordedEditor';
 
 type Row = Record<string, unknown> & { id: string };
-const TABS = ['Overview', 'Payments', 'Enrollments', 'Users', 'Recorded courses', 'Batches', 'Quiz questions', 'Announcements', 'Certificates', 'Reviews', 'FAQ', 'Audit log'] as const;
+const TABS = ['Overview', 'Payments', 'Enrollments', 'Users', 'Free class', 'Recorded courses', 'Batches', 'Quiz questions', 'Announcements', 'Certificates', 'Reviews', 'FAQ', 'Audit log'] as const;
 type Tab = (typeof TABS)[number];
 
 const fmtDate = (v: unknown) => {
@@ -44,6 +44,7 @@ export function AdminPortal() {
         {tab === 'Payments' && <Payments />}
         {tab === 'Enrollments' && <Enrollments />}
         {tab === 'Users' && <Users />}
+        {tab === 'Free class' && <FreeClass />}
         {tab === 'Recorded courses' && <RecordedEditor />}
         {tab === 'Batches' && (
           <CrudTab
@@ -172,6 +173,12 @@ function useAction() {
   return { busy, run };
 }
 
+const APPROVAL: Record<string, string> = {
+  approved: 'bg-mint/15 text-mint',
+  pending: 'bg-gold/20',
+  rejected: 'bg-rouge/15 text-rouge',
+};
+
 const STATUS: Record<string, string> = {
   Verified: 'bg-mint/15 text-mint',
   Pending: 'bg-gold/20',
@@ -188,8 +195,8 @@ function Overview() {
     if (!fb) return;
     const c = (p: string, w?: [string, string]) =>
       getCountFromServer(w ? query(collection(fb.db, p), where(w[0], '==', w[1])) : collection(fb.db, p)).then((r) => r.data().count);
-    Promise.all([c('users'), c('enrollments'), c('coursePayments', ['status', 'Pending']), c('certificates')])
-      .then(([users, enrollments, pending, certs]) => setStats({ users, enrollments, pending, certs }))
+    Promise.all([c('users'), c('enrollments'), c('coursePayments', ['status', 'Pending']), c('certificates'), c('users', ['approval', 'pending']), c('freeClassRegistrations', ['status', 'New'])])
+      .then(([users, enrollments, pending, certs, approvals, freeClass]) => setStats({ users, enrollments, pending, certs, approvals, freeClass }))
       .catch(() => {});
   }, []);
   return (
@@ -199,8 +206,10 @@ function Overview() {
         ['Enrollments', stats.enrollments],
         ['Payments to verify', stats.pending],
         ['Certificates', stats.certs],
+        ['Accounts to approve', stats.approvals],
+        ['New free-class sign-ups', stats.freeClass],
       ].map(([k, v]) => (
-        <div key={String(k)} className={cn('rounded-2xl border border-line p-5', k === 'Payments to verify' && Number(v) > 0 && 'border-gold bg-gold/10')}>
+        <div key={String(k)} className={cn('rounded-2xl border border-line p-5', ['Payments to verify', 'Accounts to approve', 'New free-class sign-ups'].includes(String(k)) && Number(v) > 0 && 'border-gold bg-gold/10')}>
           <p className="text-[10px] font-bold tracking-widest text-muted uppercase">{k}</p>
           <p className="font-display mt-1 text-3xl font-semibold">{v ?? '—'}</p>
         </div>
@@ -322,17 +331,29 @@ function Users() {
   const { profile } = useAuth();
   const { busy, run } = useAction();
   const [q, setQ] = useState('');
+  const [approvalFilter, setApprovalFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
   if (!rows) return <Loader2 className="animate-spin" />;
-  const list = rows.filter((u) => `${u.displayName} ${u.email} ${u.phoneNumber}`.toLowerCase().includes(q.toLowerCase()));
+  const approvalOf = (u: Row) => String(u.approval ?? 'approved');
+  const pendingCount = rows.filter((u) => approvalOf(u) === 'pending').length;
+  const list = rows
+    .filter((u) => approvalFilter === 'all' || approvalOf(u) === approvalFilter)
+    .filter((u) => `${u.displayName} ${u.email} ${u.phoneNumber}`.toLowerCase().includes(q.toLowerCase()));
   const superAdmin = profile?.role === 'superAdmin';
   return (
     <>
+      <div className="mb-3 flex flex-wrap gap-2">
+        {(['all', 'pending', 'approved', 'rejected'] as const).map((f) => (
+          <button key={f} onClick={() => setApprovalFilter(f)} className={cn('rounded-full px-4 py-1.5 text-sm font-semibold capitalize', approvalFilter === f ? 'bg-ink text-white' : 'border border-line')}>
+            {f === 'pending' ? `Pending approval (${pendingCount})` : f}
+          </button>
+        ))}
+      </div>
       <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, email, phone…" className="mb-4 w-full rounded-xl border border-line bg-surface px-4 py-2.5 text-sm" />
       <div className="overflow-x-auto rounded-2xl border border-line">
         <table className="w-full text-left text-sm">
           <thead className="bg-surface-2/60 text-[11px] tracking-wider text-muted uppercase">
             <tr>
-              {['Name', 'Email', 'Phone', 'Goal / level', 'Courses', 'Role'].map((h) => (
+              {['Name', 'Email', 'Phone', 'Goal / level', 'Courses', 'Approval', 'Role'].map((h) => (
                 <th key={h} className="p-3">
                   {h}
                 </th>
@@ -349,6 +370,21 @@ function Users() {
                   {String(u.targetGoal ?? '')} · {String(u.currentFrenchLevel ?? '')}
                 </td>
                 <td className="p-3 text-xs">{((u.enrolledCourses as string[]) ?? []).join(', ')}</td>
+                <td className="p-3">
+                  <div className="flex items-center gap-1.5">
+                    <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-bold capitalize', APPROVAL[approvalOf(u)])}>{approvalOf(u)}</span>
+                    {approvalOf(u) !== 'approved' && (
+                      <button disabled={!!busy} title="Approve" aria-label="Approve" onClick={async () => (await run(u.id, { action: 'setApproval', uid: u.id, approval: 'approved' })) && load()} className="rounded-lg bg-mint/15 p-1.5 text-mint">
+                        <Check size={14} />
+                      </button>
+                    )}
+                    {approvalOf(u) !== 'rejected' && u.role !== 'admin' && u.role !== 'superAdmin' && (
+                      <button disabled={!!busy} title="Reject" aria-label="Reject" onClick={async () => confirm('Reject this account? The student will not be able to log in to the dashboard.') && (await run(u.id, { action: 'setApproval', uid: u.id, approval: 'rejected' })) && load()} className="rounded-lg bg-rouge/15 p-1.5 text-rouge">
+                        <X size={14} />
+                      </button>
+                    )}
+                  </div>
+                </td>
                 <td className="p-3">
                   {superAdmin ? (
                     <select
@@ -422,5 +458,84 @@ function AuditLog() {
         </li>
       ))}
     </ul>
+  );
+}
+
+function FreeClass() {
+  const { rows, load } = useRows('freeClassRegistrations', 'submittedAt', 500);
+  const [filter, setFilter] = useState('New');
+  const [busy, setBusy] = useState<string | null>(null);
+  if (!rows) return <Loader2 className="animate-spin" />;
+  const list = rows.filter((r) => filter === 'All' || r.status === filter);
+  const setStatus = async (id: string, status: string) => {
+    setBusy(id);
+    try {
+      await updateDoc(doc(firebase()!.db, 'freeClassRegistrations', id), { status });
+      await load();
+    } catch {
+      alert('Could not update. Check your connection and try again.');
+    } finally {
+      setBusy(null);
+    }
+  };
+  const exportCsv = () => {
+    const cols = ['name', 'phone', 'whatsapp', 'email', 'interestLabel', 'status', 'locale'];
+    const cell = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    const csv = [['date', ...cols].join(','), ...list.map((r) => [cell(fmtDate(r.submittedAt)), ...cols.map((c) => cell(r[c]))].join(','))].join('\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['\ufeff' + csv], { type: 'text/csv' }));
+    a.download = `free-class-${filter.toLowerCase()}.csv`;
+    a.click();
+  };
+  return (
+    <>
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        {['New', 'Contacted', 'Joined', 'Not interested', 'All'].map((f) => (
+          <button key={f} onClick={() => setFilter(f)} className={cn('rounded-full px-4 py-1.5 text-sm font-semibold', filter === f ? 'bg-ink text-white' : 'border border-line')}>
+            {f} {f !== 'All' && `(${rows.filter((r) => r.status === f).length})`}
+          </button>
+        ))}
+        <button onClick={exportCsv} className={btn('ghost', 'sm', 'ml-auto')}>
+          Export CSV
+        </button>
+      </div>
+      <div className="overflow-x-auto rounded-2xl border border-line">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-surface-2/60 text-[11px] tracking-wider text-muted uppercase">
+            <tr>
+              {['Date', 'Name', 'Phone / WhatsApp', 'Email', 'Interested in', 'Status'].map((h) => (
+                <th key={h} className="p-3">
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {list.map((r) => (
+              <tr key={r.id} className="border-t border-line">
+                <td className="p-3 text-xs whitespace-nowrap text-muted">{fmtDate(r.submittedAt)}</td>
+                <td className="p-3 font-semibold">{String(r.name ?? '')}</td>
+                <td className="p-3 text-xs">
+                  <a href={`tel:${String(r.phone ?? '')}`} className="hover:underline">
+                    {String(r.phone ?? '')}
+                  </a>
+                  {r.whatsapp && r.whatsapp !== r.phone ? <span className="block text-muted">WA {String(r.whatsapp)}</span> : null}
+                </td>
+                <td className="p-3 text-xs">{String(r.email ?? '')}</td>
+                <td className="p-3 text-xs">{String(r.interestLabel ?? r.interest ?? '')}</td>
+                <td className="p-3">
+                  <select disabled={busy === r.id} value={String(r.status ?? 'New')} onChange={(e) => setStatus(r.id, e.target.value)} className="rounded-lg border border-line bg-surface px-2 py-1 text-xs">
+                    {['New', 'Contacted', 'Joined', 'Not interested'].map((o) => (
+                      <option key={o}>{o}</option>
+                    ))}
+                  </select>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {list.length === 0 && <p className="p-6 text-sm text-muted">No registrations here yet.</p>}
+      </div>
+    </>
   );
 }

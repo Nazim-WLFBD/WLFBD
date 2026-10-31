@@ -8,9 +8,11 @@ service cloud.firestore {
     function role() { return signedIn() ? request.auth.token.get('role', 'student') : 'none'; }
     function isAdmin() { return role() in ['admin', 'superAdmin']; }
     function isStaff() { return role() in ['admin', 'superAdmin', 'instructor']; }
+    function me() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    // New accounts wait for an admin; accounts without the field predate approval and count as approved
+    function approved() { return signedIn() && (isStaff() || me().get('approval', 'approved') == 'approved'); }
     function enrolledIn(courseId) {
-      return signedIn() &&
-        courseId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('enrolledCourses', []);
+      return approved() && courseId in me().get('enrolledCourses', []);
     }
 
     match /{document=**} { allow read, write: if false; }
@@ -21,19 +23,20 @@ service cloud.firestore {
       allow create: if isOwner(uid)
         && request.resource.data.get('role', 'student') == 'student'
         && request.resource.data.get('status', 'Active') == 'Active'
+        && request.resource.data.get('approval', '') == 'pending'
         && request.resource.data.get('enrolledCourses', []) is list
         && request.resource.data.get('enrolledCourses', []).size() == 0
         && request.resource.data.get('uid', uid) == uid
         && request.resource.data.get('email', request.auth.token.get('email', '')) == request.auth.token.get('email', '');
       // Students can't change their role, status or course access
       allow update: if (isOwner(uid) && !request.resource.data.diff(resource.data).affectedKeys()
-                          .hasAny(['role', 'status', 'enrolledCourses', 'uid', 'email']))
+                          .hasAny(['role', 'status', 'enrolledCourses', 'uid', 'email', 'approval', 'approvedBy', 'approvedAt']))
                     || isAdmin();
       allow delete: if role() == 'superAdmin';
 
       match /quizAttempts/{id} {
         allow read: if isOwner(uid) || isAdmin();
-        allow create: if isOwner(uid);
+        allow create: if isOwner(uid) && approved();
       }
       match /courseProgress/{courseId} {
         allow read: if isOwner(uid) || isAdmin();
@@ -86,6 +89,8 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
     match /auditLogs/{id} { allow read: if isAdmin(); }
+    // Created by the server (/api/free-class); admins follow up and update the status
+    match /freeClassRegistrations/{id} { allow read, update, delete: if isAdmin(); }
     // trxIds and rateLimits: server-only (denied by the catch-all above)
   }
 }

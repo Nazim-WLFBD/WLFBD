@@ -86,7 +86,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
 
   const options: Option[] = useMemo(
     () => [
-      ...COURSES_DATA.map((c) => ({
+      ...COURSES_DATA.filter((c) => !c.whatsappOnly).map((c) => ({
         id: c.id,
         title: bn ? c.banglaTitle : c.title,
         sub: c.isCustomPricing

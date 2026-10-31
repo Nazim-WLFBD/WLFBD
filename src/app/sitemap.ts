@@ -5,6 +5,7 @@ import { QUIZ_CATEGORIES } from '@/data/quizData';
 import { routing } from '@/i18n/routing';
 import { BRAND_META } from '@/lib/brand';
 import { quizHref } from '@/lib/quiz';
+import { BLOG_PATHS } from '@/data/blog';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const paths = [
@@ -17,6 +18,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...QUIZ_CATEGORIES.map((q) => quizHref(q.slug)),
     '/crs-calculator',
     '/enroll',
+    '/free-class',
+    ...BLOG_PATHS,
   ];
   return paths.flatMap((p) =>
     routing.locales.map((locale) => ({

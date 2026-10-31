@@ -6,7 +6,8 @@ export const NAV = {
   practice: { en: 'Practice Test', bn: 'প্র্যাকটিস টেস্ট' },
   schedule: { en: 'Schedule', bn: 'সময়সূচী' },
   about: { en: 'About Us', bn: 'আমাদের সম্পর্কে' },
-  contact: { en: 'Contact', bn: 'যোগাযোগ' },
+  blog: { en: 'Blog', bn: 'ব্লগ' },
+  freeClass: { en: 'Free Class', bn: 'ফ্রি ক্লাস' },
 } satisfies Record<string, L>;
 
 export const MEGA = {

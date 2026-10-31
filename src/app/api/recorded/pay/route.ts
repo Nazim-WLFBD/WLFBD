@@ -18,6 +18,7 @@ const Body = z.object({
 export async function POST(req: Request) {
   const caller = await getCaller(req);
   if (!caller) return json({ error: 'Please log in first.', code: 'login_required' }, 401);
+  if (!caller.approved) return json({ error: 'Your account is awaiting admin approval.', code: 'not_approved' }, 403);
   const p = Body.safeParse(await req.json().catch(() => null));
   if (!p.success) return json({ error: 'Check the bKash number and TrxID.', code: 'invalid', field: String(p.error.issues[0]?.path[0] ?? '') }, 400);
   if (!(await rateLimit(`pay:${caller.uid}`, 5, 3600))) return json({ error: 'Too many attempts. Try again later.', code: 'rate_limited' }, 429);

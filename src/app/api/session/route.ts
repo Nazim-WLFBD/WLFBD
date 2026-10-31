@@ -25,6 +25,9 @@ export async function POST(req: Request) {
   if (!Array.isArray(data.enrolledCourses)) patch.enrolledCourses = [];
   if (!data.createdAt) patch.createdAt = FieldValue.serverTimestamp();
   if (grant || !data.role) patch.role = grant || current === 'superAdmin' ? 'superAdmin' : current;
+  if (caller.role !== 'student' && data.approval !== 'approved') patch.approval = 'approved';
+  // A brand-new student account (this request can land before the browser creates the profile) waits for approval
+  else if (caller.role === 'student' && !data.createdAt && data.approval === undefined) patch.approval = 'pending';
   if (Object.keys(patch).length) await ref.set(patch, { merge: true });
 
   return grant ? json({ role: 'superAdmin', refresh: true }) : json({ role: current });

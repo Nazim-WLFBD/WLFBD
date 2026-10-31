@@ -11,6 +11,7 @@ const Action = z.discriminatedUnion('action', [
   z.object({ action: z.literal('setEnrollmentStatus'), enrollmentId: z.string().max(60), status: z.enum(['Verified', 'Failed', 'Pending']) }),
   z.object({ action: z.literal('setRole'), uid: z.string().max(128), role: z.enum(['student', 'instructor', 'admin', 'superAdmin']) }),
   z.object({ action: z.literal('seedRecordedCourses') }),
+  z.object({ action: z.literal('setApproval'), uid: z.string().max(128), approval: z.enum(['pending', 'approved', 'rejected']) }),
   z.object({ action: z.literal('refreshRecordedCourses') }),
 ]);
 
@@ -110,6 +111,25 @@ export async function POST(req: Request) {
     await adminAuth().revokeRefreshTokens(a.uid);
     await db.doc(`users/${a.uid}`).set({ role: a.role }, { merge: true });
     await audit(caller, 'setRole', `users/${a.uid}`, { role: a.role });
+    return json({ ok: true });
+  }
+
+  if (a.action === 'setApproval') {
+    const ref = db.doc(`users/${a.uid}`);
+    const u = (await ref.get()).data();
+    if (!u) return json({ error: 'User not found' }, 404);
+    await ref.set({ approval: a.approval, approvedBy: caller.email, approvedAt: FieldValue.serverTimestamp() }, { merge: true });
+    if (a.approval === 'approved' && u.approval !== 'approved' && u.email) {
+      const bn = u.locale === 'bn';
+      await sendMail(
+        u.email,
+        bn ? 'আপনার অ্যাকাউন্ট অনুমোদিত হয়েছে' : 'Your account has been approved',
+        layout(bn ? 'অ্যাকাউন্ট অনুমোদিত' : 'Account approved', bn ? 'এখন লগইন করে আপনার ড্যাশবোর্ড ও কোর্স ব্যবহার করতে পারবেন।' : 'You can now log in and use your dashboard and courses.', [
+          [bn ? 'ইমেইল' : 'Email', u.email],
+        ]),
+      ).catch(() => {});
+    }
+    await audit(caller, 'setApproval', `users/${a.uid}`, { approval: a.approval });
     return json({ ok: true });
   }
 

@@ -215,7 +215,7 @@ function Leaves({ count }: { count: number }) {
   });
   return (
     <instancedMesh ref={ref} args={[geo, undefined, count]}>
-      <meshBasicMaterial color="#e0243a" side={THREE.DoubleSide} transparent opacity={0.85} />
+      <meshBasicMaterial color="#d52b1e" side={THREE.DoubleSide} transparent opacity={0.85} />
     </instancedMesh>
   );
 }
@@ -262,7 +262,7 @@ function Globe({ pointer }: { pointer: React.RefObject<{ x: number; y: number }>
         {CITIES.map((c) => (
           <City key={c.code} {...c} />
         ))}
-        <FlightArc from={dac} to={par} color="#e8b64a" delay={0} />
+        <FlightArc from={dac} to={par} color="#c99a3b" delay={0} />
         <FlightArc from={par} to={yyz} color="#ff3b4f" delay={0.5} />
       </group>
       </group>

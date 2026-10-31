@@ -10,7 +10,7 @@ import { btn } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { COURSES_DATA, COMBO_OFFERS } from '@/data/courses';
 import { RECORDED_COURSES } from '@/data/recordedCourses';
-import { BRAND_CONTACT, waLink, waMessage } from '@/lib/brand';
+import { BRAND_CONTACT } from '@/lib/brand';
 import { NAV, MEGA } from '@/content/nav';
 import { ui } from '@/content/home';
 import { cn, taka } from '@/lib/utils';
@@ -110,6 +110,7 @@ export function Header() {
           <MenuTrigger id="practice" label={t(NAV.practice)} menu={menu} open={open} badge={t(ui.free)} />
           <NavLink href={{ pathname: '/', hash: 'schedule' }}>{t(NAV.schedule)}</NavLink>
           <NavLink href={{ pathname: '/', hash: 'about' }}>{t(NAV.about)}</NavLink>
+          <NavLink href="/blog">{t(NAV.blog)}</NavLink>
         </nav>
 
         {/* Actions */}
@@ -283,6 +284,10 @@ export function Header() {
                 <Icon name="globe" size={18} className="text-gold" />
                 {t(NAV.about)}
               </Link>
+              <Link href="/blog" className="flex items-center gap-3 px-2 py-3.5 text-[15px] font-semibold">
+                <Icon name="book" size={18} className="text-gold" />
+                {t(NAV.blog)}
+              </Link>
             </div>
             <div className="mt-4 flex items-center justify-between gap-2">
               <LangSwitch />
@@ -293,9 +298,9 @@ export function Header() {
               <Link href="/enroll" className={btn('rouge', 'md')}>
                 {t(ui.enroll)}
               </Link>
-              <a href={waLink(waMessage('enroll', t.locale))} target="_blank" rel="noopener" className={btn('ghost-light', 'md')}>
-                {t(ui.whatsapp)}
-              </a>
+              <Link href="/free-class" className={btn('ghost-light', 'md')}>
+                {t(NAV.freeClass)}
+              </Link>
             </div>
             <p className="mt-3 text-center text-xs text-white/50">
               {t(ui.whatsapp)}: {BRAND_CONTACT.whatsapp}

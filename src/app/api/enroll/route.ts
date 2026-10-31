@@ -35,7 +35,7 @@ export async function POST(req: Request) {
   const d = parsed.data;
 
   // Price is decided on the server, never trusted from the browser
-  const course = COURSES_DATA.find((c) => c.id === d.courseId);
+  const course = COURSES_DATA.find((c) => c.id === d.courseId && !c.whatsappOnly);
   const combo = COMBO_OFFERS.find((c) => c.id === d.courseId);
   if (!course && !combo) return json({ error: 'Unknown course.', code: 'unknown_course' }, 400);
   const title = course?.title ?? combo!.title;

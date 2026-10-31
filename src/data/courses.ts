@@ -240,6 +240,51 @@ export const COURSES_DATA: Course[] = [
       'কানাডা PNP ও ফেডারেল পিআর স্কোরের বিশেষ নির্দেশনা',
       'ক্লাস ভিডিও রেকর্ডিং অ্যাক্সেস'
     ]
+  },
+  {
+    id: 'one-to-one',
+    code: '1:1',
+    title: 'One-to-One Sessions - Personal French Coaching',
+    banglaTitle: 'ওয়ান-টু-ওয়ান সেশন - ব্যক্তিগত ফ্রেঞ্চ কোচিং',
+    duration: 'Flexible schedule',
+    banglaDuration: 'ফ্লেক্সিবল সময়সূচি',
+    classCount: 1,
+    classesPerWeek: 'You choose',
+    banglaClassesPerWeek: 'আপনার পছন্দমতো',
+    targetClb: 'Your goal',
+    banglaTargetClb: 'আপনার লক্ষ্য',
+    regularPrice: 0,
+    offerPrice: 0,
+    cefrLevel: 'Any level (A0–C1)',
+    targetAudience: 'Learners who want individual attention: busy professionals, exam candidates with a deadline, and anyone who wants to fix specific weaknesses',
+    banglaTargetAudience: 'যাঁরা ব্যক্তিগত মনোযোগ চান: ব্যস্ত পেশাজীবী, নির্দিষ্ট সময়ের মধ্যে পরীক্ষা দিতে চান এমন পরীক্ষার্থী এবং নির্দিষ্ট দুর্বলতা দূর করতে চান এমন সবাই',
+    outcome: 'A learning plan built around your goal, level and timetable, with every session focused on what you need most.',
+    banglaOutcome: 'আপনার লক্ষ্য, লেভেল ও সময় অনুযায়ী তৈরি একটি শেখার পরিকল্পনা, যেখানে প্রতিটি সেশন আপনার সবচেয়ে বেশি প্রয়োজনীয় বিষয়ে কেন্দ্রীভূত।',
+    tag: 'Personalised',
+    banglaTag: 'ব্যক্তিগত',
+    tagColor: 'bg-amber-50 text-amber-800 border-amber-200',
+    isCustomPricing: true,
+    whatsappOnly: true,
+    whatsappMessage: {
+      en: 'Bonjour! I am interested in One-to-One French Sessions. Could you share the details, schedule and fee?',
+      bn: 'Bonjour! আমি ওয়ান-টু-ওয়ান ফ্রেঞ্চ সেশন সম্পর্কে জানতে আগ্রহী। বিস্তারিত, সময়সূচি ও ফি জানাবেন?',
+    },
+    features: [
+      'Personalised learning plan for your goal (DELF, TEF/TCF, work or study)',
+      'Individual attention from the instructor in every session',
+      'Flexible schedule: pick days and times that suit you',
+      'Focus on your specific goals and weak areas',
+      'Direct interaction and instant feedback from the instructor',
+      'Exam-focused speaking and writing practice on request'
+    ],
+    banglaFeatures: [
+      'আপনার লক্ষ্য অনুযায়ী ব্যক্তিগত শেখার পরিকল্পনা (DELF, TEF/TCF, চাকরি বা উচ্চশিক্ষা)',
+      'প্রতিটি সেশনে ইন্সট্রাক্টরের ব্যক্তিগত মনোযোগ',
+      'ফ্লেক্সিবল সময়সূচি: আপনার সুবিধামতো দিন ও সময় বেছে নিন',
+      'আপনার নির্দিষ্ট লক্ষ্য ও দুর্বল দিকগুলোতে বিশেষ গুরুত্ব',
+      'ইন্সট্রাক্টরের সঙ্গে সরাসরি আলোচনা ও তাৎক্ষণিক ফিডব্যাক',
+      'প্রয়োজনে পরীক্ষাভিত্তিক স্পিকিং ও রাইটিং অনুশীলন'
+    ]
   }
 ];
 

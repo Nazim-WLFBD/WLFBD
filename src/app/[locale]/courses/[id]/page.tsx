@@ -19,8 +19,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
   const title = bn ? c.banglaTitle : c.title;
   const outcome = (bn && c.banglaOutcome) || c.outcome;
   const description = bn
-    ? `${outcome} ${c.banglaDuration ?? c.duration} · ${toBnDigits(c.classCount)}টি লাইভ ক্লাস · ${c.banglaTargetClb ?? c.targetClb ?? c.cefrLevel}।`
-    : `${outcome} ${c.duration} · ${c.classCount} live classes · ${c.targetClb ?? c.cefrLevel}.`;
+    ? c.whatsappOnly
+      ? `${outcome} ${c.banglaDuration ?? c.duration}।`
+      : `${outcome} ${c.banglaDuration ?? c.duration} · ${toBnDigits(c.classCount)}টি লাইভ ক্লাস · ${c.banglaTargetClb ?? c.targetClb ?? c.cefrLevel}।`
+    : c.whatsappOnly
+      ? `${outcome} ${c.duration}.`
+      : `${outcome} ${c.duration} · ${c.classCount} live classes · ${c.targetClb ?? c.cefrLevel}.`;
   return {
     title,
     description,
@@ -46,7 +50,7 @@ export default async function CoursePage({ params }: { params: Promise<{ locale:
     hasCourseInstance: {
       '@type': 'CourseInstance',
       courseMode: 'online',
-      courseWorkload: `${course.classCount} live classes`,
+      courseWorkload: course.whatsappOnly ? 'Flexible one-to-one sessions' : `${course.classCount} live classes`,
     },
     ...(course.isCustomPricing
       ? {}

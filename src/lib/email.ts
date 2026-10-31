@@ -20,11 +20,11 @@ const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&
 
 /** Branded HTML email with a table of details. */
 export function layout(title: string, intro: string, rows: [string, string][]) {
-  return `<!doctype html><html><body style="margin:0;background:#f4efe4;font-family:Arial,sans-serif;color:#0b1433">
+  return `<!doctype html><html><body style="margin:0;background:#f6f7f9;font-family:Arial,sans-serif;color:#0b1433">
 <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:24px">
 <table width="560" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;overflow:hidden">
-<tr><td style="background:#0a1230;color:#fff;padding:24px">
-<div style="height:4px;background:linear-gradient(90deg,#2747d8 33%,#fff 33% 66%,#e0243a 66%);margin:-24px -24px 20px"></div>
+<tr><td style="background:#0e1a2f;color:#fff;padding:24px">
+<div style="height:4px;background:linear-gradient(90deg,#1d3f8f 33%,#fff 33% 66%,#d52b1e 66%);margin:-24px -24px 20px"></div>
 <div style="font-size:20px;font-weight:bold">${BRAND_NAME}</div><div style="opacity:.7;font-size:13px">${BRAND_TAGLINE_BANGLA}</div></td></tr>
 <tr><td style="padding:24px"><h2 style="margin:0 0 8px">${esc(title)}</h2><p style="color:#59607a;line-height:1.5">${esc(intro)}</p>
 <table width="100%" cellpadding="8" style="border-collapse:collapse;font-size:14px">
