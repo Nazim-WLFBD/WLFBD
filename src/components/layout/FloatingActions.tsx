@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowUp, Phone } from 'lucide-react';
 import { useT } from '@/i18n/t';
-import { BRAND_CONTACT, WA_MESSAGES, waLink } from '@/lib/brand';
+import { BRAND_CONTACT, waLink, waMessage } from '@/lib/brand';
 import { ui } from '@/content/home';
 
 export function WhatsAppGlyph({ size = 26 }: { size?: number }) {
@@ -49,8 +49,8 @@ export function FloatingActions() {
       <a
         href={`tel:${BRAND_CONTACT.phone}`}
         className="group hidden h-12 items-center lg:flex gap-0 overflow-hidden rounded-full bg-ink pr-0 pl-3.5 text-gold shadow-lg ring-1 ring-white/10 transition-all hover:gap-2 hover:pr-4"
-        title={`Call ${BRAND_CONTACT.phone}`}
-        aria-label={`Call ${BRAND_CONTACT.phone}`}
+        title={`${t(ui.call)} ${BRAND_CONTACT.phone}`}
+        aria-label={`${t(ui.call)} ${BRAND_CONTACT.phone}`}
       >
         <Phone size={19} />
         <span className="max-w-0 overflow-hidden text-sm font-bold whitespace-nowrap text-white transition-all group-hover:max-w-40">
@@ -59,12 +59,12 @@ export function FloatingActions() {
         <span className="w-3.5 group-hover:w-0" />
       </a>
       <a
-        href={waLink(WA_MESSAGES.enroll)}
+        href={waLink(waMessage('enroll', t.locale))}
         target="_blank"
         rel="noopener"
         className="relative hidden h-14 w-14 items-center justify-center rounded-full bg-[#25d366] lg:flex text-white shadow-[0_14px_30px_-10px_rgba(37,211,102,.8)] transition hover:scale-105"
-        title="Chat on WhatsApp"
-        aria-label="Chat on WhatsApp"
+        title={t(ui.chatWhatsapp)}
+        aria-label={t(ui.chatWhatsapp)}
       >
         <span className="animate-pulse-ring absolute inset-0 rounded-full bg-[#25d366]" />
         <WhatsAppGlyph />

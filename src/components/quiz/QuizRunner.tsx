@@ -9,7 +9,7 @@ import { btn } from '@/components/ui/Button';
 import { useAuth } from '@/components/auth/AuthContext';
 import { WhatsAppGlyph } from '@/components/layout/FloatingActions';
 import { firebase } from '@/lib/firebase';
-import { builtInQuestions, courseTitle, rate, scoreQuiz, type ScoredQuiz } from '@/lib/quizScoring';
+import { builtInQuestions, categoryLabel, cefrLabel, courseTitle, rate, scoreQuiz, type ScoredQuiz } from '@/lib/quizScoring';
 import { waLink } from '@/lib/brand';
 import { cn, num } from '@/lib/utils';
 import type { Question, QuizCategory } from '@/types/quiz';
@@ -93,9 +93,14 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
 
   useEffect(() => {
     if (phase !== 'running' && phase !== 'review') return;
-    const id = setInterval(() => setLeft((s) => (s <= 1 ? (clearInterval(id), finish(), 0) : s - 1)), 1000);
+    const id = setInterval(() => setLeft((s) => Math.max(0, s - 1)), 1000);
     return () => clearInterval(id);
-  }, [phase, finish]);
+  }, [phase]);
+
+  // Time's up: submit once, outside the state updater (updaters may run twice in dev)
+  useEffect(() => {
+    if (left === 0 && (phase === 'running' || phase === 'review')) finish();
+  }, [left, phase, finish]);
 
   // Save the attempt once for signed-in students
   useEffect(() => {
@@ -145,7 +150,7 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
     const resuming = Object.keys(answers).length > 0;
     return (
       <div className="mx-auto max-w-2xl rounded-[28px] border border-line bg-surface p-7 md:p-10">
-        <span className="rounded-full bg-surface-2 px-3 py-1 text-[11px] font-bold tracking-wider">{quiz.badgeTag}</span>
+        <span className="rounded-full bg-surface-2 px-3 py-1 text-[11px] font-bold tracking-wider">{t.locale === 'bn' && quiz.banglaBadgeTag ? quiz.banglaBadgeTag : quiz.badgeTag}</span>
         <h2 className="font-display mt-4 text-3xl font-semibold">{t.locale === 'bn' ? quiz.banglaTitle : quiz.title}</h2>
         <p className="mt-3 leading-relaxed text-muted">{t.locale === 'bn' ? quiz.banglaDescription : quiz.description}</p>
         <div className="mt-6 grid grid-cols-2 gap-3">
@@ -155,7 +160,9 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
           </div>
           <div className="rounded-2xl bg-surface-2/60 p-4">
             <p className="text-[10px] font-bold tracking-widest text-muted uppercase">{t({ en: 'Time', bn: 'সময়' })}</p>
-            <p className="font-display text-3xl font-semibold">{num(quiz.durationMinutes, t.locale)} min</p>
+            <p className="font-display text-3xl font-semibold">
+              {num(quiz.durationMinutes, t.locale)} {t({ en: 'min', bn: 'মিনিট' })}
+            </p>
           </div>
         </div>
         {!user && (
@@ -206,7 +213,7 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
             <div className="flex h-36 w-36 flex-col items-center justify-center rounded-full border-4 border-gold">
               <span className="font-display text-5xl font-semibold">{num(result.percentage, t.locale)}%</span>
               <span className="text-xs text-white/60">
-                {result.totalScore}/{result.maxScore}
+                {num(result.totalScore, t.locale)}/{num(result.maxScore, t.locale)}
               </span>
             </div>
             <div>
@@ -215,22 +222,26 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
                   <Star key={k} size={20} fill={k < r.stars ? 'currentColor' : 'none'} className={k < r.stars ? '' : 'text-white/25'} />
                 ))}
               </div>
-              <p className="font-display mt-2 text-3xl font-semibold">{r.label}</p>
-              {r.nclc && <p className="text-sm text-gold">{r.nclc}</p>}
+              <p className="font-display mt-2 text-3xl font-semibold">{t(r.label)}</p>
+              {r.nclc && <p className="text-sm text-gold">{t(r.nclc)}</p>}
               <p className="mt-3 max-w-2xl text-white/75">{t.locale === 'bn' ? r.banglaFeedback : r.feedback}</p>
               <div className="mt-5 flex flex-wrap gap-2 text-sm">
-                <span className="rounded-full bg-mint/20 px-3 py-1 text-mint">✓ {result.correct}</span>
-                <span className="rounded-full bg-rouge/20 px-3 py-1 text-[#ff8a98]">✗ {result.wrong}</span>
-                <span className="rounded-full bg-white/10 px-3 py-1">CEFR ≈ {result.estimatedCEFR}</span>
+                <span className="rounded-full bg-mint/20 px-3 py-1 text-mint">✓ {num(result.correct, t.locale)}</span>
+                <span className="rounded-full bg-rouge/20 px-3 py-1 text-[#ff8a98]">✗ {num(result.wrong, t.locale)}</span>
+                <span className="rounded-full bg-white/10 px-3 py-1">CEFR ≈ {t(cefrLabel(result.estimatedCEFR))}</span>
               </div>
             </div>
           </div>
           <div className="flex flex-wrap gap-2 border-t border-white/10 p-6">
             <Link href={{ pathname: '/enroll', query: { course: result.recommendedCourseId } }} className={btn('rouge', 'md')}>
-              {t({ en: 'Join', bn: 'ভর্তি হোন:' })} {courseTitle(result.recommendedCourseId).split(' - ')[0]} <ArrowRight size={16} />
+              {t({ en: 'Join', bn: 'ভর্তি হোন:' })} {courseTitle(result.recommendedCourseId, t.locale).split(' - ')[0]} <ArrowRight size={16} />
             </Link>
             <a
-              href={waLink(`Bonjour! I scored ${result.percentage}% (${result.estimatedCEFR}) on "${quiz.title}". I'd like a free consultation.`)}
+              href={waLink(
+                t.locale === 'bn'
+                  ? `Bonjour! আমি "${quiz.banglaTitle}" টেস্টে ${result.percentage}% (${result.estimatedCEFR}) পেয়েছি। আমি একটি ফ্রি পরামর্শ নিতে চাই।`
+                  : `Bonjour! I scored ${result.percentage}% (${result.estimatedCEFR}) on "${quiz.title}". I'd like a free consultation.`,
+              )}
               target="_blank"
               rel="noopener"
               className={btn('ghost-light', 'md')}
@@ -254,9 +265,9 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
                   return (
                     <div key={k}>
                       <div className="flex justify-between text-sm">
-                        <span className="font-semibold">{k}</span>
+                        <span className="font-semibold">{t(categoryLabel(k))}</span>
                         <span className="text-muted">
-                          {b.score}/{b.max}
+                          {num(b.score, t.locale)}/{num(b.max, t.locale)}
                         </span>
                       </div>
                       <div className="mt-1.5 h-2.5 overflow-hidden rounded-full bg-fg/10">
@@ -289,17 +300,20 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
                 <li key={rv.id} className="rounded-2xl bg-surface-2/50 p-4 text-sm">
                   <p className="flex gap-2 font-semibold">
                     {rv.ok ? <CheckCircle2 size={17} className="shrink-0 text-mint" /> : <XCircle size={17} className="shrink-0 text-rouge" />}
-                    {k + 1}. {rv.prompt}
+                    {num(k + 1, t.locale)}. {rv.prompt}
                   </p>
+                  {t.locale === 'bn' && rv.banglaPrompt && <p className="font-bangla pl-6 text-xs text-muted">{rv.banglaPrompt}</p>}
                   <p className="mt-2 pl-6 text-muted">
                     {t({ en: 'Your answer', bn: 'আপনার উত্তর' })}: <span className={rv.ok ? 'text-mint' : 'text-rouge'}>{rv.given}</span>
                   </p>
                   {!rv.ok && (
                     <p className="pl-6 text-muted">
-                      {t({ en: 'Correct', bn: 'সঠিক' })}: <span className="font-semibold text-fg">{rv.correct}</span>
+                      {t({ en: 'Correct', bn: 'সঠিক উত্তর' })}: <span className="font-semibold text-fg">{rv.correct}</span>
                     </p>
                   )}
-                  {rv.explanation && <p className="mt-1 pl-6 text-xs text-muted">{rv.explanation}</p>}
+                  {(rv.explanation || rv.banglaExplanation) && (
+                    <p className="mt-1 pl-6 text-xs text-muted">{t.locale === 'bn' ? rv.banglaExplanation || rv.explanation : rv.explanation}</p>
+                  )}
                 </li>
               ))}
             </ol>
@@ -320,7 +334,7 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
             {t({ en: `${missing} question(s) unanswered.`, bn: `${num(missing, 'bn')}টি প্রশ্নের উত্তর দেওয়া হয়নি।` })}
           </p>
         )}
-        <Navigator questions={questions} answers={answers} flags={flags} current={-1} onGo={(k) => (setI(k), setPhase('running'))} />
+        <Navigator questions={questions} answers={answers} flags={flags} current={-1} onGo={(k) => (setI(k), setPhase('running'))} locale={t.locale} />
         <div className="mt-6 flex gap-3">
           <button onClick={() => setPhase('running')} className={btn('ghost', 'md')}>
             <ArrowLeft size={16} /> {t({ en: 'Back to questions', bn: 'প্রশ্নে ফিরে যান' })}
@@ -355,7 +369,7 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
           <span className="font-bold text-muted">
             {t({ en: 'Question', bn: 'প্রশ্ন' })} {num(i + 1, t.locale)} / {num(questions.length, t.locale)}
           </span>
-          <span className="rounded-full bg-surface-2 px-2.5 py-1 text-xs font-semibold">{q.category}</span>
+          <span className="rounded-full bg-surface-2 px-2.5 py-1 text-xs font-semibold">{t(categoryLabel(q.category))}</span>
         </div>
         <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-fg/10">
           <div className="h-full bg-rouge transition-all" style={{ width: `${((i + 1) / questions.length) * 100}%` }} />
@@ -462,7 +476,7 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
           <p className="text-sm font-bold">
             {num(answered, t.locale)} / {num(questions.length, t.locale)} {t({ en: 'answered', bn: 'উত্তর দেওয়া হয়েছে' })}
           </p>
-          <Navigator questions={questions} answers={answers} flags={flags} current={i} onGo={setI} />
+          <Navigator questions={questions} answers={answers} flags={flags} current={i} onGo={setI} locale={t.locale} />
           <button onClick={() => setPhase('review')} className={btn('rouge', 'sm', 'mt-4 w-full')}>
             {t({ en: 'Finish test', bn: 'টেস্ট শেষ করুন' })}
           </button>
@@ -479,12 +493,14 @@ function Navigator({
   flags,
   current,
   onGo,
+  locale,
 }: {
   questions: Question[];
   answers: Record<string, unknown>;
   flags: string[];
   current: number;
   onGo: (i: number) => void;
+  locale: 'en' | 'bn';
 }) {
   return (
     <div className="mt-4 grid grid-cols-8 gap-1.5">
@@ -494,7 +510,7 @@ function Navigator({
           <button
             key={q.id}
             onClick={() => onGo(k)}
-            aria-label={`Question ${k + 1}`}
+            aria-label={locale === 'bn' ? `প্রশ্ন ${num(k + 1, 'bn')}` : `Question ${k + 1}`}
             className={cn(
               'relative h-8 rounded-lg text-xs font-bold transition',
               k === current ? 'bg-rouge text-white' : done ? 'bg-ink text-white dark:bg-white/80 dark:text-ink' : 'bg-fg/8 text-muted hover:bg-fg/15',

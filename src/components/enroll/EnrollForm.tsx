@@ -11,10 +11,48 @@ import { COURSES_DATA, COMBO_OFFERS } from '@/data/courses';
 import { BATCH_SCHEDULES } from '@/data/schedules';
 import { enroll as copy } from '@/content/enroll';
 import { BRAND_CONTACT, waLink } from '@/lib/brand';
-import { cn, taka } from '@/lib/utils';
+import { cn, num, taka } from '@/lib/utils';
 import type { BatchSchedule } from '@/types';
+import type { L } from '@/i18n/t';
 
 export type PaymentMethod = 'bkash' | 'nagad' | 'bank';
+
+/** Error codes returned by POST /api/enroll. */
+export type EnrollErrorCode = 'invalid' | 'unknown_course' | 'bkash_required' | 'rate_limited' | 'duplicate_trx';
+type ErrorField = 'phone' | 'email' | 'senderPhone' | 'trxId';
+
+/** Thrown by the enrollment submit handler so the form can show a bilingual message under the right field. */
+export class EnrollError extends Error {
+  code?: string;
+  field?: string;
+  constructor(message: string, code?: string, field?: string) {
+    super(message);
+    this.name = 'EnrollError';
+    this.code = code;
+    this.field = field;
+  }
+}
+
+const SERVER_ERRORS: Record<EnrollErrorCode, L> = {
+  invalid: { en: 'Please check the form and try again.', bn: 'ফর্মের তথ্যগুলো আবার দেখে চেষ্টা করুন।' },
+  unknown_course: { en: 'This course could not be found. Please pick a course again.', bn: 'কোর্সটি খুঁজে পাওয়া যায়নি। অনুগ্রহ করে আবার কোর্স নির্বাচন করুন।' },
+  bkash_required: { en: 'bKash sender number and TrxID are required.', bn: 'বিকাশ প্রেরক নম্বর ও TrxID দেওয়া আবশ্যক।' },
+  rate_limited: {
+    en: 'Too many submissions. Please wait a few minutes or contact us on WhatsApp.',
+    bn: 'অনেকবার জমা দেওয়া হয়েছে। কয়েক মিনিট অপেক্ষা করুন অথবা WhatsApp-এ যোগাযোগ করুন।',
+  },
+  duplicate_trx: {
+    en: 'This TrxID has already been submitted. Contact us if this is a mistake.',
+    bn: 'এই TrxID আগেই জমা দেওয়া হয়েছে। ভুল মনে হলে আমাদের সাথে যোগাযোগ করুন।',
+  },
+};
+const FALLBACK_ERROR: L = { en: 'Could not submit. Please try WhatsApp.', bn: 'জমা দেওয়া যায়নি। অনুগ্রহ করে WhatsApp-এ চেষ্টা করুন।' };
+const FIELD_STEP: Record<ErrorField, number> = { phone: 1, email: 1, senderPhone: 2, trxId: 2 };
+const METHOD_LABEL: Record<PaymentMethod, L> = {
+  bkash: { en: 'bKash', bn: 'bKash' },
+  nagad: { en: 'Nagad', bn: 'Nagad' },
+  bank: { en: 'Bank / Office', bn: 'ব্যাংক / অফিস' },
+};
 
 export interface EnrollmentInput {
   courseId: string;
@@ -43,20 +81,31 @@ type Option = { id: string; title: string; sub: string; fee: number | null; comb
 
 export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Props) {
   const t = useT();
+  const bn = t.locale === 'bn';
   const params = useSearchParams();
 
   const options: Option[] = useMemo(
     () => [
       ...COURSES_DATA.map((c) => ({
         id: c.id,
-        title: c.title,
-        sub: c.isCustomPricing ? t(copy.contactFee) : `${c.duration.split(' (')[0]} · ${c.classCount} classes`,
+        title: bn ? c.banglaTitle : c.title,
+        sub: c.isCustomPricing
+          ? t(copy.contactFee)
+          : bn
+            ? `${c.banglaDuration ?? c.duration.split(' (')[0]} · ${num(c.classCount, 'bn')}টি ক্লাস`
+            : `${c.duration.split(' (')[0]} · ${c.classCount} classes`,
         fee: c.isCustomPricing ? null : c.offerPrice,
         combo: false,
       })),
-      ...COMBO_OFFERS.map((c) => ({ id: c.id, title: c.title, sub: c.courses.join(' + '), fee: c.combinedFee, combo: true })),
+      ...COMBO_OFFERS.map((c) => ({
+        id: c.id,
+        title: bn ? c.banglaTitle : c.title,
+        sub: c.courses.join(' + '),
+        fee: c.combinedFee,
+        combo: true,
+      })),
     ],
-    [t],
+    [t, bn],
   );
 
   const initialCourse = options.find((o) => o.id === params.get('course'))?.id ?? 'delf-a1';
@@ -82,7 +131,8 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
   const custom = course.fee == null;
   const amount = custom ? 0 : plan === 'half' ? Math.round(course.fee! / 2) : course.fee!;
   const batch = batches.find((b) => b.id === batchId);
-  const batchLabel = batch ? `${batch.days}, ${batch.timeSlot}` : t(copy.flexible);
+  const batchTime = (b: BatchSchedule) => (bn && b.banglaTimeSlot) || b.timeSlot;
+  const batchLabel = batch ? `${(bn && batch.banglaDays) || batch.days}, ${batchTime(batch)}` : t(copy.flexible);
   const steps = custom ? copy.steps.slice(0, 2) : copy.steps;
 
   const validate = (s: number) => {
@@ -110,12 +160,12 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
       batchId,
       batchLabel,
       name: name.trim(),
-      phone: phone.trim(),
+      phone: phone.replace(/[\s-]/g, ''),
       email: email.trim(),
       plan,
       method,
       amount,
-      senderPhone: senderPhone.trim(),
+      senderPhone: senderPhone.replace(/[\s-]/g, ''),
       trxId: trxId.trim().toUpperCase(),
       customPricing: custom,
     };
@@ -125,16 +175,32 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
       await onSubmit?.(data);
       setDone(data);
     } catch (err) {
-      setFailure(err instanceof Error ? err.message : String(err));
+      const code = err instanceof EnrollError ? err.code : undefined;
+      const field = err instanceof EnrollError ? err.field : undefined;
+      const known = code && code in SERVER_ERRORS ? SERVER_ERRORS[code as EnrollErrorCode] : null;
+      // Prefer our bilingual copy; fall back to the server's text, then a generic message
+      const message = known ? t(known) : err instanceof Error && err.message ? err.message : t(FALLBACK_ERROR);
+      if (field && field in FIELD_STEP) {
+        const f = field as ErrorField;
+        setErrors({ [f]: message });
+        setStep(FIELD_STEP[f]);
+        setFailure(null);
+      } else {
+        setFailure(message);
+      }
     } finally {
       setBusy(false);
     }
   };
 
   const waText = done
-    ? custom
-      ? `Bonjour! I'm ${done.name}. Interested in ${done.courseTitle}: fee and level assessment. Batch: ${done.batchLabel}. Phone: ${done.phone}`
-      : `Bonjour! I'm ${done.name}. Enrolled in ${done.courseTitle} (${done.batchLabel}). Paid ${taka(done.amount)} via ${done.method}${done.trxId ? `, TrxID ${done.trxId}` : ''}. Phone: ${done.phone}`
+    ? bn
+      ? custom
+        ? `Bonjour! আমি ${done.name}। ${done.courseTitle} কোর্সের ফি ও লেভেল অ্যাসেসমেন্ট সম্পর্কে জানতে চাই। ব্যাচ: ${done.batchLabel}। ফোন: ${done.phone}`
+        : `Bonjour! আমি ${done.name}। ${done.courseTitle} কোর্সে ভর্তি হয়েছি (${done.batchLabel})। ${t(METHOD_LABEL[done.method])}-এ ${taka(done.amount, 'bn')} পরিশোধ করেছি${done.trxId ? `, TrxID ${done.trxId}` : ''}। ফোন: ${done.phone}`
+      : custom
+        ? `Bonjour! I'm ${done.name}. Interested in ${done.courseTitle}: fee and level assessment. Batch: ${done.batchLabel}. Phone: ${done.phone}`
+        : `Bonjour! I'm ${done.name}. Enrolled in ${done.courseTitle} (${done.batchLabel}). Paid ${taka(done.amount)} via ${t(METHOD_LABEL[done.method])}${done.trxId ? `, TrxID ${done.trxId}` : ''}. Phone: ${done.phone}`
     : '';
 
   const field = (err?: string) =>
@@ -156,15 +222,23 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
             <p className="text-[11px] font-bold tracking-[0.2em] text-muted uppercase">{t(copy.receipt)}</p>
             <dl className="mt-4 grid gap-2 text-sm">
               {[
-                ['Student Name', done.name],
-                ['Email Address', done.email],
-                ['WhatsApp', done.phone],
-                ['Course', done.courseTitle],
-                ['Batch', done.batchLabel],
+                [t({ en: 'Student Name', bn: 'শিক্ষার্থীর নাম' }), done.name],
+                [t({ en: 'Email Address', bn: 'ইমেইল অ্যাড্রেস' }), done.email],
+                [t({ en: 'WhatsApp', bn: 'হোয়াটসঅ্যাপ' }), done.phone],
+                [t({ en: 'Course', bn: 'কোর্স' }), done.courseTitle],
+                [t({ en: 'Batch', bn: 'ব্যাচ' }), done.batchLabel],
                 ...(!done.customPricing
                   ? [
-                      ['Amount', `${taka(done.amount)} (${done.plan === 'half' ? '50%' : 'full'})`],
-                      ['Method', done.method === 'bkash' ? `bKash Personal (${BRAND_CONTACT.bkashPersonal})` : done.method],
+                      [
+                        t({ en: 'Amount', bn: 'পরিমাণ' }),
+                        `${taka(done.amount, t.locale)} (${done.plan === 'half' ? t({ en: '50%', bn: '৫০%' }) : t({ en: 'full', bn: 'সম্পূর্ণ' })})`,
+                      ],
+                      [
+                        t({ en: 'Method', bn: 'মাধ্যম' }),
+                        done.method === 'bkash'
+                          ? t({ en: `bKash Personal (${BRAND_CONTACT.bkashPersonal})`, bn: `bKash পার্সোনাল (${BRAND_CONTACT.bkashPersonal})` })
+                          : t(METHOD_LABEL[done.method]),
+                      ],
                       ...(done.trxId ? [['TrxID', done.trxId]] : []),
                     ]
                   : []),
@@ -178,7 +252,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
             <a href={waLink(waText)} target="_blank" rel="noopener" className={btn('ink', 'md', 'mt-6 w-full bg-[#16a34a] hover:bg-[#15803d]')}>
               <WhatsAppGlyph size={18} /> {t(copy.waConfirm)}
             </a>
-            <p className="mt-4 text-center text-xs text-muted">{copy.helpline}</p>
+            <p className="mt-4 text-center text-xs text-muted">{t(copy.helpline)}</p>
             <button
               onClick={() => {
                 setDone(null);
@@ -270,7 +344,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                             <span className="block text-sm font-bold">
                               #{i + 1} · {t.locale === 'bn' ? b.banglaDays : b.days}
                             </span>
-                            <span className="text-xs text-muted">{b.timeSlot}</span>
+                            <span className="text-xs text-muted">{batchTime(b)}</span>
                           </span>
                         )}
                       </label>
@@ -334,11 +408,11 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                   <div className="grid grid-cols-3 gap-2">
                     {(
                       [
-                        ['bkash', 'bKash', 'bg-bkash border-bkash'],
-                        ['nagad', 'Nagad', 'bg-orange-600 border-orange-600'],
-                        ['bank', 'Bank / Office', 'bg-ink border-ink'],
+                        ['bkash', 'bg-bkash border-bkash'],
+                        ['nagad', 'bg-orange-600 border-orange-600'],
+                        ['bank', 'bg-ink border-ink'],
                       ] as const
-                    ).map(([m, label, on]) => (
+                    ).map(([m, on]) => (
                       <button
                         key={m}
                         type="button"
@@ -348,7 +422,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                           method === m ? `${on} text-white shadow-md` : 'border-line hover:border-fg/30',
                         )}
                       >
-                        {label}
+                        {t(METHOD_LABEL[m])}
                       </button>
                     ))}
                   </div>
@@ -362,7 +436,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                       <button
                         type="button"
                         onClick={async () => {
-                          await navigator.clipboard.writeText(BRAND_CONTACT.bkashPersonal);
+                          await navigator.clipboard?.writeText(BRAND_CONTACT.bkashPersonal).catch(() => {});
                           setCopied(true);
                           setTimeout(() => setCopied(false), 2000);
                         }}
@@ -371,11 +445,11 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                         {copied ? <Check size={13} /> : <Copy size={13} />} {t(copied ? copy.copied : copy.copy)}
                       </button>
                     </div>
-                    <ol className="font-bangla mt-3 space-y-1 text-sm text-fg/80">
+                    <ol className={cn('mt-3 space-y-1 text-sm text-fg/80', bn && 'font-bangla')}>
                       {copy.bkashSteps.map((s, i) => (
-                        <li key={s}>
-                          {s}
-                          {i === 2 && <strong className="ml-1 text-bkash">{taka(amount)}</strong>}
+                        <li key={s.en}>
+                          {t(s)}
+                          {i === 2 && <strong className="ml-1 text-bkash">{taka(amount, t.locale)}</strong>}
                         </li>
                       ))}
                     </ol>
@@ -433,8 +507,10 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
       <aside className="lg:sticky lg:top-28 lg:self-start">
         <div className="overflow-hidden rounded-[26px] bg-ink text-white">
           <div className="p-6">
-            <p className="text-[10px] font-bold tracking-[0.2em] text-white/50 uppercase">Boarding pass · WLF BD</p>
-            <p className="font-display mt-4 text-2xl leading-tight font-semibold">{course.title}</p>
+            <p className="text-[10px] font-bold tracking-[0.2em] text-white/50 uppercase">
+              {t({ en: 'Boarding pass · WLF BD', bn: 'বোর্ডিং পাস · WLF BD' })}
+            </p>
+            <p className={cn('font-display mt-4 text-2xl leading-tight font-semibold', bn && 'font-bangla')}>{course.title}</p>
             <p className="mt-1 text-sm text-white/60">{course.sub}</p>
             <p className="mt-4 text-sm text-white/70">{batchLabel}</p>
           </div>
@@ -456,7 +532,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
             )}
           </div>
         </div>
-        <p className="mt-4 text-center text-xs text-muted">{copy.helpline}</p>
+        <p className="mt-4 text-center text-xs text-muted">{t(copy.helpline)}</p>
       </aside>
     </div>
   );

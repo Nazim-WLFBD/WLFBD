@@ -3,6 +3,11 @@ import { Testimonial } from '../types';
 export const SUPPLIED_REVIEWS: Testimonial[] = [
   {
     id: 'supp-1',
+    banglaProfessionRole: 'সিভিল ইঞ্জিনিয়ার',
+    banglaLocation: 'শিকুটিমি, ক্যুবেক, কানাডা',
+    banglaTag: 'TEF / TCF Canada প্রস্তুতি',
+    banglaScore: 'অ্যাডভান্সড স্পিকিং ও লিসেনিং',
+    banglaQuote: `আমি কানাডার এমন একটি প্রদেশে থাকি যেখানে ফরাসি প্রধান সরকারি ভাষা। IELTS-এ ভালো স্কোর থাকলেও দুর্ভাগ্যবশত এই ভাষা নিয়ে আমার অনেক সমস্যা হচ্ছিল। তাই আমি সবসময় এমন একটি শেখার পদ্ধতি খুঁজছিলাম যা আমার উচ্চারণ ও চিন্তার ধরনের সঙ্গে মানানসই হবে, যেখানে আমি নিজের স্বচ্ছন্দ ভাষায় প্রশ্ন করতে পারব। অনেক খোঁজার পর আমি "We Learn French BD" খুঁজে পাই। ফরাসি ভাষা ও এর নিয়ম সম্পর্কে কিছুটা জানা থাকায় মনে হয়েছিল আমি তাল মিলিয়ে চলতে পারব। ক্লাস শুরু করার পর আমি প্রত্যাশার চেয়েও ভালো ফল পেয়েছি। শিক্ষক শুধু ফরাসি ভাষায় দক্ষই নন, তিনি একজন সৎ ও পেশাদার মানুষ। তাঁর লক্ষ্য শিক্ষার্থীকে ঠিকভাবে শেখানো। তাঁর পড়ানোর পদ্ধতি এবং ধৈর্য ধরে সব প্রশ্নের উত্তর দেওয়া কমিউনিটির প্রতি তাঁর নিষ্ঠার প্রমাণ। আমি এই গ্রুপ ও আমার শিক্ষক জনাব আল আমিনের কাছে কৃতজ্ঞ থাকব। এখানে এবং বাংলাদেশে আমার কমিউনিটিতে আমি এই গ্রুপের কথা সুপারিশ করব।`,
     name: 'Iffat Tarannum Aurchi',
     studentName: 'Iffat Tarannum Aurchi',
     profession: 'Civil Engineer',
@@ -24,6 +29,11 @@ export const SUPPLIED_REVIEWS: Testimonial[] = [
   },
   {
     id: 'supp-2',
+    banglaProfessionRole: 'শিক্ষার্থী, নর্থ সাউথ ইউনিভার্সিটি',
+    banglaLocation: 'ঢাকা, বাংলাদেশ',
+    banglaTag: 'DELF A2',
+    banglaScore: 'DELF A2 উত্তীর্ণ',
+    banglaQuote: `কোর্স চলাকালে মূল্যবান পরামর্শের জন্য প্রফেসর আল-আমিনকে অনেক ধন্যবাদ। তাঁর কারণে আমি অনেক উন্নতি করেছি। সম্প্রতি আমি DELF A2 অর্জন করেছি। তাঁর অমূল্য পরামর্শের জন্য আমি কৃতজ্ঞ। তাঁর পরামর্শ আমাকে পরবর্তী লেভেল পার হতে সাহায্য করবে।`,
     name: 'Nazifa Yasar',
     studentName: 'Nazifa Yasar',
     profession: 'Student, North South University',
@@ -46,6 +56,12 @@ export const SUPPLIED_REVIEWS: Testimonial[] = [
   },
   {
     id: 'supp-3',
+    banglaProfessionRole: 'স্টুডেন্ট, শাহজালাল বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয়',
+    banglaLocation: 'হবিগঞ্জ, বাংলাদেশ',
+    banglaTag: 'DELF পরীক্ষা',
+    banglaScore: 'নিয়মিত DELF শিক্ষার্থী',
+    quote: `The teaching system is excellent. Since I plan to settle in France, I want to master the language fully for the future. I will keep learning regularly until I sit the DELF exam, insha'Allah.`,
+    banglaQuote: `পড়ানোর সিস্টেম অত্যন্ত চমৎকার। আমার যেহেতু ফ্রান্সে সেটেল হওয়ার ইচ্ছা, আমি চাই ভাষাটা পুরোপুরি আয়ত্তে আনতে ভবিষ্যতের জন্য। আমি ডেল্ফ এক্সাম দেয়া পর্যন্ত নিয়মিত শিখে যাব ইনশাআল্লাহ।`,
     name: 'সাদিয়া তাসনীম হেলেন',
     studentName: 'সাদিয়া তাসনীম হেলেন',
     profession: 'স্টুডেন্ট, শাহজালাল বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয়',
@@ -57,7 +73,6 @@ export const SUPPLIED_REVIEWS: Testimonial[] = [
     examPassed: 'DELF Exam',
     achievement: 'France Higher Studies Pathway',
     score: 'Regular DELF Learner',
-    quote: `পড়ানোর সিস্টেম অত্যন্ত চমৎকার। আমার যেহেতু ফ্রান্সে সেটেল হওয়ার ইচ্ছা, আমি চাই ভাষাটা পুরোপুরি আয়ত্তে আনতে ভবিষ্যতের জন্য। আমি ডেল্ফ এক্সাম দেয়া পর্যন্ত নিয়মিত শিখে যাব ইনশাআল্লাহ।`,
     reviewText: `পড়ানোর সিস্টেম অত্যন্ত চমৎকার। আমার যেহেতু ফ্রান্সে সেটেল হওয়ার ইচ্ছা, আমি চাই ভাষাটা পুরোপুরি আয়ত্তে আনতে ভবিষ্যতের জন্য। আমি ডেল্ফ এক্সাম দেয়া পর্যন্ত নিয়মিত শিখে যাব ইনশাআল্লাহ।`,
     avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=250',
     photoUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=250',
@@ -68,6 +83,12 @@ export const SUPPLIED_REVIEWS: Testimonial[] = [
   },
   {
     id: 'supp-4',
+    banglaProfessionRole: 'নার্স, মেদস্যাঁ সঁ ফ্রঁতিয়ের (MSF)',
+    banglaLocation: 'কক্সবাজার, বাংলাদেশ',
+    banglaTag: 'মেডিকেল ও মানবিক সহায়তার ফরাসি',
+    banglaQuote: `আমি বর্তমানে একটি সুপরিচিত এনজিওতে কাজ করি, যেখানে বিনামূল্যে ফরাসি ভাষার কোর্স করানো হয়। অনেকদিন ধরে সেখানে ফরাসি শেখার চেষ্টা করছিলাম, কিন্তু কোর্সটি পুরোপুরি ফরাসি কারিকুলাম অনুসরণ করায় তেমন অগ্রগতি করতে পারিনি।
+
+পরে আমি মসিয়ে আল-আমিনের সঙ্গে ফরাসি শেখার যাত্রা শুরু করি। এখন পর্যন্ত অনেক কিছু শিখেছি এবং নিয়মিত অনুশীলন করছি।`,
     name: 'Uchennu Rakhine',
     studentName: 'Uchennu Rakhine',
     profession: 'Nurse, Médecins Sans Frontières',
@@ -88,6 +109,10 @@ export const SUPPLIED_REVIEWS: Testimonial[] = [
   },
   {
     id: 'supp-5',
+    banglaProfessionRole: 'এইচআর, আইআর ও কমপ্লায়েন্স প্রফেশনাল, BSRM',
+    banglaLocation: 'চট্টগ্রাম, বাংলাদেশ',
+    banglaTag: 'কার্যকর শেখার প্ল্যাটফর্ম',
+    banglaQuote: `চমৎকার ও কার্যকর একটি শেখার প্ল্যাটফর্ম`,
     name: 'Abdullah Al Mahamud Hossain',
     studentName: 'Abdullah Al Mahamud Hossain',
     profession: 'HR, IR & Compliance Professional, BSRM',

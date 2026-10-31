@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
 import * as Dialog from '@radix-ui/react-dialog';
 import { ArrowLeft, ArrowRight, MapPin, Quote, Star, X } from 'lucide-react';
 import { useT } from '@/i18n/t';
@@ -29,7 +28,8 @@ const countryOf = (r: Testimonial) => (r.targetCountry === 'Canada' || r.targetC
 function Avatar({ r }: { r: Testimonial }) {
   const src = r.photoUrl || r.avatar;
   const [failed, setFailed] = useState(false);
-  const usable = src && !src.includes('images.unsplash.com') && !failed;
+  // Admin-entered photo links can be any host, so a plain <img> is used (next/image only allows configured hosts)
+  const usable = src && src.startsWith('https://') && !src.includes('images.unsplash.com') && !failed;
   const initials = nameOf(r)
     .split(/\s+/)
     .slice(0, 2)
@@ -37,7 +37,8 @@ function Avatar({ r }: { r: Testimonial }) {
     .join('')
     .toUpperCase();
   return usable ? (
-    <Image src={src} alt={nameOf(r)} width={52} height={52} onError={() => setFailed(true)} className="h-[52px] w-[52px] shrink-0 rounded-full object-cover ring-2 ring-surface" />
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt={nameOf(r)} width={52} height={52} loading="lazy" onError={() => setFailed(true)} className="h-[52px] w-[52px] shrink-0 rounded-full object-cover ring-2 ring-surface" />
   ) : (
     <span
       className={cn(
@@ -53,15 +54,16 @@ function Avatar({ r }: { r: Testimonial }) {
 
 function Person({ r, light }: { r: Testimonial; light?: boolean }) {
   const c = countryOf(r);
+  const bn = useT().locale === 'bn';
   return (
     <div className="flex min-w-0 items-center gap-3.5">
       <Avatar r={r} />
       <div className="min-w-0">
         <p className="truncate font-bold">{nameOf(r)}</p>
-        <p className={cn('truncate text-[13px]', light ? 'text-white/60' : 'text-muted')}>{r.professionRole || r.profession}</p>
+        <p className={cn('truncate text-[13px]', light ? 'text-white/60' : 'text-muted')}>{(bn && r.banglaProfessionRole) || r.professionRole || r.profession}</p>
         <p className={cn('mt-0.5 flex items-center gap-1.5 truncate text-xs', light ? 'text-white/50' : 'text-muted')}>
           <MapPin size={12} className="shrink-0" />
-          <span className="truncate">{r.location}</span>
+          <span className="truncate">{(bn && r.banglaLocation) || r.location}</span>
           <Flag country={c === 'Canada' ? 'ca' : c === 'France' ? 'fr' : 'bd'} />
         </p>
       </div>
@@ -70,8 +72,9 @@ function Person({ r, light }: { r: Testimonial; light?: boolean }) {
 }
 
 function Stars({ n = 5 }: { n?: number }) {
+  const t = useT();
   return (
-    <span className="flex gap-0.5 text-gold" aria-label={`${n} out of 5`}>
+    <span className="flex gap-0.5 text-gold" aria-label={t(copy.rating).replace('{n}', num(n, t.locale))}>
       {Array.from({ length: 5 }).map((_, i) => (
         <Star key={i} size={15} fill={i < n ? 'currentColor' : 'none'} className={i < n ? '' : 'opacity-30'} />
       ))}
@@ -142,7 +145,7 @@ export function Testimonials({ items = TESTIMONIALS_DATA }: { items?: Testimonia
           <div className="max-w-2xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-line px-3.5 py-1.5 text-[11px] font-bold tracking-[0.18em] text-rouge uppercase">
               <span className="h-1.5 w-1.5 rounded-full bg-current" />
-              {copy.badge}
+              {t(copy.badge)}
             </span>
             <h2 className="font-display mt-5 text-[clamp(2rem,4.6vw,3.6rem)] leading-[1.04] font-semibold text-balance">{t(copy.title)}</h2>
             <p className="mt-4 text-lg leading-relaxed text-muted">{t(copy.intro)}</p>
@@ -157,7 +160,7 @@ export function Testimonials({ items = TESTIMONIALS_DATA }: { items?: Testimonia
               <button
                 onClick={() => go(index - 1)}
                 disabled={index === 0}
-                aria-label={copy.prev}
+                aria-label={t(copy.prev)}
                 className="flex h-12 w-12 items-center justify-center rounded-full border border-line bg-surface transition hover:border-fg disabled:opacity-35"
               >
                 <ArrowLeft size={18} />
@@ -165,7 +168,7 @@ export function Testimonials({ items = TESTIMONIALS_DATA }: { items?: Testimonia
               <button
                 onClick={() => go(index + 1)}
                 disabled={atEnd}
-                aria-label={copy.next}
+                aria-label={t(copy.next)}
                 className="flex h-12 w-12 items-center justify-center rounded-full bg-ink text-white transition hover:bg-rouge disabled:opacity-35 dark:bg-white dark:text-ink"
               >
                 <ArrowRight size={18} />
@@ -184,13 +187,14 @@ export function Testimonials({ items = TESTIMONIALS_DATA }: { items?: Testimonia
         onPointerDown={() => setPaused(true)}
         role="region"
         aria-roledescription="carousel"
-        aria-label={copy.badge}
+        aria-label={t(copy.badge)}
         className="no-scrollbar relative flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-[var(--gutter)] pb-6 [--gutter:16px] [scroll-padding-inline:var(--gutter)] sm:[--gutter:24px] xl:[--gutter:calc((100vw-1240px)/2+24px)]"
       >
         {list.map((r, i) => {
           const quote = quoteOf(r, t.locale);
           const long = quote.length > LONG;
-          const tag = r.examPassed || r.course || r.achievement;
+          const tag = (t.locale === 'bn' && r.banglaTag) || r.examPassed || r.course || r.achievement;
+          const score = (t.locale === 'bn' && r.banglaScore) || r.score;
           return (
             <article
               key={r.id}
@@ -212,7 +216,7 @@ export function Testimonials({ items = TESTIMONIALS_DATA }: { items?: Testimonia
                 <p className={cn('text-[16.5px] leading-[1.7] whitespace-pre-line text-fg/85', long && 'line-clamp-5')}>{quote}</p>
                 {long && (
                   <button onClick={() => (setPaused(true), setOpen(r))} className="mt-1 -ml-1 inline-flex min-h-10 items-center px-1 text-sm font-bold text-rouge hover:underline">
-                    {t({ en: 'Read full review', bn: 'পুরো রিভিউ পড়ুন' })} →
+                    {t(copy.readFull)} →
                   </button>
                 )}
               </blockquote>
@@ -220,7 +224,7 @@ export function Testimonials({ items = TESTIMONIALS_DATA }: { items?: Testimonia
               {tag && (
                 <div className="mt-4 flex flex-wrap gap-1.5">
                   <span className="rounded-full bg-bleu/10 px-3 py-1 text-xs font-bold text-bleu">{tag}</span>
-                  {r.score && r.score !== tag && <span className="rounded-full bg-mint/12 px-3 py-1 text-xs font-bold text-mint">{r.score}</span>}
+                  {score && score !== tag && <span className="rounded-full bg-mint/12 px-3 py-1 text-xs font-bold text-mint">{score}</span>}
                 </div>
               )}
 
@@ -254,7 +258,7 @@ export function Testimonials({ items = TESTIMONIALS_DATA }: { items?: Testimonia
               <>
                 <div className="flex items-center justify-between">
                   <Stars n={open.rating ?? 5} />
-                  <Dialog.Close aria-label="Close" className="rounded-full p-2 hover:bg-fg/10">
+                  <Dialog.Close aria-label={t(copy.close)} className="rounded-full p-2 hover:bg-fg/10">
                     <X size={18} />
                   </Dialog.Close>
                 </div>

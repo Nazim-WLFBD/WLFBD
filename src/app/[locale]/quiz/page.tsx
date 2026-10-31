@@ -12,7 +12,11 @@ const I = {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  return { title: T[locale], description: I[locale], alternates: { canonical: `/${locale}/quiz` } };
+  return {
+    title: T[locale],
+    description: I[locale],
+    alternates: { canonical: `/${locale}/quiz`, languages: { en: '/en/quiz', bn: '/bn/quiz' } },
+  };
 }
 
 export default async function QuizPage({ params }: { params: Promise<{ locale: Locale }> }) {

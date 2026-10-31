@@ -4,6 +4,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { COURSES_DATA } from '@/data/courses';
 import { routing, type Locale } from '@/i18n/routing';
 import { BRAND_META, BRAND_NAME } from '@/lib/brand';
+import { toBnDigits } from '@/lib/utils';
 import { CourseDetail } from '@/components/courses/CourseDetail';
 
 export function generateStaticParams() {
@@ -14,12 +15,17 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
   const { locale, id } = await params;
   const c = COURSES_DATA.find((x) => x.id === id);
   if (!c) return {};
-  const title = locale === 'bn' ? c.banglaTitle : c.title;
+  const bn = locale === 'bn';
+  const title = bn ? c.banglaTitle : c.title;
+  const outcome = (bn && c.banglaOutcome) || c.outcome;
+  const description = bn
+    ? `${outcome} ${c.banglaDuration ?? c.duration} · ${toBnDigits(c.classCount)}টি লাইভ ক্লাস · ${c.banglaTargetClb ?? c.targetClb ?? c.cefrLevel}।`
+    : `${outcome} ${c.duration} · ${c.classCount} live classes · ${c.targetClb ?? c.cefrLevel}.`;
   return {
     title,
-    description: `${c.outcome} ${c.duration} · ${c.classCount} live classes · ${c.targetClb ?? c.cefrLevel}.`,
+    description,
     alternates: { canonical: `/${locale}/courses/${id}`, languages: { en: `/en/courses/${id}`, bn: `/bn/courses/${id}` } },
-    openGraph: { title, description: c.outcome },
+    openGraph: { title, description: outcome },
   };
 }
 

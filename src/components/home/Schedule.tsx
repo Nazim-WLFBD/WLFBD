@@ -41,7 +41,7 @@ export function Schedule({ batches = BATCH_SCHEDULES }: { batches?: BatchSchedul
           <Reveal>
             <div className="overflow-hidden rounded-[28px] border border-line bg-surface">
               <div className="grid grid-cols-[64px_repeat(4,minmax(0,1fr))] border-b border-line text-center text-xs font-bold tracking-widest text-muted uppercase sm:grid-cols-[120px_repeat(4,minmax(0,1fr))]">
-                <div className="p-3 text-left sm:p-4">{schedule.bst}</div>
+                <div className="p-3 text-left sm:p-4">{t(schedule.bst)}</div>
                 {DAYS.map((d) => (
                   <div key={d} className="px-1 py-4 sm:p-4">
                     {t(schedule.days[d as keyof typeof schedule.days])}
@@ -52,7 +52,7 @@ export function Schedule({ batches = BATCH_SCHEDULES }: { batches?: BatchSchedul
                 <div key={slot.id} className="grid grid-cols-[64px_repeat(4,minmax(0,1fr))] border-b border-line last:border-0 sm:grid-cols-[120px_repeat(4,minmax(0,1fr))]">
                   <div className="flex flex-col justify-center gap-1 p-3 text-[11px] font-bold sm:p-4 sm:text-xs">
                     {slot.id === '7pm' ? <Sunset size={16} className="text-gold" /> : <Moon size={16} className="text-bleu" />}
-                    {slot.label}
+                    {t(slot.label)}
                   </div>
                   {DAYS.map((d) => {
                     const b = batches.find((x) => x.dayKeys.includes(d) && slotOf(x) === slot.id);
@@ -103,8 +103,8 @@ export function Schedule({ batches = BATCH_SCHEDULES }: { batches?: BatchSchedul
                       {i + 1}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="leading-snug font-bold">{t.locale === 'bn' ? b.banglaBatchName : b.batchName}</p>
-                      <p className="text-sm text-muted">{b.timeSlot}</p>
+                      <p className="leading-snug font-bold">{t.locale === 'bn' ? (b.banglaBatchName ?? b.batchName) : b.batchName}</p>
+                      <p className="text-sm text-muted">{t.locale === 'bn' ? (b.banglaTimeSlot ?? b.timeSlot) : b.timeSlot}</p>
                       {seatsLeft != null && (
                         <p className="mt-1 text-xs font-semibold text-rouge">
                           {t(schedule.seats)} {seatsLeft}/{b.seatsTotal}
@@ -113,7 +113,7 @@ export function Schedule({ batches = BATCH_SCHEDULES }: { batches?: BatchSchedul
                     </div>
                     <Link
                       href={{ pathname: '/enroll', query: { batch: b.id } }}
-                      aria-label={`${t(schedule.book)}: ${b.batchName}`}
+                      aria-label={`${t(schedule.book)}: ${t.locale === 'bn' ? (b.banglaBatchName ?? b.batchName) : b.batchName}`}
                       className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink text-white transition hover:bg-rouge dark:bg-white dark:text-ink"
                     >
                       <ArrowRight size={16} />

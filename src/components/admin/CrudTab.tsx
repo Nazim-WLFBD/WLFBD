@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { addDoc, collection, deleteDoc, doc, getDocs, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
 import { Download, Pencil, Plus, Trash2, X } from 'lucide-react';
 import { btn } from '@/components/ui/Button';
 import { firebase } from '@/lib/firebase';
@@ -45,15 +45,24 @@ export function CrudTab({ path, fields, columns, seed, seedId, newDefaults = {},
     const fb = firebase()!;
     if (!edit) return;
     const { id, ...data } = edit;
-    for (const f of fields) if (f.type === 'number' && data[f.key] !== undefined && data[f.key] !== '') data[f.key] = Number(data[f.key]);
+    // Empty numbers would be stored as '' and break arithmetic (e.g. quiz points), so they are dropped
+    for (const f of fields)
+      if (f.type === 'number') {
+        if (data[f.key] === undefined || data[f.key] === '' || Number.isNaN(Number(data[f.key]))) delete data[f.key];
+        else data[f.key] = Number(data[f.key]);
+      }
     try {
       if (id) await updateDoc(doc(fb.db, path, id), { ...data, updatedAt: serverTimestamp() });
-      else if (idFrom) await setDoc(doc(fb.db, path, idFrom(data)), { ...data, createdAt: serverTimestamp() });
+      else if (idFrom) {
+        const ref = doc(fb.db, path, idFrom(data));
+        if ((await getDoc(ref)).exists()) throw new Error(`An item with ID ${ref.id} already exists.`);
+        await setDoc(ref, { ...data, createdAt: serverTimestamp() });
+      }
       else await addDoc(collection(fb.db, path), { ...data, createdAt: serverTimestamp() });
       setEdit(null);
       await load();
     } catch (e) {
-      setErr(String(e));
+      setErr(e instanceof Error ? e.message : String(e));
     }
   };
 

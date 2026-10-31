@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from '@/i18n/navigation';
-import { useT } from '@/i18n/t';
+import { useT, type L } from '@/i18n/t';
 import { btn } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { useAuth } from './AuthContext';
@@ -12,12 +12,14 @@ import { NotConfigured } from './NotConfigured';
 
 type Tab = 'login' | 'signup' | 'reset';
 
-export const GOALS = [
-  'Canada TEF/TCF (+62 CRS)',
-  '2026 France Residency',
-  'France Higher Education',
-  'General Fluency',
+/** Target goals: the English value is what gets stored on the profile; `l` is the display label. */
+export const GOAL_OPTIONS: { v: string; l: L }[] = [
+  { v: 'Canada TEF/TCF (+62 CRS)', l: { en: 'Canada TEF/TCF (+62 CRS)', bn: 'কানাডা TEF/TCF (+৬২ CRS)' } },
+  { v: '2026 France Residency', l: { en: '2026 France Residency', bn: 'ফ্রান্স রেসিডেন্সি ২০২৬' } },
+  { v: 'France Higher Education', l: { en: 'France Higher Education', bn: 'ফ্রান্সে উচ্চশিক্ষা' } },
+  { v: 'General Fluency', l: { en: 'General Fluency', bn: 'সাধারণ ভাষা দক্ষতা' } },
 ];
+export const GOALS = GOAL_OPTIONS.map((g) => g.v);
 export const LEVELS = ['A0', 'A1', 'A2', 'B1', 'B2+'];
 
 const copy = {
@@ -38,21 +40,41 @@ const copy = {
   or: { en: 'or', bn: 'অথবা' },
 };
 
-function friendly(e: unknown) {
+const ERRORS = {
+  credential: { en: 'Email or password is incorrect.', bn: 'ইমেইল অথবা পাসওয়ার্ড সঠিক নয়।' },
+  exists: { en: 'An account with this email already exists. Log in instead.', bn: 'এই ইমেইলে আগে থেকেই অ্যাকাউন্ট আছে। লগইন করুন।' },
+  weak: { en: 'Password must be at least 6 characters.', bn: 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।' },
+  popup: { en: 'Google sign-in was closed before finishing.', bn: 'Google সাইন-ইন শেষ হওয়ার আগেই বন্ধ হয়ে গেছে।' },
+  invalidEmail: { en: 'Enter a valid email address.', bn: 'সঠিক ইমেইল অ্যাড্রেস দিন।' },
+  tooMany: { en: 'Too many attempts. Please wait a few minutes and try again.', bn: 'অনেকবার চেষ্টা করা হয়েছে। কয়েক মিনিট পর আবার চেষ্টা করুন।' },
+  network: { en: 'Network error. Check your connection and try again.', bn: 'নেটওয়ার্ক সমস্যা। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।' },
+  notConfigured: { en: 'Accounts are not configured yet.', bn: 'অ্যাকাউন্ট সুবিধা এখনো চালু হয়নি।' },
+  notSignedIn: { en: 'You are not signed in.', bn: 'আপনি লগইন করা নেই।' },
+  generic: { en: 'Something went wrong. Please try again.', bn: 'কিছু একটা সমস্যা হয়েছে। আবার চেষ্টা করুন।' },
+} satisfies Record<string, L>;
+
+/** Maps a Firebase/AuthContext error to a bilingual message. Raw error text is never shown. */
+function friendly(e: unknown): L {
   const code = (e as { code?: string })?.code ?? '';
-  if (code.includes('invalid-credential') || code.includes('wrong-password') || code.includes('user-not-found'))
-    return 'Email or password is incorrect.';
-  if (code.includes('email-already-in-use')) return 'An account with this email already exists. Log in instead.';
-  if (code.includes('weak-password')) return 'Password must be at least 6 characters.';
-  if (code.includes('popup-closed')) return 'Google sign-in was closed before finishing.';
-  return e instanceof Error ? e.message : 'Something went wrong. Please try again.';
+  if (code.includes('invalid-credential') || code.includes('wrong-password') || code.includes('user-not-found')) return ERRORS.credential;
+  if (code.includes('email-already-in-use')) return ERRORS.exists;
+  if (code.includes('weak-password')) return ERRORS.weak;
+  if (code.includes('popup-closed')) return ERRORS.popup;
+  if (code.includes('invalid-email')) return ERRORS.invalidEmail;
+  if (code.includes('too-many-requests')) return ERRORS.tooMany;
+  if (code.includes('network-request-failed')) return ERRORS.network;
+  if (code === 'auth/not-configured') return ERRORS.notConfigured;
+  if (code === 'auth/not-signed-in') return ERRORS.notSignedIn;
+  return ERRORS.generic;
 }
 
 export function AuthForm({ initial = 'login' }: { initial?: Tab }) {
   const t = useT();
   const router = useRouter();
   const params = useSearchParams();
-  const next = params.get('next') || '/dashboard';
+  // Only same-site paths may be used as the return address (blocks open redirects like ?next=https://evil)
+  const rawNext = params.get('next') || '';
+  const next = rawNext.startsWith('/') && !rawNext.startsWith('//') && !/^\/[a-z][\w+.-]*:/i.test(rawNext) ? rawNext : '/dashboard';
   const auth = useAuth();
   const [tab, setTab] = useState<Tab>(initial);
   const [f, setF] = useState({ name: '', email: '', password: '', confirm: '', phone: '', goal: GOALS[0], level: 'A0' });
@@ -76,7 +98,7 @@ export function AuthForm({ initial = 'login' }: { initial?: Tab }) {
     try {
       await fn();
     } catch (e) {
-      setErr(friendly(e));
+      setErr(t(friendly(e)));
     } finally {
       setBusy(false);
     }
@@ -135,8 +157,10 @@ export function AuthForm({ initial = 'login' }: { initial?: Tab }) {
               <label className="text-xs font-bold text-muted">
                 {t(copy.goal)}
                 <select value={f.goal} onChange={set('goal')} className={cn(input, 'mt-1 px-3')}>
-                  {GOALS.map((g) => (
-                    <option key={g}>{g}</option>
+                  {GOAL_OPTIONS.map((g) => (
+                    <option key={g.v} value={g.v}>
+                      {t(g.l)}
+                    </option>
                   ))}
                 </select>
               </label>

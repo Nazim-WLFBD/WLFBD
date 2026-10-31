@@ -14,7 +14,9 @@ export const DEFAULT_RECORDED_COURSES: RecordedCourse[] = [
     description: 'A comprehensive, structured DELF A1 recorded video course designed for absolute beginners and job/visa seekers. Master French pronunciation, foundational grammar, real-life conversational dialogues, and actual DELF A1 examination format.',
     banglaDescription: 'সম্পূর্ণ বাংলায় ব্যাখ্যাসহ DELF A1 এর পূর্ণাঙ্গ রেকর্ডেড মাস্টারকোর্স। বর্ণমালা, উচ্চারণ, মৌলিক ব্যাকরণ, নিত্যদিনের ফ্রেঞ্চ কথোপকথন ও অফিশিয়াল DELF A1 পরীক্ষার চার স্তরের (Compréhension & Production) পূর্ণাঙ্গ প্রস্তুতি।',
     targetAudience: 'Absolute beginners (A0), students, professionals, and France/Canada visa candidates starting from scratch.',
+    banglaTargetAudience: 'একেবারে শূন্য থেকে শুরু করা শিক্ষার্থী (A0), ছাত্রছাত্রী, পেশাজীবী এবং ফ্রান্স/কানাডা ভিসা প্রার্থী।',
     totalHours: '32+ Hours of HD Video Content',
+    banglaTotalHours: '৩২+ ঘণ্টার HD ভিডিও কনটেন্ট',
     totalLessons: 36,
     totalModules: 6,
     hasCertificate: true,
@@ -26,6 +28,13 @@ export const DEFAULT_RECORDED_COURSES: RecordedCourse[] = [
       'Pass the official DELF A1 examination (Oral Comprehension, Written Comprehension, Written Production, Oral Production)',
       'Build confidence in basic French sentence construction and pronunciation rules'
     ],
+    banglaOutcomes: [
+      'দৈনন্দিন পরিচিত অভিব্যক্তি ও মৌলিক বাক্যাংশ বুঝতে ও ব্যবহার করতে পারবেন',
+      'নিজের ও অন্যের পরিচয় দিতে এবং ব্যক্তিগত তথ্য নিয়ে প্রশ্নোত্তর করতে পারবেন',
+      'অপর পক্ষ ধীরে ও স্পষ্টভাবে কথা বললে সহজ কথোপকথন চালিয়ে যেতে পারবেন',
+      'অফিশিয়াল DELF A1 পরীক্ষায় (লিসেনিং, রিডিং, রাইটিং ও স্পিকিং) উত্তীর্ণ হওয়ার প্রস্তুতি পাবেন',
+      'মৌলিক ফ্রেঞ্চ বাক্য গঠন ও উচ্চারণের নিয়মে আত্মবিশ্বাস তৈরি হবে'
+    ],
     features: [
       '36 Full HD Structured Video Lessons (Bengali Explanation)',
       'Official DELF A1 Syllabus Breakdown & Exam Strategy',
@@ -33,6 +42,14 @@ export const DEFAULT_RECORDED_COURSES: RecordedCourse[] = [
       '3 Full-Length Mock Exams with Answer Keys & Audio Tracks',
       'Lifetime Access to All Lessons on Mobile & Desktop',
       'Self-Paced Learning with Tracked Progress & Instant Certificate'
+    ],
+    banglaFeatures: [
+      '৩৬টি Full HD সাজানো ভিডিও লেসন (বাংলায় ব্যাখ্যা)',
+      'অফিশিয়াল DELF A1 সিলেবাসের বিশ্লেষণ ও পরীক্ষার কৌশল',
+      'ডাউনলোডযোগ্য PDF লেকচার নোট, ভোকাবুলারি শিট ও ওয়ার্কশিট',
+      'উত্তরপত্র ও অডিও ট্র্যাকসহ ৩টি পূর্ণাঙ্গ মক এক্সাম',
+      'মোবাইল ও ডেস্কটপে সব লেসনে লাইফটাইম অ্যাক্সেস',
+      'নিজের গতিতে শেখা, অগ্রগতি ট্র্যাকিং ও তাৎক্ষণিক সার্টিফিকেট'
     ],
     modules: [
       {
@@ -607,7 +624,9 @@ export const DEFAULT_RECORDED_COURSES: RecordedCourse[] = [
     description: 'The definitive recorded masterclass for DELF A2 certification, crucial for France Multi-Year Residence Permits (Carte de Séjour) under the new immigration law, and building solid fluency after A1.',
     banglaDescription: 'ফ্রান্সের নতুন ২০২৬ রেসিডেন্সি আইন ও কার্ত দ্য সেজুর (Carte de Séjour) অর্জনের জন্য অপরিহার্য DELF A2 সম্পূর্ণ রেকর্ডকৃত কোর্স। অতীতকাল (Passé Composé & Imparfait), ভবিষ্যৎ কাল, প্রোনাউন (COD/COI) ও DELF A2 পরীক্ষার চূড়ান্ত প্রস্তুতি।',
     targetAudience: 'DELF A1 graduates, France resident permit candidates, work visa holders, and intermediate language learners.',
+    banglaTargetAudience: 'DELF A1 সম্পন্নকারী, ফ্রান্সের রেসিডেন্স পারমিট প্রার্থী, ওয়ার্ক ভিসাধারী এবং মধ্যবর্তী স্তরের শিক্ষার্থী।',
     totalHours: '38+ Hours of HD Video Content',
+    banglaTotalHours: '৩৮+ ঘণ্টার HD ভিডিও কনটেন্ট',
     totalLessons: 36,
     totalModules: 6,
     hasCertificate: true,
@@ -619,6 +638,13 @@ export const DEFAULT_RECORDED_COURSES: RecordedCourse[] = [
       'Pass the official DELF A2 examination for French Residence Permit (Préfecture requirement)',
       'Confidently use Passé Composé, Imparfait, Futur Simple, and Object Pronouns in conversation'
     ],
+    banglaOutcomes: [
+      'নিত্যপ্রয়োজনীয় বিষয়ে ব্যবহৃত বাক্য ও বহুল প্রচলিত অভিব্যক্তি বুঝতে পারবেন',
+      'পরিচিত বিষয়ে সরাসরি তথ্য আদান-প্রদানের সহজ ও নিয়মিত কাজগুলোতে যোগাযোগ করতে পারবেন',
+      'নিজের পটভূমি, আশপাশের পরিবেশ ও তাৎক্ষণিক প্রয়োজনের বিষয়গুলো সহজ ভাষায় বর্ণনা করতে পারবেন',
+      'ফ্রান্সের রেসিডেন্স পারমিটের (Préfecture-এর শর্ত) জন্য অফিশিয়াল DELF A2 পরীক্ষায় উত্তীর্ণ হওয়ার প্রস্তুতি পাবেন',
+      'কথোপকথনে Passé Composé, Imparfait, Futur Simple ও অবজেক্ট প্রোনাউন আত্মবিশ্বাসের সাথে ব্যবহার করতে পারবেন'
+    ],
     features: [
       '36 Comprehensive Video Masterclasses in Bengali + French',
       'Strict Alignment with France 2026 Residency Law Mandates',
@@ -626,6 +652,14 @@ export const DEFAULT_RECORDED_COURSES: RecordedCourse[] = [
       'Pronoun Placement Workshop (COD, COI, En, Y)',
       'Downloadable PDF Lecture Notes, Grammar Guides & Drills',
       '4 Full-Length DELF A2 Mock Exams with Examiner Marking Scheme'
+    ],
+    banglaFeatures: [
+      'বাংলা + ফ্রেঞ্চে ৩৬টি পূর্ণাঙ্গ ভিডিও মাস্টারক্লাস',
+      'ফ্রান্সের ২০২৬ রেসিডেন্সি আইনের শর্ত অনুযায়ী সাজানো সিলেবাস',
+      'অতীতকালের পূর্ণ দখল (Passé Composé বনাম Imparfait)',
+      'প্রোনাউন বসানোর ওয়ার্কশপ (COD, COI, En, Y)',
+      'ডাউনলোডযোগ্য PDF লেকচার নোট, গ্রামার গাইড ও ড্রিল',
+      'এক্সামিনারের মার্কিং স্কিমসহ ৪টি পূর্ণাঙ্গ DELF A2 মক এক্সাম'
     ],
     modules: [
       {

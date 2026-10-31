@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useT } from '@/i18n/t';
 import { SECTIONS } from '@/content/nav';
+import { ui } from '@/content/home';
 import { cn } from '@/lib/utils';
 
 /** Right-edge progress rail for the home page: shows and jumps to each section. */
@@ -24,7 +25,7 @@ export function SectionRail() {
 
   return (
     <nav
-      aria-label="Page sections"
+      aria-label={t(ui.pageSections)}
       className="fixed top-1/2 right-4 z-30 hidden -translate-y-1/2 flex-col gap-1 rounded-full border border-line bg-surface/80 p-1.5 backdrop-blur-md min-[1360px]:flex"
     >
       {SECTIONS.map((s) => (

@@ -5,7 +5,8 @@ import { Fraunces, Hind_Siliguri, Plus_Jakarta_Sans, Tiro_Bangla } from 'next/fo
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
-import { BRAND_CONTACT, BRAND_META, BRAND_NAME, BRAND_TAGLINE_BANGLA, FACEBOOK_PIXEL_ID } from '@/lib/brand';
+import { BRAND_CONTACT, BRAND_META, BRAND_NAME, BRAND_TAGLINE_BANGLA, FACEBOOK_PIXEL_ID, brandMeta } from '@/lib/brand';
+import { ui } from '@/content/home';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { FloatingActions } from '@/components/layout/FloatingActions';
@@ -33,11 +34,12 @@ export const viewport: Viewport = {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
+  const meta = brandMeta(locale);
   return {
     metadataBase: new URL(BRAND_META.canonical),
-    title: { default: BRAND_META.defaultTitle, template: `%s | ${BRAND_NAME}` },
-    description: BRAND_META.defaultDescription,
-    keywords: BRAND_META.keywords,
+    title: { default: meta.defaultTitle, template: `%s | ${BRAND_NAME}` },
+    description: meta.defaultDescription,
+    keywords: meta.keywords,
     alternates: {
       canonical: `/${locale}`,
       languages: { en: '/en', bn: '/bn', 'x-default': '/en' },
@@ -45,16 +47,16 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     openGraph: {
       type: 'website',
       siteName: BRAND_NAME,
-      title: BRAND_META.defaultTitle,
-      description: BRAND_META.defaultDescription,
+      title: meta.defaultTitle,
+      description: meta.defaultDescription,
       url: `/${locale}`,
       locale: locale === 'bn' ? 'bn_BD' : 'en_US',
       images: [{ url: '/og.jpg', width: 1200, height: 630, alt: BRAND_NAME }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: BRAND_META.defaultTitle,
-      description: BRAND_META.defaultDescription,
+      title: meta.defaultTitle,
+      description: meta.defaultDescription,
       images: ['/og.jpg'],
     },
   };
@@ -121,7 +123,7 @@ export default async function LocaleLayout({
               href="#main"
               className="sr-only z-[200] rounded-full bg-gold px-4 py-2 font-semibold text-ink focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
             >
-              Skip to content
+              {ui.skip[locale]}
             </a>
             <SmoothScroll />
             <LegacyHashRedirect />

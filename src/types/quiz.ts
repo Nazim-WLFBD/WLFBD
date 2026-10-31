@@ -60,6 +60,7 @@ export interface QuizCategory {
   durationMinutes: number;
   iconName: string;
   badgeTag: string;
+  banglaBadgeTag?: string;
   isPlacementTest?: boolean;
   isMockExam?: boolean;
   isChallenge?: boolean;

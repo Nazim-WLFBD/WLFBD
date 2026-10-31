@@ -1,6 +1,7 @@
 import { QUESTION_BANK, QUIZ_CATEGORIES } from '@/data/quizData';
 import type { CEFRLevel, Question, QuizCategory } from '@/types/quiz';
 import { COURSES_DATA } from '@/data/courses';
+import type { L } from '@/i18n/t';
 
 /** Quizzes that share another quiz's question set. */
 const SHARED: Record<string, string> = { 'placement-test': 'french-level-test' };
@@ -33,6 +34,24 @@ export function isCorrect(q: Question, given: unknown): boolean {
 const CATS = ['Grammar', 'Vocabulary', 'Reading', 'Listening', 'Writing', 'Speaking'] as const;
 export type Breakdown = Record<(typeof CATS)[number], { score: number; max: number }>;
 
+/** Display names for skill categories (the keys stay English for storage and scoring). */
+export const CATEGORY_LABELS: Record<string, L> = {
+  Grammar: { en: 'Grammar', bn: 'ব্যাকরণ' },
+  Vocabulary: { en: 'Vocabulary', bn: 'শব্দভাণ্ডার' },
+  Reading: { en: 'Reading', bn: 'রিডিং' },
+  Listening: { en: 'Listening', bn: 'লিসেনিং' },
+  Writing: { en: 'Writing', bn: 'রাইটিং' },
+  Speaking: { en: 'Speaking', bn: 'স্পিকিং' },
+  Placement: { en: 'Placement', bn: 'লেভেল নির্ণয়' },
+};
+export const categoryLabel = (c: string): L => CATEGORY_LABELS[c] ?? { en: c, bn: c };
+
+/** Display names for CEFR levels (the stored value stays as-is; plain codes like "A1" need no translation). */
+export const CEFR_LABELS: Partial<Record<CEFRLevel, L>> = {
+  'Beginner (A0)': { en: 'Beginner (A0)', bn: 'শিক্ষানবিস (A0)' },
+};
+export const cefrLabel = (lvl: string): L => CEFR_LABELS[lvl as CEFRLevel] ?? { en: lvl, bn: lvl };
+
 export interface ScoredQuiz {
   totalScore: number;
   maxScore: number;
@@ -44,7 +63,16 @@ export interface ScoredQuiz {
   recommendedCourseId: string;
   strengths: string[];
   weaknesses: string[];
-  review: { id: string; prompt: string; given: string; correct: string; ok: boolean; explanation?: string }[];
+  review: {
+    id: string;
+    prompt: string;
+    banglaPrompt?: string;
+    given: string;
+    correct: string;
+    ok: boolean;
+    explanation?: string;
+    banglaExplanation?: string;
+  }[];
 }
 
 const show = (v: unknown) =>
@@ -58,21 +86,24 @@ export function scoreQuiz(quiz: QuizCategory, questions: Question[], answers: Re
   const review: ScoredQuiz['review'] = [];
   for (const q of questions) {
     const ok = isCorrect(q, answers[q.id]);
+    const pts = Number(q.points) > 0 ? Number(q.points) : 1; // admin-entered questions may lack points
     const cat = (CATS as readonly string[]).includes(q.category) ? (q.category as keyof Breakdown) : 'Grammar';
-    breakdown[cat].max += q.points;
-    max += q.points;
+    breakdown[cat].max += pts;
+    max += pts;
     if (ok) {
-      total += q.points;
-      breakdown[cat].score += q.points;
+      total += pts;
+      breakdown[cat].score += pts;
       correct++;
     }
     review.push({
       id: q.id,
       prompt: q.prompt,
+      banglaPrompt: q.banglaPrompt,
       given: show(answers[q.id]),
       correct: q.matchPairs ? q.matchPairs.map((p) => `${p.french} = ${p.englishOrBangla}`).join(', ') : show(q.correctAnswer),
       ok,
       explanation: q.explanation,
+      banglaExplanation: q.banglaExplanation,
     });
   }
   const percentage = max ? Math.round((total / max) * 100) : 0;
@@ -101,10 +132,10 @@ export function scoreQuiz(quiz: QuizCategory, questions: Question[], answers: Re
 
 export interface Rating {
   stars: number;
-  label: string;
+  label: L;
   feedback: string;
   banglaFeedback: string;
-  nclc?: string;
+  nclc?: L;
 }
 
 /** Star rating + feedback, ported from the original result dashboard. */
@@ -112,30 +143,122 @@ export function rate(quiz: QuizCategory, s: ScoredQuiz): Rating {
   if (quiz.isPlacementTest) {
     const t = s.totalScore;
     if (t >= 22)
-      return { stars: 5, label: 'Upper-Intermediate (B2)', nclc: 'Approx. NCLC/CLB: 6–7 (Upper-Intermediate)', feedback: 'Excellent result! You have reached Upper-Intermediate proficiency (B2, Approx. NCLC/CLB: 6–7). You are ready for DELF B2 / TEF Canada Masterclasses.', banglaFeedback: 'চমৎকার পারফরম্যান্স! আপনি আপার-ইন্টারমিডিয়েট (B2, Approx. NCLC/CLB: 6–7) লেভেল অর্জনে সক্ষম হয়েছেন। আপনি DELF B2 / TEF Canada মাস্টার ক্লাসের জন্য প্রস্তুত।' };
+      return {
+        stars: 5,
+        label: { en: 'Upper-Intermediate (B2)', bn: 'আপার-ইন্টারমিডিয়েট (B2)' },
+        nclc: { en: 'Approx. NCLC/CLB: 6–7 (Upper-Intermediate)', bn: 'আনুমানিক NCLC/CLB: ৬–৭ (আপার-ইন্টারমিডিয়েট)' },
+        feedback: 'Excellent result! You have reached Upper-Intermediate proficiency (B2, Approx. NCLC/CLB: 6–7). You are ready for DELF B2 / TEF Canada Masterclasses.',
+        banglaFeedback: 'চমৎকার পারফরম্যান্স! আপনি আপার-ইন্টারমিডিয়েট (B2, আনুমানিক NCLC/CLB: ৬–৭) লেভেল অর্জন করেছেন। আপনি DELF B2 / TEF Canada মাস্টারক্লাসের জন্য প্রস্তুত।',
+      };
     if (t >= 15)
-      return { stars: 4, label: 'Intermediate (B1)', nclc: 'Approx. NCLC/CLB: 5–6 (Intermediate)', feedback: 'Great job! You demonstrate solid Intermediate proficiency (B1, Approx. NCLC/CLB: 5–6). Join our B1 Target PR Batch to advance further.', banglaFeedback: 'খুব ভালো ফলাফল! আপনি ইন্টারমিডিয়েট (B1, Approx. NCLC/CLB: 5–6) লেভেলের দক্ষতা দেখিয়েছেন। উচ্চতর প্রস্তুতির জন্য B1 ব্যাচে যুক্ত হতে পারেন।' };
+      return {
+        stars: 4,
+        label: { en: 'Intermediate (B1)', bn: 'ইন্টারমিডিয়েট (B1)' },
+        nclc: { en: 'Approx. NCLC/CLB: 5–6 (Intermediate)', bn: 'আনুমানিক NCLC/CLB: ৫–৬ (ইন্টারমিডিয়েট)' },
+        feedback: 'Great job! You demonstrate solid Intermediate proficiency (B1, Approx. NCLC/CLB: 5–6). Join our B1 Target PR Batch to advance further.',
+        banglaFeedback: 'খুব ভালো ফলাফল! আপনি ইন্টারমিডিয়েট (B1, আনুমানিক NCLC/CLB: ৫–৬) লেভেলের দক্ষতা দেখিয়েছেন। আরও এগিয়ে যেতে আমাদের B1 PR টার্গেট ব্যাচে যুক্ত হতে পারেন।',
+      };
     if (t >= 8)
-      return { stars: 3, label: 'Elementary (A2)', nclc: 'Approx. NCLC/CLB: 3–4 (Elementary)', feedback: 'Good effort! You demonstrate Elementary level proficiency (A2, Approx. NCLC/CLB: 3–4). Strengthen your grammar & vocabulary in DELF A2 Live Batch.', banglaFeedback: 'ভালো চেষ্টা! আপনি এলিমেন্টারি (A2, Approx. NCLC/CLB: 3–4) লেভেলে আছেন। ব্যাকরণ ও শব্দভাণ্ডার আরও জোরদার করতে A2 লাইভ ব্যাচে যোগ দিন।' };
-    return { stars: 2, label: 'Beginner (A1)', nclc: 'Approx. NCLC/CLB: 1–2 (Beginner)', feedback: 'Welcome to your French journey! You are at Beginner level (A1, Approx. NCLC/CLB: 1–2). Start with our DELF A1 Foundation Live Preparation Batch.', banglaFeedback: 'ফরাসি ভাষা শেখার যাত্রায় স্বাগতম! আপনি শিক্ষানবিস (A1, Approx. NCLC/CLB: 1–2) স্তরে আছেন। আমাদের DELF A1 ফাউন্ডেশন ব্যাচ দিয়ে শুরু করুন।' };
+      return {
+        stars: 3,
+        label: { en: 'Elementary (A2)', bn: 'এলিমেন্টারি (A2)' },
+        nclc: { en: 'Approx. NCLC/CLB: 3–4 (Elementary)', bn: 'আনুমানিক NCLC/CLB: ৩–৪ (এলিমেন্টারি)' },
+        feedback: 'Good effort! You demonstrate Elementary level proficiency (A2, Approx. NCLC/CLB: 3–4). Strengthen your grammar & vocabulary in DELF A2 Live Batch.',
+        banglaFeedback: 'ভালো চেষ্টা! আপনি এলিমেন্টারি (A2, আনুমানিক NCLC/CLB: ৩–৪) লেভেলে আছেন। ব্যাকরণ ও শব্দভাণ্ডার আরও মজবুত করতে DELF A2 লাইভ ব্যাচে যোগ দিন।',
+      };
+    return {
+      stars: 2,
+      label: { en: 'Beginner (A1)', bn: 'শিক্ষানবিস (A1)' },
+      nclc: { en: 'Approx. NCLC/CLB: 1–2 (Beginner)', bn: 'আনুমানিক NCLC/CLB: ১–২ (শিক্ষানবিস)' },
+      feedback: 'Welcome to your French journey! You are at Beginner level (A1, Approx. NCLC/CLB: 1–2). Start with our DELF A1 Foundation Live Preparation Batch.',
+      banglaFeedback: 'ফরাসি ভাষা শেখার যাত্রায় স্বাগতম! আপনি শিক্ষানবিস (A1, আনুমানিক NCLC/CLB: ১–২) স্তরে আছেন। আমাদের DELF A1 ফাউন্ডেশন লাইভ ব্যাচ দিয়ে শুরু করুন।',
+    };
   }
   if (quiz.id === 'tcf-canada-reading-c1-c2') {
-    if (s.percentage >= 80) return { stars: 5, label: 'Excellent Performance', feedback: 'You demonstrate advanced reading comprehension skills close to the official TCF Canada C1–C2 level. Continue practicing full-length mock exams.', banglaFeedback: 'আপনি সরকারি TCF Canada C1–C2 লেভেলের কাছাকাছি উন্নত রিডিং কমপ্রিহেনশন দক্ষতা দেখিয়েছেন। পূর্ণাঙ্গ মক এক্সাম দিয়ে অনুশীলন অব্যাহত রাখুন।' };
-    if (s.percentage >= 55) return { stars: 4, label: 'Good Progress', feedback: 'Your reading comprehension is strong. Focus on inference questions, discourse markers, and advanced vocabulary to reach a higher level.', banglaFeedback: 'আপনার রিডিং কমপ্রিহেনশন অত্যন্ত শক্তিশালী। আরও উচ্চ লেভেলে পৌঁছাতে ইনফ্যারেন্সিয়াল প্রশ্ন, কানেক্টর ও এডভান্সড ভোকাবুলারিতে মনোযোগ দিন।' };
-    return { stars: 2, label: 'Needs Improvement', feedback: 'Continue practicing advanced articles, opinion texts, scientific texts, and critical reading exercises before attempting another full mock test.', banglaFeedback: 'পরবর্তী পূর্ণাঙ্গ মক টেস্টের আগে আরও উন্নত আর্টিকেল, অভিমতধর্মী টেক্সট, বৈজ্ঞানিক নিবন্ধ ও সমালোচনামূলক রিডিং অনুশীলন চালিয়ে যান।' };
+    if (s.percentage >= 80)
+      return {
+        stars: 5,
+        label: { en: 'Excellent Performance', bn: 'চমৎকার পারফরম্যান্স' },
+        feedback: 'You demonstrate advanced reading comprehension skills close to the official TCF Canada C1–C2 level. Continue practicing full-length mock exams.',
+        banglaFeedback: 'আপনি অফিশিয়াল TCF Canada C1–C2 লেভেলের কাছাকাছি উন্নত রিডিং কমপ্রিহেনশন দক্ষতা দেখিয়েছেন। পূর্ণাঙ্গ মক এক্সাম দিয়ে অনুশীলন অব্যাহত রাখুন।',
+      };
+    if (s.percentage >= 55)
+      return {
+        stars: 4,
+        label: { en: 'Good Progress', bn: 'ভালো অগ্রগতি' },
+        feedback: 'Your reading comprehension is strong. Focus on inference questions, discourse markers, and advanced vocabulary to reach a higher level.',
+        banglaFeedback: 'আপনার রিডিং কমপ্রিহেনশন বেশ শক্তিশালী। আরও উঁচু লেভেলে পৌঁছাতে ইনফারেন্স প্রশ্ন, কানেক্টর ও অ্যাডভান্সড ভোকাবুলারিতে মনোযোগ দিন।',
+      };
+    return {
+      stars: 2,
+      label: { en: 'Needs Improvement', bn: 'আরও উন্নতি প্রয়োজন' },
+      feedback: 'Continue practicing advanced articles, opinion texts, scientific texts, and critical reading exercises before attempting another full mock test.',
+      banglaFeedback: 'পরবর্তী পূর্ণাঙ্গ মক টেস্টের আগে আরও উন্নত আর্টিকেল, মতামতধর্মী টেক্সট, বৈজ্ঞানিক নিবন্ধ ও সমালোচনামূলক রিডিং অনুশীলন চালিয়ে যান।',
+    };
   }
   if (quiz.id.startsWith('tcf-canada-reading')) {
-    if (s.percentage >= 80) return { stars: 5, label: 'Excellent', feedback: 'Excellent! You demonstrate strong reading comprehension skills at the B1–B2 level. Continue preparing with full TCF mock exams.', banglaFeedback: 'চমৎকার! আপনি B1-B2 লেভেলে চমৎকার রিডিং কমপ্রিহেনশন দক্ষতা প্রদর্শন করেছেন। পূর্ণাঙ্গ TCF মক টেস্ট দিয়ে প্রস্তুতি অব্যাহত রাখুন।' };
-    if (s.percentage >= 55) return { stars: 4, label: 'Good Progress', feedback: 'Good Progress! You have a solid understanding of intermediate texts. Focus on vocabulary and inference questions to improve further.', banglaFeedback: 'খুব ভালো উন্নতি! ইন্টারমিডিয়েট টেক্সট বোঝার ক্ষেত্রে আপনার ভালো ভিত্তি তৈরি হয়েছে। ভোকাবুলারি ও ইনফ্যারেন্সভিত্তিক প্রশ্নে বাড়তি নজর দিন।' };
-    return { stars: 2, label: 'Needs Improvement', feedback: 'Needs Improvement. Practice more intermediate reading passages, notices, articles, workplace texts, and opinion-based questions before attempting another full mock test.', banglaFeedback: 'আরও অনুশীলন প্রয়োজন। পরবর্তী পূর্ণাঙ্গ মক টেস্টের আগে বিভিন্ন প্যাসেজ, নোটিশ, আর্টিকেল ও মতামতভিত্তিক প্রশ্নে বেশি বেশি প্র্যাকটিস করুন।' };
+    if (s.percentage >= 80)
+      return {
+        stars: 5,
+        label: { en: 'Excellent', bn: 'চমৎকার' },
+        feedback: 'Excellent! You demonstrate strong reading comprehension skills at the B1–B2 level. Continue preparing with full TCF mock exams.',
+        banglaFeedback: 'চমৎকার! আপনি B1–B2 লেভেলে দারুণ রিডিং কমপ্রিহেনশন দক্ষতা দেখিয়েছেন। পূর্ণাঙ্গ TCF মক টেস্ট দিয়ে প্রস্তুতি অব্যাহত রাখুন।',
+      };
+    if (s.percentage >= 55)
+      return {
+        stars: 4,
+        label: { en: 'Good Progress', bn: 'ভালো অগ্রগতি' },
+        feedback: 'Good Progress! You have a solid understanding of intermediate texts. Focus on vocabulary and inference questions to improve further.',
+        banglaFeedback: 'ভালো অগ্রগতি! ইন্টারমিডিয়েট টেক্সট বোঝার ক্ষেত্রে আপনার ভিত্তি মজবুত। ভোকাবুলারি ও ইনফারেন্সভিত্তিক প্রশ্নে বাড়তি নজর দিন।',
+      };
+    return {
+      stars: 2,
+      label: { en: 'Needs Improvement', bn: 'আরও উন্নতি প্রয়োজন' },
+      feedback: 'Needs Improvement. Practice more intermediate reading passages, notices, articles, workplace texts, and opinion-based questions before attempting another full mock test.',
+      banglaFeedback: 'আরও অনুশীলন প্রয়োজন। পরবর্তী পূর্ণাঙ্গ মক টেস্টের আগে বিভিন্ন প্যাসেজ, নোটিশ, আর্টিকেল, কর্মক্ষেত্রের টেক্সট ও মতামতভিত্তিক প্রশ্নে বেশি বেশি প্র্যাকটিস করুন।',
+    };
   }
   // Other quizzes: the original used raw-score cutoffs out of 20; scaled to percentage here
   const p = s.percentage;
-  if (p >= 90) return { stars: 5, label: 'Excellent', feedback: "Excellent work! You're ready to begin DELF/TCF preparation.", banglaFeedback: 'চমৎকার পারফরম্যান্স! আপনি উচ্চতর প্রস্তুতির জন্য পুরোপুরি প্রস্তুত।' };
-  if (p >= 75) return { stars: 4, label: 'Very Good', feedback: 'Great progress! Continue practicing before taking the next mock test.', banglaFeedback: 'খুব ভালো উন্নতি! পরবর্তী মক টেস্টের আগে আরও কিছু অনুশীলন চালিয়ে যান।' };
-  if (p >= 60) return { stars: 3, label: 'Good', feedback: 'Good effort! Review grammar & vocabulary to reach the top band.', banglaFeedback: 'ভালো চেষ্টা! ব্যাকরণ ও শব্দভাণ্ডারের দুর্বল বিষয়গুলো রিভিশন দিন।' };
-  if (p >= 40) return { stars: 2, label: 'Needs More Practice', feedback: 'You need more practice with grammar and vocabulary. Join our LIVE Batch for guided learning.', banglaFeedback: 'আপনার ব্যাকরণ ও শব্দভাণ্ডারে আরও অনুশীলন প্রয়োজন। আমাদের লাইভ ব্যাচে যুক্ত হতে পারেন।' };
-  return { stars: 1, label: 'Revise the Topics Again', feedback: 'Revise basic grammar and vocabulary topics, then retake the test.', banglaFeedback: 'মৌলিক বিষয়গুলো রিভিশন দিয়ে আবারও টেস্টে অংশ নিন।' };
+  if (p >= 90)
+    return {
+      stars: 5,
+      label: { en: 'Excellent', bn: 'চমৎকার' },
+      feedback: "Excellent work! You're ready to begin DELF/TCF preparation.",
+      banglaFeedback: 'চমৎকার পারফরম্যান্স! আপনি DELF/TCF প্রস্তুতি শুরু করার জন্য পুরোপুরি প্রস্তুত।',
+    };
+  if (p >= 75)
+    return {
+      stars: 4,
+      label: { en: 'Very Good', bn: 'খুব ভালো' },
+      feedback: 'Great progress! Continue practicing before taking the next mock test.',
+      banglaFeedback: 'খুব ভালো অগ্রগতি! পরবর্তী মক টেস্টের আগে আরও কিছু অনুশীলন চালিয়ে যান।',
+    };
+  if (p >= 60)
+    return {
+      stars: 3,
+      label: { en: 'Good', bn: 'ভালো' },
+      feedback: 'Good effort! Review grammar & vocabulary to reach the top band.',
+      banglaFeedback: 'ভালো চেষ্টা! সর্বোচ্চ ব্যান্ডে পৌঁছাতে ব্যাকরণ ও শব্দভাণ্ডার রিভিশন দিন।',
+    };
+  if (p >= 40)
+    return {
+      stars: 2,
+      label: { en: 'Needs More Practice', bn: 'আরও অনুশীলন প্রয়োজন' },
+      feedback: 'You need more practice with grammar and vocabulary. Join our LIVE Batch for guided learning.',
+      banglaFeedback: 'আপনার ব্যাকরণ ও শব্দভাণ্ডারে আরও অনুশীলন প্রয়োজন। গাইডেড শেখার জন্য আমাদের লাইভ ব্যাচে যুক্ত হতে পারেন।',
+    };
+  return {
+    stars: 1,
+    label: { en: 'Revise the Topics Again', bn: 'বিষয়গুলো আবার রিভিশন দিন' },
+    feedback: 'Revise basic grammar and vocabulary topics, then retake the test.',
+    banglaFeedback: 'মৌলিক ব্যাকরণ ও শব্দভাণ্ডারের বিষয়গুলো রিভিশন দিয়ে আবারও টেস্টে অংশ নিন।',
+  };
 }
 
-export const courseTitle = (id: string) => COURSES_DATA.find((c) => c.id === id)?.title ?? id;
+/** Course name for a recommendation in the given locale (falls back to the id). */
+export const courseTitle = (id: string, locale: 'en' | 'bn' = 'en') => {
+  const c = COURSES_DATA.find((x) => x.id === id);
+  if (!c) return id;
+  return locale === 'bn' ? c.banglaTitle || c.title : c.title;
+};

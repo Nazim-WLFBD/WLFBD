@@ -13,6 +13,7 @@ export const QUIZ_CATEGORIES: QuizCategory[] = [
     durationMinutes: 60,
     iconName: 'BookOpen',
     badgeTag: 'TCF C1-C2 MOCK TEST',
+    banglaBadgeTag: 'TCF C1-C2 মক টেস্ট',
     isMockExam: true,
   },
   {
@@ -27,6 +28,7 @@ export const QUIZ_CATEGORIES: QuizCategory[] = [
     durationMinutes: 45,
     iconName: 'BookOpen',
     badgeTag: 'TCF B1-B2 MOCK TEST',
+    banglaBadgeTag: 'TCF B1-B2 মক টেস্ট',
     isMockExam: true,
   },
   {
@@ -41,6 +43,7 @@ export const QUIZ_CATEGORIES: QuizCategory[] = [
     durationMinutes: 45,
     iconName: 'BookOpen',
     badgeTag: 'TCF CANADA MOCK TEST',
+    banglaBadgeTag: 'TCF CANADA মক টেস্ট',
     isMockExam: true,
   },
   {
@@ -55,6 +58,7 @@ export const QUIZ_CATEGORIES: QuizCategory[] = [
     durationMinutes: 30,
     iconName: 'GraduationCap',
     badgeTag: 'DELF A1 MOCK TEST',
+    banglaBadgeTag: 'DELF A1 মক টেস্ট',
     isMockExam: true,
   },
   {
@@ -69,6 +73,7 @@ export const QUIZ_CATEGORIES: QuizCategory[] = [
     durationMinutes: 30,
     iconName: 'Compass',
     badgeTag: 'DIAGNOSTIC PLACEMENT TEST',
+    banglaBadgeTag: 'ডায়াগনস্টিক লেভেল টেস্ট',
     isPlacementTest: true,
   },
   {
@@ -83,6 +88,7 @@ export const QUIZ_CATEGORIES: QuizCategory[] = [
     durationMinutes: 30,
     iconName: 'Compass',
     badgeTag: 'RECOMMENDED FIRST STEP',
+    banglaBadgeTag: 'প্রথম ধাপ হিসেবে সুপারিশকৃত',
     isPlacementTest: true,
   },
   {
@@ -97,6 +103,7 @@ export const QUIZ_CATEGORIES: QuizCategory[] = [
     durationMinutes: 12,
     iconName: 'GraduationCap',
     badgeTag: 'A1 LEVEL',
+    banglaBadgeTag: 'A1 লেভেল',
   },
   {
     id: 'delf-a2',
@@ -110,6 +117,7 @@ export const QUIZ_CATEGORIES: QuizCategory[] = [
     durationMinutes: 15,
     iconName: 'Award',
     badgeTag: 'A2 LEVEL',
+    banglaBadgeTag: 'A2 লেভেল',
   },
   {
     id: 'delf-b1',
@@ -123,6 +131,7 @@ export const QUIZ_CATEGORIES: QuizCategory[] = [
     durationMinutes: 15,
     iconName: 'Flame',
     badgeTag: 'B1 PR TARGET',
+    banglaBadgeTag: 'B1 PR টার্গেট',
   },
   {
     id: 'delf-b2',
@@ -136,6 +145,7 @@ export const QUIZ_CATEGORIES: QuizCategory[] = [
     durationMinutes: 18,
     iconName: 'Zap',
     badgeTag: 'B2 MAXIMUM CRS',
+    banglaBadgeTag: 'B2 সর্বোচ্চ CRS',
   },
   {
     id: 'tef-practice',
@@ -149,6 +159,7 @@ export const QUIZ_CATEGORIES: QuizCategory[] = [
     durationMinutes: 15,
     iconName: 'Globe',
     badgeTag: 'EXPRESS ENTRY',
+    banglaBadgeTag: 'এক্সপ্রেস এন্ট্রি',
     isMockExam: true,
   },
   {
@@ -163,6 +174,7 @@ export const QUIZ_CATEGORIES: QuizCategory[] = [
     durationMinutes: 15,
     iconName: 'Sparkles',
     badgeTag: 'TCF FORMAT',
+    banglaBadgeTag: 'TCF ফরম্যাট',
     isMockExam: true,
   },
   {
@@ -177,6 +189,7 @@ export const QUIZ_CATEGORIES: QuizCategory[] = [
     durationMinutes: 8,
     iconName: 'BookOpen',
     badgeTag: 'VOCABULARY',
+    banglaBadgeTag: 'ভোকাবুলারি',
     isChallenge: true,
   },
   {
@@ -191,6 +204,7 @@ export const QUIZ_CATEGORIES: QuizCategory[] = [
     durationMinutes: 8,
     iconName: 'Layers',
     badgeTag: 'GRAMMAR SPRINT',
+    banglaBadgeTag: 'গ্রামার স্প্রিন্ট',
     isChallenge: true,
   },
   {
@@ -205,6 +219,7 @@ export const QUIZ_CATEGORIES: QuizCategory[] = [
     durationMinutes: 10,
     iconName: 'Headphones',
     badgeTag: 'AUDIO LISTENING',
+    banglaBadgeTag: 'অডিও লিসেনিং',
     isChallenge: true,
   },
 ];
@@ -946,6 +961,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['une', 'un', 'des', 'du'],
     correctAnswer: 'une',
     explanation: 'Pomme is a feminine singular noun: "une pomme".',
+    banglaExplanation: '"Pomme" একটি স্ত্রীলিঙ্গ একবচন বিশেষ্য, তাই "une pomme" হবে।',
     points: 10,
   },
   {
@@ -959,6 +975,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Wednesday', 'Monday', 'Friday', 'Sunday'],
     correctAnswer: 'Wednesday',
     explanation: 'Mercredi = Wednesday.',
+    banglaExplanation: 'Mercredi অর্থ বুধবার।',
     points: 10,
   },
   {
@@ -972,6 +989,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['as', 'ai', 'a', 'avez'],
     correctAnswer: 'as',
     explanation: 'Tu as = You have.',
+    banglaExplanation: '"Tu as" অর্থ "তোমার আছে" — Avoir ভার্বের Tu রূপ হলো "as"।',
     points: 10,
   },
   {
@@ -991,6 +1009,7 @@ export const QUESTION_BANK: Question[] = [
     ],
     correctAnswer: 'Goodbye and have a nice day!',
     explanation: '"Au revoir" = Goodbye, "bonne journée" = have a nice day.',
+    banglaExplanation: '"Au revoir" অর্থ বিদায়, আর "bonne journée" অর্থ দিনটি শুভ হোক।',
     points: 10,
   },
   {
@@ -1004,6 +1023,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['True', 'False'],
     correctAnswer: 'True',
     explanation: 'Correct! "Merci beaucoup" = Thank you very much.',
+    banglaExplanation: 'সঠিক! "Merci beaucoup" অর্থ আপনাকে অনেক ধন্যবাদ।',
     points: 10,
   },
 
@@ -1024,6 +1044,7 @@ export const QUESTION_BANK: Question[] = [
     ],
     correctAnswer: 'Quand j\'étais jeune, je jouais au football tous les samedis.',
     explanation: 'Imparfait (j\'étais, je jouais) is used for past repeated actions/habits.',
+    banglaExplanation: 'অতীতের পুনরাবৃত্ত কাজ বা অভ্যাস বোঝাতে Imparfait (j\'étais, je jouais) ব্যবহৃত হয়।',
     points: 10,
   },
   {
@@ -1042,6 +1063,7 @@ export const QUESTION_BANK: Question[] = [
     ],
     correctAnswer: 'To take/sit for an exam',
     explanation: '"Passer un examen" means to take an exam. Succeeding is "réussir à un examen".',
+    banglaExplanation: '"Passer un examen" অর্থ পরীক্ষা দেওয়া। পরীক্ষায় পাস করা বোঝাতে বলা হয় "réussir à un examen"।',
     points: 10,
   },
 
@@ -1063,6 +1085,7 @@ export const QUESTION_BANK: Question[] = [
     ],
     correctAnswer: 'The flight to Montreal is delayed by 30 minutes.',
     explanation: '"retardé de trente minutes" = delayed by 30 minutes.',
+    banglaExplanation: '"retardé de trente minutes" অর্থ ৩০ মিনিট বিলম্বিত।',
     points: 10,
   },
   {
@@ -1082,6 +1105,7 @@ export const QUESTION_BANK: Question[] = [
     ],
     correctAnswer: 'The metro service will be interrupted Sunday morning between 6am and 10am.',
     explanation: '"interrompra le service... entre 6h et 10h" = interrupted between 6am and 10am.',
+    banglaExplanation: '"interrompra le service... entre 6h et 10h" অর্থ সকাল ৬টা থেকে ১০টার মধ্যে সার্ভিস বন্ধ থাকবে।',
     points: 10,
   },
   {
@@ -1099,6 +1123,7 @@ export const QUESTION_BANK: Question[] = [
     ],
     correctAnswer: 'Parler=To speak,Manger=To eat,Comprendre=To understand,Travailler=To work',
     explanation: 'Parler = To speak, Manger = To eat, Comprendre = To understand, Travailler = To work.',
+    banglaExplanation: 'Parler = কথা বলা, Manger = খাওয়া, Comprendre = বোঝা, Travailler = কাজ করা।',
     points: 10,
   },
   {
@@ -1112,6 +1137,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['lui', 'le', 'la', 'y'],
     correctAnswer: 'lui',
     explanation: '"à + person" singular is replaced by indirect pronoun "lui" -> Je lui écris.',
+    banglaExplanation: '"à + ব্যক্তি" (একবচন) এর বদলে ইনডিরেক্ট প্রোনাউন "lui" বসে → Je lui écris.',
     points: 10,
   },
 
@@ -1133,6 +1159,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Sophie', 'Marie', 'Julie', 'Emma'],
     correctAnswer: 'Marie',
     explanation: 'Le texte dit : "Bonjour ! Je m\'appelle Marie."',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "Bonjour ! Je m\'appelle Marie."',
     points: 1,
   },
   {
@@ -1147,6 +1174,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['22 ans', '23 ans', '24 ans', '25 ans'],
     correctAnswer: '24 ans',
     explanation: 'Le texte indique : "J\'ai 24 ans."',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "J\'ai 24 ans." (আমার বয়স ২৪ বছর)।',
     points: 1,
   },
   {
@@ -1161,6 +1189,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Paris', 'Marseille', 'Lyon', 'Nice'],
     correctAnswer: 'Lyon',
     explanation: 'Le texte indique : "J\'habite à Lyon."',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "J\'habite à Lyon." (আমি লিয়োঁতে থাকি)।',
     points: 1,
   },
   {
@@ -1175,6 +1204,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['médecin', 'étudiante', 'professeur', 'vendeuse'],
     correctAnswer: 'étudiante',
     explanation: 'Le texte indique : "Je suis étudiante."',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "Je suis étudiante." (আমি একজন ছাত্রী)।',
     points: 1,
   },
   {
@@ -1189,6 +1219,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Elle travaille.', 'Elle voyage.', 'Elle va au cinéma.', 'Elle dort.'],
     correctAnswer: 'Elle va au cinéma.',
     explanation: 'Le texte indique : "Le week-end, je vais au cinéma avec mes amis."',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "Le week-end, je vais au cinéma avec mes amis." (সপ্তাহান্তে আমি বন্ধুদের সাথে সিনেমায় যাই)।',
     points: 1,
   },
 
@@ -1205,6 +1236,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['8 h', '9 h', '10 h', '11 h'],
     correctAnswer: '9 h',
     explanation: 'Le texte indique : "Le magasin ouvre à 9 h".',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "Le magasin ouvre à 9 h" (দোকান সকাল ৯টায় খোলে)।',
     points: 1,
   },
   {
@@ -1219,6 +1251,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['18 h', '19 h', '20 h', '21 h'],
     correctAnswer: '19 h',
     explanation: 'Le texte indique : "ferme à 19 h".',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "ferme à 19 h" (সন্ধ্যা ৭টায় বন্ধ হয়)।',
     points: 1,
   },
   {
@@ -1233,6 +1266,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Lundi', 'Mardi', 'Samedi', 'Dimanche'],
     correctAnswer: 'Dimanche',
     explanation: 'Le texte indique : "Il est fermé le dimanche."',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "Il est fermé le dimanche." (রবিবার বন্ধ থাকে)।',
     points: 1,
   },
   {
@@ -1247,6 +1281,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Oui', 'Non', 'Seulement le dimanche', 'Impossible'],
     correctAnswer: 'Oui',
     explanation: '15 h est entre 9 h et 19 h, donc le magasin est ouvert.',
+    banglaExplanation: 'দুপুর ৩টা (15 h) সকাল ৯টা ও সন্ধ্যা ৭টার মধ্যে পড়ে, তাই দোকান তখন খোলা থাকে।',
     points: 1,
   },
   {
@@ -1261,6 +1296,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Oui', 'Non', 'Peut-être', 'Toujours'],
     correctAnswer: 'Non',
     explanation: 'Le magasin ferme à 19 h, donc à 20 h il est fermé.',
+    banglaExplanation: 'দোকান সন্ধ্যা ৭টায় (19 h) বন্ধ হয়, তাই রাত ৮টায় (20 h) এটি বন্ধ থাকে।',
     points: 1,
   },
 
@@ -1277,6 +1313,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['En train', 'En voiture', 'En bus', 'À vélo'],
     correctAnswer: 'En bus',
     explanation: 'Le texte indique : "Paul prend le bus".',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "Paul prend le bus" (পল বাসে যায়)।',
     points: 1,
   },
   {
@@ -1291,6 +1328,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['7 h', '7 h 30', '8 h', '8 h 30'],
     correctAnswer: '7 h 30',
     explanation: 'Le texte indique : "tous les matins à 7 h 30".',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "tous les matins à 7 h 30" (প্রতিদিন সকাল সাড়ে ৭টায়)।',
     points: 1,
   },
   {
@@ -1305,6 +1343,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['7 h', '7 h 30', '8 h', '9 h'],
     correctAnswer: '8 h',
     explanation: 'Le texte indique : "Il commence son travail à 8 h."',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "Il commence son travail à 8 h." (সে সকাল ৮টায় কাজ শুরু করে)।',
     points: 1,
   },
   {
@@ -1319,6 +1358,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['le soir', 'tous les matins', 'seulement lundi', 'jamais'],
     correctAnswer: 'tous les matins',
     explanation: 'Le texte indique : "tous les matins".',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "tous les matins" (প্রতিদিন সকালে)।',
     points: 1,
   },
   {
@@ -1333,6 +1373,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['étudiant', 'employé', 'médecin', 'touriste'],
     correctAnswer: 'employé',
     explanation: 'Puisqu\'il commence son travail à 8 h, il est employé.',
+    banglaExplanation: 'যেহেতু সে সকাল ৮টায় কাজ শুরু করে, তাই সে একজন কর্মচারী।',
     points: 1,
   },
 
@@ -1349,6 +1390,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Il neige.', 'Il pleut.', 'Il fait beau.', 'Il fait froid.'],
     correctAnswer: 'Il fait beau.',
     explanation: 'Le texte indique : "Aujourd\'hui, il fait beau."',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "Aujourd\'hui, il fait beau." (আজ আবহাওয়া সুন্দর)।',
     points: 1,
   },
   {
@@ -1363,6 +1405,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['de la neige', 'du soleil', 'du vent fort', 'du brouillard'],
     correctAnswer: 'du soleil',
     explanation: 'Le texte indique : "Il y a du soleil."',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "Il y a du soleil." (রোদ আছে)।',
     points: 1,
   },
   {
@@ -1377,6 +1420,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['16°C', '20°C', '26°C', '30°C'],
     correctAnswer: '26°C',
     explanation: 'Le texte indique : "La température est de 26°C."',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "La température est de 26°C." (তাপমাত্রা ২৬°C)।',
     points: 1,
   },
   {
@@ -1391,6 +1435,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['agréable', 'très froid', 'neigeux', 'mauvais'],
     correctAnswer: 'agréable',
     explanation: 'Beau temps avec soleil et 26°C est un temps agréable.',
+    banglaExplanation: 'রোদ ও ২৬°C তাপমাত্রাসহ সুন্দর আবহাওয়া মানেই মনোরম আবহাওয়া।',
     points: 1,
   },
   {
@@ -1405,6 +1450,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Oui', 'Non', 'Impossible', 'Jamais'],
     correctAnswer: 'Oui',
     explanation: 'Comme il fait beau et ensoleillé, on peut faire un pique-nique.',
+    banglaExplanation: 'যেহেতু আবহাওয়া সুন্দর ও রৌদ্রোজ্জ্বল, তাই পিকনিক করা যায়।',
     points: 1,
   },
 
@@ -1421,6 +1467,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['11 h', '12 h', '13 h', '14 h'],
     correctAnswer: '12 h',
     explanation: 'Le texte indique : "Déjeuner : 12 h – 14 h".',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "Déjeuner : 12 h – 14 h" (দুপুরের খাবার: দুপুর ১২টা–২টা)।',
     points: 1,
   },
   {
@@ -1435,6 +1482,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['18 h', '19 h', '20 h', '21 h'],
     correctAnswer: '19 h',
     explanation: 'Le texte indique : "Dîner : 19 h – 22 h".',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "Dîner : 19 h – 22 h" (রাতের খাবার: সন্ধ্যা ৭টা–রাত ১০টা)।',
     points: 1,
   },
   {
@@ -1449,6 +1497,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['mardi', 'mercredi', 'lundi', 'dimanche'],
     correctAnswer: 'lundi',
     explanation: 'Le texte indique : "Fermé le lundi".',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "Fermé le lundi" (সোমবার বন্ধ)।',
     points: 1,
   },
   {
@@ -1463,6 +1512,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Oui', 'Non', 'Seulement samedi', 'Impossible'],
     correctAnswer: 'Oui',
     explanation: '20 h est compris entre 19 h et 22 h (horaires du dîner).',
+    banglaExplanation: 'রাত ৮টা (20 h) সন্ধ্যা ৭টা থেকে রাত ১০টার (ডিনারের সময়) মধ্যে পড়ে।',
     points: 1,
   },
   {
@@ -1477,6 +1527,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Oui', 'Non', 'Toujours', 'Seulement dimanche'],
     correctAnswer: 'Non',
     explanation: 'Le déjeuner se termine à 14 h.',
+    banglaExplanation: 'দুপুরের খাবারের সময় শেষ হয় দুপুর ২টায় (14 h)।',
     points: 1,
   },
 
@@ -1493,6 +1544,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['les voitures', 'les animaux', 'les fleurs', 'les livres'],
     correctAnswer: 'les animaux',
     explanation: 'Le texte indique : "Lucie adore les animaux."',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "Lucie adore les animaux." (লুসি প্রাণী খুব ভালোবাসে)।',
     points: 1,
   },
   {
@@ -1507,6 +1559,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Un', 'Deux', 'Trois', 'Quatre'],
     correctAnswer: 'Deux',
     explanation: 'Elle a un chien + un chat = deux animaux.',
+    banglaExplanation: 'তার একটি কুকুর + একটি বিড়াল = দুটি প্রাণী।',
     points: 1,
   },
   {
@@ -1521,6 +1574,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Deux chiens', 'Un chien et un chat', 'Deux chats', 'Un poisson'],
     correctAnswer: 'Un chien et un chat',
     explanation: 'Le texte indique : "Elle a un chien et un chat."',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "Elle a un chien et un chat." (তার একটি কুকুর ও একটি বিড়াল আছে)।',
     points: 1,
   },
   {
@@ -1535,6 +1589,7 @@ export const QUESTION_BANK: Question[] = [
     options: ["À l'école", 'Au parc', 'À la plage', 'Au marché'],
     correctAnswer: 'Au parc',
     explanation: 'Le texte indique : "elle promène son chien au parc."',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "elle promène son chien au parc." (সে পার্কে তার কুকুর নিয়ে হাঁটে)।',
     points: 1,
   },
   {
@@ -1549,6 +1604,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Lundi', 'Mardi', 'Samedi', 'Dimanche'],
     correctAnswer: 'Dimanche',
     explanation: 'Le texte indique : "Le dimanche, elle promène..."',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "Le dimanche, elle promène..." (রবিবারে সে... নিয়ে হাঁটে)।',
     points: 1,
   },
 
@@ -1565,6 +1621,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Une voiture', 'Une maison', 'Un appartement', 'Un bureau'],
     correctAnswer: 'Un appartement',
     explanation: 'L\'annonce est titrée : "Appartement à louer".',
+    banglaExplanation: 'বিজ্ঞাপনের শিরোনাম: "Appartement à louer" (ভাড়ার জন্য অ্যাপার্টমেন্ট)।',
     points: 1,
   },
   {
@@ -1579,6 +1636,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Une', 'Deux', 'Trois', 'Quatre'],
     correctAnswer: 'Deux',
     explanation: 'L\'annonce indique : "• 2 chambres".',
+    banglaExplanation: 'বিজ্ঞাপনে বলা হয়েছে: "• 2 chambres" (২টি শোবার ঘর)।',
     points: 1,
   },
   {
@@ -1593,6 +1651,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['550 €', '600 €', '650 €', '700 €'],
     correctAnswer: '650 €',
     explanation: 'L\'annonce indique : "• 650 € par mois".',
+    banglaExplanation: 'বিজ্ঞাপনে বলা হয়েছে: "• 650 € par mois" (মাসে ৬৫০ ইউরো)।',
     points: 1,
   },
   {
@@ -1607,6 +1666,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['À la campagne', 'Au village', 'En centre-ville', 'À la montagne'],
     correctAnswer: 'En centre-ville',
     explanation: 'L\'annonce indique : "• Centre-ville".',
+    banglaExplanation: 'বিজ্ঞাপনে বলা হয়েছে: "• Centre-ville" (শহরের কেন্দ্রে)।',
     points: 1,
   },
   {
@@ -1621,6 +1681,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['écrire un e-mail', 'téléphoner', 'envoyer une lettre', 'visiter le site'],
     correctAnswer: 'téléphoner',
     explanation: 'Un numéro de téléphone est fourni pour contacter l\'annonceur.',
+    banglaExplanation: 'বিজ্ঞাপনদাতার সাথে যোগাযোগের জন্য একটি ফোন নম্বর দেওয়া আছে।',
     points: 1,
   },
 
@@ -1637,6 +1698,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Anglais', 'Espagnol', 'Français', 'Italien'],
     correctAnswer: 'Français',
     explanation: 'Le texte indique : "Les cours de français...".',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "Les cours de français..." (ফ্রেঞ্চ ক্লাসগুলো...)।',
     points: 1,
   },
   {
@@ -1651,6 +1713,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['lundi et mercredi', 'mardi et jeudi', 'vendredi et samedi', 'samedi seulement'],
     correctAnswer: 'mardi et jeudi',
     explanation: 'Le texte indique : "le mardi et le jeudi".',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "le mardi et le jeudi" (মঙ্গল ও বৃহস্পতিবার)।',
     points: 1,
   },
   {
@@ -1665,6 +1728,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['17 h', '18 h', '19 h', '20 h'],
     correctAnswer: '18 h',
     explanation: 'Le texte indique : "de 18 h à 20 h", donc début à 18 h.',
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "de 18 h à 20 h", অর্থাৎ ক্লাস শুরু সন্ধ্যা ৬টায়।',
     points: 1,
   },
   {
@@ -1679,6 +1743,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['1 heure', '2 heures', '3 heures', '4 heures'],
     correctAnswer: '2 heures',
     explanation: 'De 18 h à 20 h = 2 heures de cours.',
+    banglaExplanation: 'সন্ধ্যা ৬টা থেকে ৮টা = ২ ঘণ্টার ক্লাস।',
     points: 1,
   },
 
@@ -1700,6 +1765,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Construire des routes', 'Encourager les déplacements écologiques', 'Augmenter le prix des transports', 'Fermer les pistes cyclables'],
     correctAnswer: 'Encourager les déplacements écologiques',
     explanation: "Le texte indique : 'ce projet permettra... en encourageant les déplacements écologiques.'",
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "ce projet permettra... en encourageant les déplacements écologiques." (এই প্রকল্প পরিবেশবান্ধব যাতায়াতে উৎসাহ দেবে)।',
     points: 1,
   },
   {
@@ -1714,6 +1780,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Seulement les touristes', 'Les étudiants uniquement', 'Les habitants', 'Les enfants uniquement'],
     correctAnswer: 'Les habitants',
     explanation: "Le texte indique : 'Les habitants pourront louer un vélo...'",
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "Les habitants pourront louer un vélo..." (বাসিন্দারা সাইকেল ভাড়া নিতে পারবেন)।',
     points: 1,
   },
   {
@@ -1728,6 +1795,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Avec une carte bancaire', 'Grâce à un abonnement mensuel', 'Avec un permis de conduire', "En réservant un an à l'avance"],
     correctAnswer: 'Grâce à un abonnement mensuel',
     explanation: "Le texte indique : 'grâce à un abonnement mensuel.'",
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "grâce à un abonnement mensuel." (মাসিক সাবস্ক্রিপশনের মাধ্যমে)।',
     points: 1,
   },
   {
@@ -1742,6 +1810,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Le chômage', 'Les embouteillages', 'Les accidents scolaires', 'Le tourisme'],
     correctAnswer: 'Les embouteillages',
     explanation: "Le texte indique : 'réduire les embouteillages et la pollution'.",
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "réduire les embouteillages et la pollution" (যানজট ও দূষণ কমানো)।',
     points: 1,
   },
   {
@@ -1756,6 +1825,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Décourager', 'Favoriser', 'Arrêter', 'Interdire'],
     correctAnswer: 'Favoriser',
     explanation: 'Encourager signifie soutenir ou favoriser une action.',
+    banglaExplanation: '"Encourager" অর্থ কোনো কাজকে সমর্থন করা বা উৎসাহিত করা।',
     points: 1,
   },
 
@@ -1772,6 +1842,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Le salaire est faible.', 'Elle doit changer de métier.', 'Elle devra quitter ses proches.', "L'entreprise est fermée."],
     correctAnswer: 'Elle devra quitter ses proches.',
     explanation: "Le texte explique qu'elle hésite 'car elle devra quitter sa famille et ses amis.'",
+    banglaExplanation: 'টেক্সটে ব্যাখ্যা করা হয়েছে যে সে দ্বিধায় আছে "car elle devra quitter sa famille et ses amis" (কারণ তাকে পরিবার ও বন্ধুদের ছেড়ে যেতে হবে)।',
     points: 1,
   },
   {
@@ -1786,6 +1857,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Plus de vacances', 'Un meilleur salaire', 'Un logement gratuit', 'Une voiture'],
     correctAnswer: 'Un meilleur salaire',
     explanation: "Le texte mentionne : 'le salaire est plus élevé'.",
+    banglaExplanation: 'টেক্সটে উল্লেখ আছে: "le salaire est plus élevé" (বেতন বেশি)।',
     points: 1,
   },
   {
@@ -1800,6 +1872,7 @@ export const QUESTION_BANK: Question[] = [
     options: ["d'un voyage", "d'une décision professionnelle", "d'une maladie", "d'un examen"],
     correctAnswer: "d'une décision professionnelle",
     explanation: "Le texte aborde l'hésitation face à une offre d'emploi.",
+    banglaExplanation: 'টেক্সটটি একটি চাকরির প্রস্তাব নিয়ে দ্বিধা-দ্বন্দ্বের বিষয়ে।',
     points: 1,
   },
   {
@@ -1814,6 +1887,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['certaine de partir', 'indifférente', 'partagée entre deux choix', 'en colère'],
     correctAnswer: 'partagée entre deux choix',
     explanation: "Elle hésite entre un meilleur salaire et rester proche de sa famille.",
+    banglaExplanation: 'সে বেশি বেতন আর পরিবারের কাছে থাকার মধ্যে দ্বিধায় আছে।',
     points: 1,
   },
   {
@@ -1828,6 +1902,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['décide immédiatement', "n'est pas sûre", 'refuse définitivement', 'oublie'],
     correctAnswer: "n'est pas sûre",
     explanation: "Hésiter signifie manquer de certitude avant de prendre une décision.",
+    banglaExplanation: '"Hésiter" অর্থ সিদ্ধান্ত নেওয়ার আগে নিশ্চিত হতে না পারা বা দ্বিধা করা।',
     points: 1,
   },
 
@@ -1844,6 +1919,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['des voyages', 'du sport', "de l'alimentation", 'des réseaux sociaux'],
     correctAnswer: 'du sport',
     explanation: "L'étude aborde la pratique d'une 'activité physique'.",
+    banglaExplanation: 'গবেষণাটি "activité physique" (শারীরিক কার্যকলাপ) চর্চা নিয়ে।',
     points: 1,
   },
   {
@@ -1858,6 +1934,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Une fois', 'Deux fois', 'Trois fois', 'Tous les jours'],
     correctAnswer: 'Trois fois',
     explanation: "Le texte indique : 'trois fois par semaine'.",
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "trois fois par semaine" (সপ্তাহে তিনবার)।',
     points: 1,
   },
   {
@@ -1872,6 +1949,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Dormir moins', 'Être plus stressé', 'Mieux dormir', "Gagner plus d'argent"],
     correctAnswer: 'Mieux dormir',
     explanation: "Le texte mentionne que les personnes 'dorment mieux et sont moins stressées'.",
+    banglaExplanation: 'টেক্সটে উল্লেখ আছে যে এই ব্যক্তিরা "dorment mieux et sont moins stressées" (ভালো ঘুমান ও কম মানসিক চাপে থাকেন)।',
     points: 1,
   },
   {
@@ -1886,6 +1964,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['une publicité', 'une étude', 'un roman', 'une émission'],
     correctAnswer: 'une étude',
     explanation: "Le texte commence par : 'Selon une étude récente'.",
+    banglaExplanation: 'টেক্সটের শুরুতেই আছে: "Selon une étude récente" (সাম্প্রতিক এক গবেষণা অনুযায়ী)।',
     points: 1,
   },
   {
@@ -1900,6 +1979,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['abandonner', 'faire régulièrement', 'regarder', 'vendre'],
     correctAnswer: 'faire régulièrement',
     explanation: "Pratiquer une activité signifie l'exercer régulièrement.",
+    banglaExplanation: 'কোনো কার্যকলাপ "pratiquer" করা মানে তা নিয়মিত চর্চা করা।',
     points: 1,
   },
 
@@ -1916,6 +1996,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Les transports', 'Les achats', 'Les banques', 'Les écoles'],
     correctAnswer: 'Les achats',
     explanation: "Le texte parle des achats en ligne et dans les magasins physiques.",
+    banglaExplanation: 'টেক্সটটি অনলাইন কেনাকাটা ও সরাসরি দোকানে কেনাকাটা নিয়ে।',
     points: 1,
   },
   {
@@ -1930,6 +2011,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Les prix sont toujours plus bas.', 'Ils peuvent voir les produits.', 'Les magasins livrent gratuitement.', "Ils n'ont pas Internet."],
     correctAnswer: 'Ils peuvent voir les produits.',
     explanation: "Le texte explique qu'ils préfèrent les magasins physiques 'pour voir les produits avant de les acheter'.",
+    banglaExplanation: 'টেক্সটে ব্যাখ্যা করা হয়েছে যে তারা সরাসরি দোকান পছন্দ করেন "pour voir les produits avant de les acheter" (কেনার আগে পণ্য দেখার জন্য)।',
     points: 1,
   },
   {
@@ -1944,6 +2026,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['diminuent', 'connaissent du succès', 'sont interdits', 'disparaissent'],
     correctAnswer: 'connaissent du succès',
     explanation: "Le texte affirme : 'Les achats en ligne connaissent un grand succès.'",
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "Les achats en ligne connaissent un grand succès." (অনলাইন কেনাকাটা ব্যাপক সাফল্য পাচ্ছে)।',
     points: 1,
   },
   {
@@ -1958,6 +2041,7 @@ export const QUESTION_BANK: Question[] = [
     options: ["deux moyens d'acheter", 'deux villes', 'deux écoles', 'deux entreprises'],
     correctAnswer: "deux moyens d'acheter",
     explanation: "Il compare les achats en ligne et en magasin physique.",
+    banglaExplanation: 'এটি অনলাইন কেনাকাটা ও সরাসরি দোকানে কেনাকাটার তুলনা করে।',
     points: 1,
   },
   {
@@ -1972,6 +2056,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['une opposition', 'une cause', 'une conclusion', 'un exemple'],
     correctAnswer: 'une opposition',
     explanation: "Cependant est un connecteur logique exprimant l'opposition ou la nuance.",
+    banglaExplanation: '"Cependant" একটি যৌক্তিক সংযোজক শব্দ, যা বৈপরীত্য বা সূক্ষ্ম পার্থক্য প্রকাশ করে।',
     points: 1,
   },
 
@@ -1988,6 +2073,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['La médecine', "L'intelligence artificielle", 'Le cinéma', 'Le tourisme'],
     correctAnswer: "L'intelligence artificielle",
     explanation: "Le texte mentionne : 'une conférence sur l'intelligence artificielle'.",
+    banglaExplanation: 'টেক্সটে উল্লেখ আছে: "une conférence sur l\'intelligence artificielle" (কৃত্রিম বুদ্ধিমত্তা বিষয়ক সম্মেলন)।',
     points: 1,
   },
   {
@@ -2002,6 +2088,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['payante', 'gratuite', 'réservée aux étudiants', 'impossible'],
     correctAnswer: 'gratuite',
     explanation: "Le texte précise : 'L\'entrée est gratuite'.",
+    banglaExplanation: 'টেক্সটে স্পষ্ট বলা আছে: "L\'entrée est gratuite" (প্রবেশ বিনামূল্যে)।',
     points: 1,
   },
   {
@@ -2016,6 +2103,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Voyager', 'Acheter un livre', "S'inscrire", 'Passer un examen'],
     correctAnswer: "S'inscrire",
     explanation: "Le texte indique : 'l\'inscription est obligatoire avant le 10 octobre.'",
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "l\'inscription est obligatoire avant le 10 octobre." (১০ অক্টোবরের আগে নিবন্ধন বাধ্যতামূলক)।',
     points: 1,
   },
   {
@@ -2030,6 +2118,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['une annonce', 'un roman', 'une recette', 'une lettre'],
     correctAnswer: 'une annonce',
     explanation: "C'est une annonce d'événement universitaire.",
+    banglaExplanation: 'এটি একটি বিশ্ববিদ্যালয় অনুষ্ঠানের ঘোষণা।',
     points: 1,
   },
   {
@@ -2044,6 +2133,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['facultatif', 'nécessaire', 'impossible', 'inutile'],
     correctAnswer: 'nécessaire',
     explanation: "Obligatoire signifie indispensable, requis par la règle.",
+    banglaExplanation: '"Obligatoire" অর্থ অপরিহার্য, নিয়ম অনুযায়ী আবশ্যক।',
     points: 1,
   },
 
@@ -2060,6 +2150,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Plus de vacances', 'Retour au bureau', 'Fermeture des entreprises', 'Changement de salaire'],
     correctAnswer: 'Retour au bureau',
     explanation: "Le texte mentionne : 'revenir au bureau plusieurs jours par semaine.'",
+    banglaExplanation: 'টেক্সটে উল্লেখ আছে: "revenir au bureau plusieurs jours par semaine." (সপ্তাহে কয়েক দিন অফিসে ফিরে আসা)।',
     points: 1,
   },
   {
@@ -2074,6 +2165,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['À domicile', "À l'école", "À l'hôtel", "À l'étranger"],
     correctAnswer: 'À domicile',
     explanation: "Le télétravail correspond au travail effectué à domicile.",
+    banglaExplanation: '"Télétravail" বলতে বাড়ি থেকে কাজ করা বোঝায়।',
     points: 1,
   },
   {
@@ -2088,6 +2180,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Les clients', 'Les entreprises', 'Les étudiants', 'Les journalistes'],
     correctAnswer: 'Les entreprises',
     explanation: "Le texte indique : 'certaines entreprises demandent à leurs employés...'",
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "certaines entreprises demandent à leurs employés..." (কিছু প্রতিষ্ঠান তাদের কর্মীদের বলছে...)।',
     points: 1,
   },
   {
@@ -2102,6 +2195,7 @@ export const QUESTION_BANK: Question[] = [
     options: ["l'agriculture", 'le monde du travail', 'le sport', 'la santé'],
     correctAnswer: 'le monde du travail',
     explanation: "Le texte traite du télétravail et de l'organisation en entreprise.",
+    banglaExplanation: 'টেক্সটটি টেলিওয়ার্ক (বাড়ি থেকে কাজ) ও প্রতিষ্ঠানের কাজের ব্যবস্থাপনা নিয়ে।',
     points: 1,
   },
   {
@@ -2116,6 +2210,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['un seul', 'deux ou plus', 'aucun', 'rarement'],
     correctAnswer: 'deux ou plus',
     explanation: "Plusieurs signifie un nombre indéfini supérieur à un (deux ou plus).",
+    banglaExplanation: '"Plusieurs" অর্থ একের বেশি অনির্দিষ্ট সংখ্যক (দুই বা তার বেশি)।',
     points: 1,
   },
 
@@ -2132,6 +2227,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Les médecins', 'Les scientifiques', 'Les étudiants', 'Les commerçants'],
     correctAnswer: 'Les scientifiques',
     explanation: "Le texte commence par : 'Les scientifiques recommandent...'",
+    banglaExplanation: 'টেক্সটের শুরুতেই আছে: "Les scientifiques recommandent..." (বিজ্ঞানীরা সুপারিশ করছেন...)।',
     points: 1,
   },
   {
@@ -2146,6 +2242,7 @@ export const QUESTION_BANK: Question[] = [
     options: ["Pour protéger l'environnement", "Pour économiser du temps", 'Pour augmenter les ventes', 'Pour voyager'],
     correctAnswer: "Pour protéger l'environnement",
     explanation: "Le texte indique : 'afin de protéger l'environnement.'",
+    banglaExplanation: 'টেক্সটে বলা হয়েছে: "afin de protéger l\'environnement." (পরিবেশ রক্ষার জন্য)।',
     points: 1,
   },
   {
@@ -2160,6 +2257,7 @@ export const QUESTION_BANK: Question[] = [
     options: ["de l'écologie", 'du sport', 'de la politique', 'du tourisme'],
     correctAnswer: "de l'écologie",
     explanation: "La protection de l'environnement relève de l'écologie.",
+    banglaExplanation: 'পরিবেশ রক্ষার বিষয়টি পরিবেশবিদ্যার (écologie) আওতায় পড়ে।',
     points: 1,
   },
   {
@@ -2174,6 +2272,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['réutilisable', 'utilisé une seule fois', 'très cher', 'recyclable'],
     correctAnswer: 'utilisé une seule fois',
     explanation: "Un objet à usage unique est conçu pour être jeté après une seule utilisation.",
+    banglaExplanation: '"À usage unique" বস্তু একবার ব্যবহারের পরই ফেলে দেওয়ার জন্য তৈরি।',
     points: 1,
   },
   {
@@ -2188,6 +2287,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['humoristique', 'informatif', 'publicitaire', 'poétique'],
     correctAnswer: 'informatif',
     explanation: "Le texte transmet une recommandation scientifique de manière factuelle.",
+    banglaExplanation: 'টেক্সটটি একটি বৈজ্ঞানিক সুপারিশ তথ্যনিষ্ঠভাবে উপস্থাপন করে।',
     points: 1,
   },
 
@@ -2204,6 +2304,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Ils sont plus courts.', 'Ils offrent plus de flexibilité.', 'Ils sont toujours gratuits.', 'Ils remplacent tous les examens.'],
     correctAnswer: 'Ils offrent plus de flexibilité.',
     explanation: "Le texte explique : 'Cette solution offre davantage de flexibilité'.",
+    banglaExplanation: 'টেক্সটে ব্যাখ্যা করা হয়েছে: "Cette solution offre davantage de flexibilité" (এই সমাধান আরও বেশি নমনীয়তা দেয়)।',
     points: 1,
   },
   {
@@ -2218,6 +2319,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Ils coûtent plus cher.', 'Ils demandent une bonne organisation.', 'Ils sont trop faciles.', 'Ils sont interdits.'],
     correctAnswer: 'Ils demandent une bonne organisation.',
     explanation: "Le texte précise : 'elle demande aussi une bonne organisation personnelle.'",
+    banglaExplanation: 'টেক্সটে স্পষ্ট বলা আছে: "elle demande aussi une bonne organisation personnelle." (এর জন্য ভালো ব্যক্তিগত পরিকল্পনাও দরকার)।',
     points: 1,
   },
   {
@@ -2232,6 +2334,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['uniquement des avantages', 'uniquement des inconvénients', 'des avantages et des limites', 'une publicité'],
     correctAnswer: 'des avantages et des limites',
     explanation: "Le texte mentionne un avantage (flexibilité) et une limite (exigence d'organisation).",
+    banglaExplanation: 'টেক্সটে একটি সুবিধা (নমনীয়তা) ও একটি সীমাবদ্ধতা (সুসংগঠিত হওয়ার প্রয়োজন) উভয়ই উল্লেখ আছে।',
     points: 1,
   },
   {
@@ -2246,6 +2349,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Les vacances universitaires', 'Les cours en ligne : avantages et défis', 'Les meilleurs professeurs', 'Les bibliothèques françaises'],
     correctAnswer: 'Les cours en ligne : avantages et défis',
     explanation: "Ce titre résume parfaitement la présentation de la flexibilité et des exigences des cours en ligne.",
+    banglaExplanation: 'এই শিরোনামটি অনলাইন কোর্সের নমনীয়তা ও চাহিদার উপস্থাপনাকে নিখুঁতভাবে সারসংক্ষেপ করে।',
     points: 1,
   },
 
@@ -2267,6 +2371,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Les transports publics sont inutiles.', 'Les villes abandonnent les transports.', 'La congestion persiste malgré les investissements.', 'La population diminue.'],
     correctAnswer: 'La congestion persiste malgré les investissements.',
     explanation: "Le texte souligne que malgré des investissements considérables, la congestion continue d'augmenter.",
+    banglaExplanation: 'টেক্সটে জোর দেওয়া হয়েছে যে বিপুল বিনিয়োগ সত্ত্বেও যানজট বেড়েই চলেছে।',
     points: 1,
   },
   {
@@ -2281,6 +2386,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['La croissance démographique', "L'étalement urbain", 'Les habitudes de déplacement', 'Le changement climatique'],
     correctAnswer: 'Le changement climatique',
     explanation: "Les causes citées sont la croissance démographique, l'étalement urbain et les habitudes de déplacement. Le changement climatique n'est pas mentionné.",
+    banglaExplanation: 'উল্লিখিত কারণগুলো হলো জনসংখ্যা বৃদ্ধি, শহরের বিস্তার ও যাতায়াতের অভ্যাস। জলবায়ু পরিবর্তনের কথা বলা হয়নি।',
     points: 1,
   },
   {
@@ -2295,6 +2401,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['une contradiction apparente', 'une catastrophe', 'une erreur scientifique', 'une découverte'],
     correctAnswer: 'une contradiction apparente',
     explanation: "Un paradoxe désigne une contradiction apparente entre deux constatations (investissements massifs vs augmentation du trafic).",
+    banglaExplanation: '"Paradoxe" (কূটাভাস) বলতে দুটি পর্যবেক্ষণের মধ্যে আপাত বৈপরীত্য বোঝায় (বিপুল বিনিয়োগ বনাম বাড়তে থাকা যানজট)।',
     points: 1,
   },
   {
@@ -2309,6 +2416,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['humoristique', 'analytique', 'polémique', 'nostalgique'],
     correctAnswer: 'analytique',
     explanation: "L'auteur analyse de manière objective et factuelle un problème d'aménagement urbain.",
+    banglaExplanation: 'লেখক নগর পরিকল্পনার একটি সমস্যা বস্তুনিষ্ঠ ও তথ্যভিত্তিকভাবে বিশ্লেষণ করেছেন।',
     points: 1,
   },
   {
@@ -2323,6 +2431,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['les investissements suffisent toujours', 'le problème est complexe', "les villes refusent d'agir", 'les transports publics disparaissent'],
     correctAnswer: 'le problème est complexe',
     explanation: "Plusieurs facteurs interconnectés expliquent la persistance de la congestion, ce qui prouve la complexité du problème.",
+    banglaExplanation: 'পরস্পর সম্পর্কিত একাধিক কারণ যানজট টিকে থাকার ব্যাখ্যা দেয়, যা সমস্যাটির জটিলতা প্রমাণ করে।',
     points: 1,
   },
 
@@ -2339,6 +2448,7 @@ export const QUESTION_BANK: Question[] = [
     options: ["La baisse d'Internet", 'Les fausses informations', 'Les journaux imprimés', 'La télévision'],
     correctAnswer: 'Les fausses informations',
     explanation: "Le texte mentionne explicitement la propagation de fausses informations.",
+    banglaExplanation: 'টেক্সটে স্পষ্টভাবে ভুয়া তথ্যের বিস্তারের কথা উল্লেখ আছে।',
     points: 1,
   },
   {
@@ -2353,6 +2463,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Pour écrire des articles', 'Pour distinguer les informations fiables', 'Pour créer des réseaux sociaux', 'Pour éviter Internet'],
     correctAnswer: 'Pour distinguer les informations fiables',
     explanation: "Face à la propagation de fausses nouvelles, l'esprit critique permet de faire la part des choses et d'identifier les sources fiables.",
+    banglaExplanation: 'ভুয়া খবরের বিস্তারের মুখে সমালোচনামূলক চিন্তা সত্য-মিথ্যা যাচাই ও নির্ভরযোগ্য উৎস চিনতে সাহায্য করে।',
     points: 1,
   },
   {
@@ -2367,6 +2478,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['uniquement des avantages', 'uniquement des inconvénients', 'un équilibre entre avantages et risques', 'une publicité'],
     correctAnswer: 'un équilibre entre avantages et risques',
     explanation: "Le texte évoque la diffusion rapide (avantage) ainsi que les fausses informations (risque).",
+    banglaExplanation: 'টেক্সটে দ্রুত প্রচার (সুবিধা) এবং ভুয়া তথ্য (ঝুঁকি) উভয়ের কথাই বলা হয়েছে।',
     points: 1,
   },
   {
@@ -2381,6 +2493,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['disparition', 'diffusion', 'correction', 'limitation'],
     correctAnswer: 'diffusion',
     explanation: "Propagation signifie la diffusion ou l'extension rapide d'un phénomène.",
+    banglaExplanation: '"Propagation" অর্থ কোনো ঘটনার দ্রুত বিস্তার বা ছড়িয়ে পড়া।',
     points: 1,
   },
   {
@@ -2395,6 +2508,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['divertir', 'informer et sensibiliser', 'vendre un produit', 'raconter une histoire'],
     correctAnswer: 'informer et sensibiliser',
     explanation: "L'auteur informe sur les mutations de l'information et sensibilise à l'importance de l'esprit critique.",
+    banglaExplanation: 'লেখক তথ্যের পরিবর্তন সম্পর্কে জানান এবং সমালোচনামূলক চিন্তার গুরুত্ব সম্পর্কে সচেতন করেন।',
     points: 1,
   },
 
@@ -2411,6 +2525,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Le recyclage industriel', 'Une stratégie écologique authentique', 'Une communication écologique trompeuse', 'Une taxe environnementale'],
     correctAnswer: 'Une communication écologique trompeuse',
     explanation: "Le greenwashing désigne le fait d'utiliser l'écologie comme prétexte marketing sans réel engagement.",
+    banglaExplanation: '"Greenwashing" বলতে প্রকৃত অঙ্গীকার ছাড়াই পরিবেশকে বিপণনের অজুহাত হিসেবে ব্যবহার করা বোঝায়।',
     points: 1,
   },
   {
@@ -2425,6 +2540,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Une conséquence', 'Une opposition', 'Une illustration', 'Une conclusion'],
     correctAnswer: 'Une opposition',
     explanation: "Toutefois est un connecteur logique introduisant une nuance ou une opposition.",
+    banglaExplanation: '"Toutefois" একটি যৌক্তিক সংযোজক শব্দ, যা সূক্ষ্ম পার্থক্য বা বৈপরীত্য প্রকাশ করে।',
     points: 1,
   },
   {
@@ -2439,6 +2555,7 @@ export const QUESTION_BANK: Question[] = [
     options: ["ignorent toujours l'environnement", "utilisent l'écologie comme outil marketing", 'refusent la publicité', 'ferment leurs usines'],
     correctAnswer: "utilisent l'écologie comme outil marketing",
     explanation: "Le texte indique que leurs initiatives relèvent parfois 'davantage du marketing que d'un engagement réel'.",
+    banglaExplanation: 'টেক্সটে বলা হয়েছে যে তাদের উদ্যোগগুলো কখনো কখনো "davantage du marketing que d\'un engagement réel" (প্রকৃত অঙ্গীকারের চেয়ে বেশি বিপণন)।',
     points: 1,
   },
   {
@@ -2453,6 +2570,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['critique', 'enthousiaste', 'neutre', 'ironique'],
     correctAnswer: 'critique',
     explanation: "L'auteur dénonce l'utilisation trompeuse de l'écologie à des fins purement marketing.",
+    banglaExplanation: 'লেখক শুধু বিপণনের উদ্দেশ্যে পরিবেশের প্রতারণামূলক ব্যবহারের নিন্দা করেছেন।',
     points: 1,
   },
   {
@@ -2467,6 +2585,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Le tourisme vert', 'Le greenwashing : entre communication et réalité', 'Les transports écologiques', 'Les forêts françaises'],
     correctAnswer: 'Le greenwashing : entre communication et réalité',
     explanation: "Ce titre exprime la confrontation entre les discours écologiques et les actes réels des entreprises.",
+    banglaExplanation: 'এই শিরোনামটি প্রতিষ্ঠানগুলোর পরিবেশবাদী বক্তব্য ও প্রকৃত কাজের মধ্যকার দ্বন্দ্ব প্রকাশ করে।',
     points: 1,
   },
 
@@ -2483,6 +2602,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Tous les emplois disparaîtront.', 'Le marché du travail évoluera.', 'Les robots remplaceront totalement les humains.', 'Rien ne changera.'],
     correctAnswer: 'Le marché du travail évoluera.',
     explanation: "Le texte montre une transformation du marché avec disparition de certains métiers et apparition de nouveaux.",
+    banglaExplanation: 'টেক্সটে বাজারের এমন রূপান্তর দেখানো হয়েছে যেখানে কিছু পেশা বিলুপ্ত হচ্ছে ও নতুন পেশা আসছে।',
     points: 1,
   },
   {
@@ -2497,6 +2617,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['disparaître', 'apparaître', 'échouer', 'ralentir'],
     correctAnswer: 'apparaître',
     explanation: "Émerger signifie se manifester, apparaître ou prendre de l'importance.",
+    banglaExplanation: '"Émerger" অর্থ আবির্ভূত হওয়া, প্রকাশ পাওয়া বা গুরুত্ব পেতে শুরু করা।',
     points: 1,
   },
   {
@@ -2511,6 +2632,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['moins de compétences', 'de nouvelles compétences', 'uniquement une expérience', 'aucun diplôme'],
     correctAnswer: 'de nouvelles compétences',
     explanation: "Le texte mentionne l'exigence de 'compétences inédites'.",
+    banglaExplanation: 'টেক্সটে "compétences inédites" (নতুন ধরনের দক্ষতা) প্রয়োজনের কথা উল্লেখ আছে।',
     points: 1,
   },
   {
@@ -2525,6 +2647,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['historique', 'prospective', 'humoristique', 'littéraire'],
     correctAnswer: 'prospective',
     explanation: "Une perspective prospective analyse et anticipe les évolutions futures de la société.",
+    banglaExplanation: 'একটি ভবিষ্যৎমুখী (prospective) দৃষ্টিভঙ্গি সমাজের আগামী পরিবর্তনগুলো বিশ্লেষণ ও পূর্বানুমান করে।',
     points: 1,
   },
   {
@@ -2539,6 +2662,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['aux enfants', 'au grand public', 'aux touristes', 'aux sportifs'],
     correctAnswer: 'au grand public',
     explanation: "Il s'agit d'un article d'information générale accessible à l'ensemble des lecteurs.",
+    banglaExplanation: 'এটি সব ধরনের পাঠকের জন্য লেখা একটি সাধারণ তথ্যমূলক নিবন্ধ।',
     points: 1,
   },
 
@@ -2555,6 +2679,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['La créativité est uniquement naturelle.', 'Les études sont inutiles.', "Les artistes n'existent plus.", 'Les écoles sont inefficaces.'],
     correctAnswer: 'La créativité est uniquement naturelle.',
     explanation: "Le texte contredit l'idée que la créativité dépend uniquement d'un talent inné.",
+    banglaExplanation: 'টেক্সটটি এই ধারণার বিরোধিতা করে যে সৃজনশীলতা কেবল সহজাত প্রতিভার ওপর নির্ভর করে।',
     points: 1,
   },
   {
@@ -2569,6 +2694,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['achetée', 'développée', 'oubliée', 'interdite'],
     correctAnswer: 'développée',
     explanation: "Le texte affirme que la créativité 'peut être développée'.",
+    banglaExplanation: 'টেক্সটে বলা হয়েছে সৃজনশীলতা "peut être développée" (বিকশিত করা যায়)।',
     points: 1,
   },
   {
@@ -2583,6 +2709,7 @@ export const QUESTION_BANK: Question[] = [
     options: ["L'expérience", "L'environnement", "L'apprentissage", 'La chance'],
     correctAnswer: 'La chance',
     explanation: "L'expérience, l'environnement et l'apprentissage sont explicitement mentionnés. La chance n'est pas citée.",
+    banglaExplanation: 'অভিজ্ঞতা, পরিবেশ ও শেখার কথা স্পষ্টভাবে উল্লেখ আছে। ভাগ্যের কথা বলা হয়নি।',
     points: 1,
   },
   {
@@ -2597,6 +2724,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['argumentatif', 'satirique', 'dramatique', 'poétique'],
     correctAnswer: 'argumentatif',
     explanation: "L'auteur défend une thèse appuyée par des preuves scientifiques pour convaincre le lecteur.",
+    banglaExplanation: 'লেখক পাঠককে বোঝানোর জন্য বৈজ্ঞানিক প্রমাণসহ একটি বক্তব্য তুলে ধরেছেন।',
     points: 1,
   },
   {
@@ -2611,6 +2739,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['des rumeurs', 'plusieurs études', 'une opinion personnelle', 'une fiction'],
     correctAnswer: 'plusieurs études',
     explanation: "Le texte spécifie : 'Plusieurs études montrent...'",
+    banglaExplanation: 'টেক্সটে স্পষ্ট বলা আছে: "Plusieurs études montrent..." (একাধিক গবেষণা দেখায়...)।',
     points: 1,
   },
 
@@ -2627,6 +2756,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Le chômage', 'La surcharge mentale', 'La baisse des salaires', 'La fermeture des entreprises'],
     correctAnswer: 'La surcharge mentale',
     explanation: "Le texte avertit contre le risque de surcharge mentale lorsque les limites du télétravail restent floues.",
+    banglaExplanation: 'টেক্সটে সতর্ক করা হয়েছে যে টেলিওয়ার্কের সীমারেখা অস্পষ্ট থাকলে মানসিক অতিরিক্ত চাপের ঝুঁকি থাকে।',
     points: 1,
   },
   {
@@ -2641,6 +2771,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['devenir moins nette', 'augmenter', 'disparaître brutalement', 'apparaître'],
     correctAnswer: 'devenir moins nette',
     explanation: "S'estomper signifie s'effacer progressivement ou devenir flou.",
+    banglaExplanation: '"S\'estomper" অর্থ ধীরে ধীরে মুছে যাওয়া বা অস্পষ্ট হয়ে যাওয়া।',
     points: 1,
   },
   {
@@ -2655,6 +2786,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['uniquement des avantages', 'uniquement des inconvénients', 'des avantages et des risques', 'une publicité'],
     correctAnswer: 'des avantages et des risques',
     explanation: "Le texte met en balance un avantage (flexibilité) et un risque (surcharge mentale).",
+    banglaExplanation: 'টেক্সটটি একটি সুবিধা (নমনীয়তা) ও একটি ঝুঁকিকে (মানসিক অতিরিক্ত চাপ) পাশাপাশি রেখে বিচার করে।',
     points: 1,
   },
   {
@@ -2669,6 +2801,7 @@ export const QUESTION_BANK: Question[] = [
     options: ["d'interdire le télétravail", 'de fixer des limites', 'de quitter son emploi', 'de travailler davantage'],
     correctAnswer: 'de fixer des limites',
     explanation: "En expliquant que la surcharge survient quand les limites deviennent floues, l'auteur suggère de fixer des frontières claires.",
+    banglaExplanation: 'সীমারেখা অস্পষ্ট হলে অতিরিক্ত চাপ আসে — এই ব্যাখ্যার মাধ্যমে লেখক স্পষ্ট সীমা নির্ধারণের পরামর্শ দেন।',
     points: 1,
   },
   {
@@ -2683,6 +2816,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['médical', 'professionnel', 'sportif', 'artistique'],
     correctAnswer: 'professionnel',
     explanation: "Il concerne l'organisation du travail et la vie professionnelle.",
+    banglaExplanation: 'এটি কাজের ব্যবস্থাপনা ও পেশাগত জীবন সম্পর্কিত।',
     points: 1,
   },
 
@@ -2699,6 +2833,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Les données suffisent toujours.', 'Les données doivent être bien analysées.', 'Les chercheurs refusent les données.', 'Les statistiques sont inutiles.'],
     correctAnswer: 'Les données doivent être bien analysées.',
     explanation: "Le texte soutient que l'abondance de données n'a d'intérêt que si l'on dispose de méthodes d'analyse adéquates.",
+    banglaExplanation: 'টেক্সটের বক্তব্য: উপযুক্ত বিশ্লেষণ পদ্ধতি থাকলেই কেবল প্রচুর ডেটার মূল্য আছে।',
     points: 1,
   },
   {
@@ -2713,6 +2848,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['rareté', 'grande quantité', 'erreur', 'difficulté'],
     correctAnswer: 'grande quantité',
     explanation: "L'abondance désigne une présence en très grande quantité.",
+    banglaExplanation: '"Abondance" অর্থ খুব বেশি পরিমাণে উপস্থিতি বা প্রাচুর্য।',
     points: 1,
   },
   {
@@ -2727,6 +2863,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['les limites des données seules', 'la fin de la recherche', 'la baisse des informations', 'la disparition des scientifiques'],
     correctAnswer: 'les limites des données seules',
     explanation: "Il rappelle que les données brutes sans méthodes d'analyse pertinentes sont insuffisantes.",
+    banglaExplanation: 'এটি মনে করিয়ে দেয় যে উপযুক্ত বিশ্লেষণ পদ্ধতি ছাড়া কাঁচা ডেটা যথেষ্ট নয়।',
     points: 1,
   },
   {
@@ -2741,6 +2878,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Toutefois', 'Encore faut-il', "Aujourd'hui", 'Nécessairement'],
     correctAnswer: 'Encore faut-il',
     explanation: "'Encore faut-il' introduit une condition obligatoire ou une restriction sine qua non.",
+    banglaExplanation: '"Encore faut-il" একটি বাধ্যতামূলক শর্ত বা অপরিহার্য সীমাবদ্ধতা (sine qua non) প্রকাশ করে।',
     points: 1,
   },
   {
@@ -2755,6 +2893,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['scientifique', 'humoristique', 'sentimental', 'ironique'],
     correctAnswer: 'scientifique',
     explanation: "Le sujet et la formulation s'inscrivent dans un registre d'analyse scientifique rigoureux.",
+    banglaExplanation: 'বিষয়বস্তু ও ভাষাভঙ্গি একটি কঠোর বৈজ্ঞানিক বিশ্লেষণের রীতির অন্তর্গত।',
     points: 1,
   },
 
@@ -2771,6 +2910,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Augmenter la circulation', 'Construire un modèle durable', 'Réduire le tourisme', 'Fermer les centres-villes'],
     correctAnswer: 'Construire un modèle durable',
     explanation: "Le texte précise que 'ces mesures... visent à construire un modèle urbain plus durable.'",
+    banglaExplanation: 'টেক্সটে স্পষ্ট বলা আছে: "ces mesures... visent à construire un modèle urbain plus durable." (এই পদক্ষেপগুলো আরও টেকসই নগর মডেল গড়ার লক্ষ্যে)।',
     points: 1,
   },
   {
@@ -2785,6 +2925,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Elles sont trop anciennes.', 'Elles peuvent entraîner des contraintes immédiates.', 'Elles sont gratuites.', 'Elles concernent uniquement les campagnes.'],
     correctAnswer: 'Elles peuvent entraîner des contraintes immédiates.',
     explanation: "Les politiques d'urbanisme durable imposent souvent des contraintes à court terme (ex: limitation des voitures), provoquant des contestations.",
+    banglaExplanation: 'টেকসই নগর নীতি প্রায়ই স্বল্পমেয়াদে বিধিনিষেধ আরোপ করে (যেমন গাড়ি চলাচলে সীমাবদ্ধতা), যা প্রতিবাদের জন্ম দেয়।',
     points: 1,
   },
   {
@@ -2799,6 +2940,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['des innovations urbaines', 'des catastrophes naturelles', 'des élections', 'des découvertes médicales'],
     correctAnswer: 'des innovations urbaines',
     explanation: "Le texte aborde l'expérimentation de politiques d'urbanisme durables dans les villes.",
+    banglaExplanation: 'টেক্সটটি শহরগুলোতে টেকসই নগর নীতির পরীক্ষামূলক প্রয়োগ নিয়ে।',
     points: 1,
   },
   {
@@ -2813,6 +2955,7 @@ export const QUESTION_BANK: Question[] = [
     options: ['Les villes face aux défis climatiques', 'Les transports maritimes', 'La vie à la campagne', 'Les énergies fossiles'],
     correctAnswer: 'Les villes face aux défis climatiques',
     explanation: "Ce titre capture la problématique de la transition écologique dans le milieu urbain.",
+    banglaExplanation: 'এই শিরোনামটি নগর পরিবেশে পরিবেশগত রূপান্তরের মূল সমস্যাটি তুলে ধরে।',
     points: 1,
   },
 ];

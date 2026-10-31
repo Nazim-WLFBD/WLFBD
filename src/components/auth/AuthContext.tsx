@@ -44,23 +44,30 @@ async function ensureProfile(u: User, extra: Partial<EditableProfile> = {}) {
   const fb = firebase()!;
   const ref = doc(fb.db, 'users', u.uid);
   const snap = await getDoc(ref);
-  if (!snap.exists()) {
-    await setDoc(ref, {
-      uid: u.uid,
-      email: u.email ?? '',
-      displayName: extra.displayName || u.displayName || (u.email ?? '').split('@')[0],
-      photoURL: u.photoURL ?? '',
-      phoneNumber: extra.phoneNumber ?? '',
-      targetGoal: extra.targetGoal ?? '',
-      currentFrenchLevel: extra.currentFrenchLevel ?? 'A0',
-      role: 'student',
-      status: 'Active',
-      enrolledCourses: [],
-      authProvider: u.providerData[0]?.providerId ?? 'password',
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-      lastLoginAt: serverTimestamp(),
-    });
+  // The server may have created a partial doc first (role grant / payment unlock), so missing
+  // profile fields are filled in rather than only checking existence
+  if (!snap.exists() || !snap.data()?.createdAt) {
+    const cur = snap.data() ?? {};
+    await setDoc(
+      ref,
+      {
+        uid: u.uid,
+        email: u.email ?? '',
+        displayName: cur.displayName || extra.displayName || u.displayName || (u.email ?? '').split('@')[0],
+        photoURL: u.photoURL ?? '',
+        phoneNumber: cur.phoneNumber ?? extra.phoneNumber ?? '',
+        targetGoal: cur.targetGoal ?? extra.targetGoal ?? '',
+        currentFrenchLevel: cur.currentFrenchLevel ?? extra.currentFrenchLevel ?? 'A0',
+        status: cur.status ?? 'Active',
+        authProvider: u.providerData[0]?.providerId ?? 'password',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        lastLoginAt: serverTimestamp(),
+        // Only set on a brand-new doc: rules forbid students touching these once they exist
+        ...(snap.exists() ? {} : { role: 'student', enrolledCourses: [] }),
+      },
+      { merge: true },
+    );
   } else {
     await updateDoc(ref, { lastLoginAt: serverTimestamp() });
   }
@@ -90,12 +97,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const r = await fetch('/api/session', { method: 'POST', headers: { Authorization: `Bearer ${await u.getIdToken()}` } });
         if (r.ok && (await r.json()).refresh) await u.getIdToken(true);
       } catch {}
+      // The user may have signed out (or switched) while the request above was in flight
+      if (fb.auth.currentUser?.uid !== u.uid) return;
       const token = await u.getIdTokenResult();
       setRole((token.claims.role as string) ?? 'student');
-      unsubProfile = onSnapshot(doc(fb.db, 'users', u.uid), (s) => {
-        setProfile(s.exists() ? (s.data() as UserProfile) : null);
-        setLoading(false);
-      });
+      unsubProfile = onSnapshot(
+        doc(fb.db, 'users', u.uid),
+        (s) => {
+          setProfile(s.exists() ? (s.data() as UserProfile) : null);
+          setLoading(false);
+        },
+        () => setLoading(false),
+      );
     });
     return () => {
       unsub();
@@ -103,9 +116,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Errors carry a stable `code` (like Firebase errors) so AuthForm can show a bilingual message
   const need = () => {
     const fb = firebase();
-    if (!fb) throw new Error('Accounts are not configured yet.');
+    if (!fb) throw Object.assign(new Error('Accounts are not configured yet.'), { code: 'auth/not-configured' });
     return fb;
   };
 
@@ -137,7 +151,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     },
     async updateMyProfile(data) {
       const { db } = need();
-      if (!user) throw new Error('Not signed in');
+      if (!user) throw Object.assign(new Error('Not signed in'), { code: 'auth/not-signed-in' });
       await updateDoc(doc(db, 'users', user.uid), { ...data, updatedAt: serverTimestamp() });
     },
     async authFetch(url, init = {}) {

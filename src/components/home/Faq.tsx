@@ -9,7 +9,7 @@ import { SectionHeading } from '@/components/ui/SectionHeading';
 import { btn } from '@/components/ui/Button';
 import { FAQ_DATA } from '@/data/faq';
 import { faq as copy } from '@/content/home';
-import { WA_MESSAGES, waLink } from '@/lib/brand';
+import { waLink, waMessage } from '@/lib/brand';
 import { cn } from '@/lib/utils';
 import type { FAQItem } from '@/types';
 import { WhatsAppGlyph } from '@/components/layout/FloatingActions';
@@ -59,7 +59,7 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
           <SectionHeading tag={t(copy.tag)} title={t(copy.title)} intro={t(copy.intro)} className="mb-8 md:mb-8" />
           <Reveal className="rounded-[var(--radius)] bg-ink p-6 text-white">
             <p className="font-display text-xl font-semibold">{t(copy.customTitle)}</p>
-            <a href={waLink(WA_MESSAGES.question)} target="_blank" rel="noopener" className={btn('gold', 'md', 'mt-4')}>
+            <a href={waLink(waMessage('question', t.locale))} target="_blank" rel="noopener" className={btn('gold', 'md', 'mt-4')}>
               <WhatsAppGlyph size={18} />
               {t(copy.customCta)}
             </a>
@@ -89,7 +89,7 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
                     cat === c ? 'bg-rouge text-white' : 'border border-line hover:bg-fg/5',
                   )}
                 >
-                  {c}
+                  {t(copy.categoryLabels[c])}
                 </button>
               ))}
             </div>
@@ -106,7 +106,7 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
                 <Accordion.Header>
                   <Accordion.Trigger className="group flex w-full items-center gap-4 p-5 text-left md:p-6">
                     <span aria-hidden className="hidden rounded-md bg-surface-2 px-2 py-1 text-[10px] font-bold tracking-wider text-muted uppercase sm:inline">
-                      {f.category}
+                      {t(copy.categoryLabels[f.category])}
                     </span>
                     <span className="flex-1 text-[16px] font-bold md:text-[17px]">{t.locale === 'bn' ? f.banglaQuestion : f.question}</span>
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line transition group-data-[state=open]:rotate-45 group-data-[state=open]:bg-ink group-data-[state=open]:text-white">

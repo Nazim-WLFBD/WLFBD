@@ -7,15 +7,21 @@ export const COURSES_DATA: Course[] = [
     title: 'DELF A1 - French Language Levels',
     banglaTitle: 'DELF A1 - মৌলিক ফ্রেঞ্চ কোর্স',
     duration: '3 Months (৩ মাস)',
+    banglaDuration: '৩ মাস',
     classCount: 24,
     classesPerWeek: '2 Classes',
+    banglaClassesPerWeek: '২টি ক্লাস',
     targetClb: 'CLB 1–2',
+    banglaTargetClb: 'CLB 1–2',
     regularPrice: 10000,
     offerPrice: 8000,
     cefrLevel: 'A1 (CLB 1–2)',
     targetAudience: 'Absolute Beginners, Students & Everyday Communication',
+    banglaTargetAudience: 'একদম নতুন শিক্ষার্থী, ছাত্রছাত্রী ও দৈনন্দিন যোগাযোগে আগ্রহীদের জন্য',
     outcome: 'Basic conversation, self-introduction, foundation grammar & DELF A1 Exam preparation.',
+    banglaOutcome: 'প্রাথমিক কথোপকথন, আত্মপরিচয়, গ্রামারের ভিত্তি এবং DELF A1 পরীক্ষার প্রস্তুতি।',
     tag: 'Beginner Choice',
+    banglaTag: 'বিগিনারদের পছন্দ',
     tagColor: 'bg-blue-50 text-[#0055A4] border-blue-200',
     features: [
       '24 Interactive Live Classes (2 Classes per Week)',
@@ -24,6 +30,14 @@ export const COURSES_DATA: Course[] = [
       'Full Length Mock Tests & Evaluation',
       'Class Recordings Access',
       'Dedicated WhatsApp Support Group'
+    ],
+    banglaFeatures: [
+      '২৪টি ইন্টারেক্টিভ লাইভ ক্লাস (সপ্তাহে ২টি)',
+      'সম্পূর্ণ প্রিন্টেড স্টাডি ম্যাটেরিয়াল ও PDF',
+      'স্পিকিং ও উচ্চারণ ওয়ার্কশপ',
+      'পূর্ণাঙ্গ মক টেস্ট ও মূল্যায়ন',
+      'ক্লাস রেকর্ডিং অ্যাক্সেস',
+      'ডেডিকেটেড WhatsApp সাপোর্ট গ্রুপ'
     ]
   },
   {
@@ -32,15 +46,21 @@ export const COURSES_DATA: Course[] = [
     title: 'DELF A2 - Elementary Level',
     banglaTitle: 'DELF A2 - প্রাথমিক স্তরের ফ্রেঞ্চ',
     duration: '3 Months (৩ মাস)',
+    banglaDuration: '৩ মাস',
     classCount: 24,
     classesPerWeek: '2 Classes',
+    banglaClassesPerWeek: '২টি ক্লাস',
     targetClb: 'CLB 3–4',
+    banglaTargetClb: 'CLB 3–4',
     regularPrice: 12000,
     offerPrice: 10000,
     cefrLevel: 'A2 (CLB 3–4)',
     targetAudience: 'A1 Graduates & French Multi-Year Residence Permit Seekers',
+    banglaTargetAudience: 'A1 সম্পন্নকারী এবং ফ্রান্সের বহুবর্ষী রেসিডেন্স পারমিট প্রত্যাশীদের জন্য',
     outcome: 'Routine social interactions, descriptive French communication & DELF A2 Exam preparation.',
+    banglaOutcome: 'দৈনন্দিন সামাজিক কথাবার্তা, বর্ণনামূলক ফ্রেঞ্চ যোগাযোগ এবং DELF A2 পরীক্ষার প্রস্তুতি।',
     tag: 'Elementary',
+    banglaTag: 'প্রাথমিক স্তর',
     tagColor: 'bg-emerald-50 text-emerald-800 border-emerald-200',
     popular: true,
     features: [
@@ -50,6 +70,14 @@ export const COURSES_DATA: Course[] = [
       'Mock Tests with Instructor Feedback',
       'Class Video Recording Access',
       'Direct Instructor Q&A Support'
+    ],
+    banglaFeatures: [
+      '২৪টি ইনটেনসিভ লাইভ ক্লাস (সপ্তাহে ২টি)',
+      'স্পিকিং, লিসেনিং ও রাইটিং অনুশীলন',
+      'গ্রামার ড্রিল ও ভোকাবুলারি সম্প্রসারণ',
+      'ইন্সট্রাক্টরের ফিডব্যাকসহ মক টেস্ট',
+      'ক্লাস ভিডিও রেকর্ডিং অ্যাক্সেস',
+      'ইন্সট্রাক্টরের সাথে সরাসরি প্রশ্নোত্তর সাপোর্ট'
     ]
   },
   {
@@ -58,15 +86,21 @@ export const COURSES_DATA: Course[] = [
     title: 'DELF B1 - Intermediate Level',
     banglaTitle: 'DELF B1 - মধ্যবর্তী স্তরের ফ্রেঞ্চ',
     duration: '4 Months (৪ মাস)',
+    banglaDuration: '৪ মাস',
     classCount: 36,
     classesPerWeek: '2–3 Classes',
+    banglaClassesPerWeek: '২–৩টি ক্লাস',
     targetClb: 'Up to CLB 5',
+    banglaTargetClb: 'CLB 5 পর্যন্ত',
     regularPrice: 40000,
     offerPrice: 30000,
     cefrLevel: 'B1 (Up to CLB 5)',
     targetAudience: 'Higher Education in France, Long-Term Residency & Intermediate Learners',
+    banglaTargetAudience: 'ফ্রান্সে উচ্চশিক্ষা, দীর্ঘমেয়াদি রেসিডেন্সি প্রত্যাশী ও মধ্যবর্তী স্তরের শিক্ষার্থীদের জন্য',
     outcome: 'Express opinions, handle travel & workplace situations independently, and pass DELF B1.',
+    banglaOutcome: 'নিজের মতামত প্রকাশ, ভ্রমণ ও কর্মক্ষেত্রের পরিস্থিতি স্বাধীনভাবে সামলানো এবং DELF B1 পাস করা।',
     tag: 'Intermediate Mastery',
+    banglaTag: 'মধ্যবর্তী দক্ষতা',
     tagColor: 'bg-indigo-50 text-indigo-800 border-indigo-200',
     features: [
       '36 Comprehensive Live Classes (2–3 Classes per Week)',
@@ -75,6 +109,14 @@ export const COURSES_DATA: Course[] = [
       'Full DELF B1 Exam Simulations',
       'Personalized Assessment by Senior Instructors',
       'University Guidance & Academic Support'
+    ],
+    banglaFeatures: [
+      '৩৬টি পূর্ণাঙ্গ লাইভ ক্লাস (সপ্তাহে ২–৩টি)',
+      'বিতর্ক, প্রবন্ধ রচনা ও যুক্তি উপস্থাপন',
+      'অডিও ও ভিডিও কম্প্রিহেনশন ওয়ার্কশপ',
+      'পূর্ণাঙ্গ DELF B1 পরীক্ষার সিমুলেশন',
+      'সিনিয়র ইন্সট্রাক্টরদের ব্যক্তিগত মূল্যায়ন',
+      'বিশ্ববিদ্যালয় ভর্তি নির্দেশনা ও একাডেমিক সাপোর্ট'
     ]
   },
   {
@@ -83,15 +125,21 @@ export const COURSES_DATA: Course[] = [
     title: 'DELF B2 - Upper Intermediate Fluency',
     banglaTitle: 'DELF B2 - উচ্চতর ফ্রেঞ্চ দক্ষতা',
     duration: '6 Months (৬ মাস)',
+    banglaDuration: '৬ মাস',
     classCount: 48,
     classesPerWeek: '2–3 Classes',
+    banglaClassesPerWeek: '২–৩টি ক্লাস',
     targetClb: 'Up to CLB 7',
+    banglaTargetClb: 'CLB 7 পর্যন্ত',
     regularPrice: 50000,
     offerPrice: 40000,
     cefrLevel: 'B2 (Up to CLB 7)',
     targetAudience: 'Global Careers, University Admissions & Naturalization Candidates',
+    banglaTargetAudience: 'আন্তর্জাতিক ক্যারিয়ার, বিশ্ববিদ্যালয়ে ভর্তি ও ফরাসি নাগরিকত্ব প্রত্যাশীদের জন্য',
     outcome: 'Fluent argumentation, professional fluency, technical comprehension & DELF B2 Certification.',
+    banglaOutcome: 'সাবলীল যুক্তি উপস্থাপন, পেশাদার পর্যায়ের দক্ষতা, টেকনিক্যাল বিষয় বোঝা এবং DELF B2 সার্টিফিকেশন।',
     tag: 'Advanced Fluency',
+    banglaTag: 'অ্যাডভান্সড দক্ষতা',
     tagColor: 'bg-purple-50 text-purple-800 border-purple-200',
     features: [
       '48 Intensive Advanced Classes (2–3 Classes per Week)',
@@ -100,6 +148,14 @@ export const COURSES_DATA: Course[] = [
       'Full DELF B2 Exam Simulations & Analytics',
       'Academic & Technical Article Writing Skills',
       '1-on-1 Speaking Review with Experienced Instructors'
+    ],
+    banglaFeatures: [
+      '৪৮টি ইনটেনসিভ অ্যাডভান্সড ক্লাস (সপ্তাহে ২–৩টি)',
+      'জটিল যুক্তি উপস্থাপন ও পেশাদার ভোকাবুলারি',
+      'ইন্টারভিউ প্রস্তুতি ও পাবলিক স্পিকিং',
+      'পূর্ণাঙ্গ DELF B2 পরীক্ষার সিমুলেশন ও বিশ্লেষণ',
+      'একাডেমিক ও টেকনিক্যাল প্রবন্ধ লেখার দক্ষতা',
+      'অভিজ্ঞ ইন্সট্রাক্টরের সাথে ১-অন-১ স্পিকিং রিভিউ'
     ]
   },
   {
@@ -108,17 +164,23 @@ export const COURSES_DATA: Course[] = [
     title: 'TEF Canada - Immigration Preparation',
     banglaTitle: 'TEF Canada - কানাডা ইমিগ্রেশন প্রস্তুতি',
     duration: 'Flexible Preparation',
+    banglaDuration: 'ফ্লেক্সিবল প্রস্তুতি',
     classCount: 48,
     classesPerWeek: '2–3 Classes',
+    banglaClassesPerWeek: '২–৩টি ক্লাস',
     targetClb: 'CLB 7+',
+    banglaTargetClb: 'CLB 7+',
     regularPrice: 0,
     offerPrice: 0,
     isCustomPricing: true,
     priceNotice: 'Contact us for course fee details',
     cefrLevel: 'CLB 7+',
     targetAudience: 'Canada Express Entry PR & Francophone Immigration Candidates',
+    banglaTargetAudience: 'কানাডা Express Entry পিআর ও ফ্রাঙ্কোফোন ইমিগ্রেশন প্রার্থীদের জন্য',
     outcome: 'Master all computer-based TEF Canada modules targeting CLB 7+ for French language points.',
+    banglaOutcome: 'ফ্রেঞ্চ ভাষার পয়েন্ট পেতে CLB 7+ লক্ষ্য করে কম্পিউটারভিত্তিক TEF Canada-র সব মডিউলে দক্ষতা অর্জন।',
     tag: 'Canada PR Pathway',
+    banglaTag: 'কানাডা পিআর পাথওয়ে',
     tagColor: 'bg-rose-50 text-[#D71920] border-rose-200',
     popular: true,
     features: [
@@ -128,6 +190,14 @@ export const COURSES_DATA: Course[] = [
       'Express Entry French Category Draw Strategy Guidance',
       'Dedicated Speaking Partner Drills with Feedback',
       'Comprehensive Prep Materials & Audio Archive'
+    ],
+    banglaFeatures: [
+      'TEF Canada ফরম্যাটে ডেডিকেটেড ইনটেনসিভ প্রস্তুতি',
+      'CLB 7 লেভেল লক্ষ্য করে দক্ষতা অর্জন (Compréhension ও Expression)',
+      'কম্পিউটারভিত্তিক পরীক্ষার ড্রিল ও মক টেস্ট',
+      'Express Entry ফ্রেঞ্চ ক্যাটাগরি ড্র-এর কৌশলগত নির্দেশনা',
+      'ফিডব্যাকসহ ডেডিকেটেড স্পিকিং পার্টনার ড্রিল',
+      'পূর্ণাঙ্গ প্রস্তুতি সামগ্রী ও অডিও আর্কাইভ'
     ]
   },
   {
@@ -136,17 +206,23 @@ export const COURSES_DATA: Course[] = [
     title: 'TCF Canada - Exam Preparation',
     banglaTitle: 'TCF Canada - কানাডা পরীক্ষা প্রস্তুতি',
     duration: 'Flexible Preparation',
+    banglaDuration: 'ফ্লেক্সিবল প্রস্তুতি',
     classCount: 48,
     classesPerWeek: '2–3 Classes',
+    banglaClassesPerWeek: '২–৩টি ক্লাস',
     targetClb: 'CLB 7+',
+    banglaTargetClb: 'CLB 7+',
     regularPrice: 0,
     offerPrice: 0,
     isCustomPricing: true,
     priceNotice: 'Contact us for course fee details',
     cefrLevel: 'CLB 7+',
     targetAudience: 'Canada PR Candidates preferring the TCF Exam structure',
+    banglaTargetAudience: 'TCF পরীক্ষার কাঠামো পছন্দ করেন এমন কানাডা পিআর প্রার্থীদের জন্য',
     outcome: 'Master all 4 TCF Canada modules (Compréhension & Expression) for optimal CLB scores.',
+    banglaOutcome: 'সর্বোচ্চ CLB স্কোরের জন্য TCF Canada-র ৪টি মডিউলেই (Compréhension ও Expression) দক্ষতা অর্জন।',
     tag: 'Canada PR Pathway',
+    banglaTag: 'কানাডা পিআর পাথওয়ে',
     tagColor: 'bg-rose-50 text-[#D71920] border-rose-200',
     features: [
       'Comprehensive Live Online Preparation Classes',
@@ -155,6 +231,14 @@ export const COURSES_DATA: Course[] = [
       'Full TCF Mock Tests with Immediate Analysis',
       'Exclusive Canada PNP & Federal PR Score Guidance',
       'Class Video Recording Access'
+    ],
+    banglaFeatures: [
+      'পূর্ণাঙ্গ লাইভ অনলাইন প্রস্তুতি ক্লাস',
+      'TCF Canada কম্পিউটারভিত্তিক পরীক্ষার কৌশল',
+      'দ্রুত উত্তরের স্পিকিং ও রাইটিং মডিউল',
+      'তাৎক্ষণিক বিশ্লেষণসহ পূর্ণাঙ্গ TCF মক টেস্ট',
+      'কানাডা PNP ও ফেডারেল পিআর স্কোরের বিশেষ নির্দেশনা',
+      'ক্লাস ভিডিও রেকর্ডিং অ্যাক্সেস'
     ]
   }
 ];
@@ -168,9 +252,11 @@ export const COMBO_OFFERS: ComboOffer[] = [
     combinedFee: 16000,
     regularValue: 22000,
     eligibility: 'Existing/regular students',
-    eligibilityBangla: 'পূর্বের ও নিয়মিত শিক্ষার্থীদের জন্য প্রযোজ্য',
+    eligibilityBangla: 'পূর্বের ও নিয়মিত শিক্ষার্থীদের জন্য প্রযোজ্য',
     description: 'Complete beginner-to-elementary program covering full A1 and A2 certification preparation.',
-    badge: 'Special Combo'
+    banglaDescription: 'শূন্য থেকে প্রাথমিক স্তর পর্যন্ত পূর্ণাঙ্গ প্রোগ্রাম — A1 ও A2 সার্টিফিকেশনের সম্পূর্ণ প্রস্তুতি একসাথে।',
+    badge: 'Special Combo',
+    banglaBadge: 'স্পেশাল কম্বো'
   },
   {
     id: 'combo-b1-tef-tcf',
@@ -180,8 +266,10 @@ export const COMBO_OFFERS: ComboOffer[] = [
     combinedFee: 40000,
     regularValue: 50000,
     eligibility: 'Existing/regular students',
-    eligibilityBangla: 'পূর্বের ও নিয়মিত শিক্ষার্থীদের জন্য প্রযোজ্য',
+    eligibilityBangla: 'পূর্বের ও নিয়মিত শিক্ষার্থীদের জন্য প্রযোজ্য',
     description: 'Comprehensive intermediate-to-immigration pathway combining DELF B1 grounding with specialized TEF/TCF Canada exam techniques.',
-    badge: 'Immigration Pathway'
+    banglaDescription: 'মধ্যবর্তী স্তর থেকে ইমিগ্রেশন পর্যন্ত পূর্ণাঙ্গ পাথওয়ে — DELF B1-এর মজবুত ভিত্তির সাথে TEF/TCF Canada পরীক্ষার বিশেষায়িত কৌশল।',
+    badge: 'Immigration Pathway',
+    banglaBadge: 'ইমিগ্রেশন পাথওয়ে'
   }
 ];

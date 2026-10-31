@@ -28,17 +28,17 @@ export function Pathways() {
                   className="absolute -top-12 -right-10 text-white/10 transition-transform duration-[1.5s] group-hover:rotate-12"
                 />
                 <span className="relative inline-block rounded-full bg-white px-3 py-1 text-[10px] font-extrabold tracking-[0.16em] text-maple">
-                  {canada.ribbon}
+                  {t(canada.ribbon)}
                 </span>
                 <div className="relative mt-6 flex items-center gap-3">
                   <Plane size={22} />
-                  <h3 className="font-display text-3xl font-semibold">{canada.title}</h3>
+                  <h3 className="font-display text-3xl font-semibold">{t(canada.title)}</h3>
                 </div>
                 <p className="relative mt-1 text-white/80">{t(canada.sub)}</p>
                 <div className="relative mt-7 flex flex-wrap items-end justify-between gap-4">
                   <div>
                     <p className="text-xs font-semibold tracking-wide text-white/70 uppercase">{t(canada.statLabel)}</p>
-                    <p className="font-display text-[clamp(2.6rem,6vw,4rem)] leading-none font-semibold">{canada.stat}</p>
+                    <p className="font-display text-[clamp(2.6rem,6vw,4rem)] leading-none font-semibold">{t(canada.stat)}</p>
                   </div>
                   <Link href="/crs-calculator" className={btn('paper', 'sm', 'text-maple')}>
                     <Sparkles size={15} />
@@ -76,19 +76,19 @@ export function Pathways() {
                   <path d="M50 0 52 30 58 70 70 110 86 160H72L62 130H38L28 160H14L30 110 42 70 48 30Z" />
                 </svg>
                 <span className="relative inline-block rounded-full bg-white px-3 py-1 text-[10px] font-extrabold tracking-[0.16em] text-bleu">
-                  {france.ribbon}
+                  {t(france.ribbon)}
                 </span>
                 <div className="relative mt-6 flex items-center gap-3">
                   <GraduationCap size={22} />
-                  <h3 className="font-display text-3xl font-semibold">{france.title}</h3>
+                  <h3 className="font-display text-3xl font-semibold">{t(france.title)}</h3>
                 </div>
                 <p className="relative mt-1 text-white/80">{t(france.sub)}</p>
                 <div className="relative mt-7 flex flex-wrap items-end justify-between gap-4">
                   <div>
                     <p className="text-xs font-semibold tracking-wide text-white/70 uppercase">{t(france.statLabel)}</p>
-                    <p className="font-display text-[clamp(2.6rem,6vw,4rem)] leading-none font-semibold">{france.stat}</p>
+                    <p className="font-display text-[clamp(2.6rem,6vw,4rem)] leading-none font-semibold">{t(france.stat)}</p>
                   </div>
-                  <span className="rounded-full border border-white/30 px-3 py-1.5 text-xs font-bold">{france.chip}</span>
+                  <span className="rounded-full border border-white/30 px-3 py-1.5 text-xs font-bold">{t(france.chip)}</span>
                 </div>
               </div>
               <div className="flex flex-1 flex-col p-7 md:p-9">

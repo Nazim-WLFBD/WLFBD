@@ -40,12 +40,12 @@ export function AccountMenu() {
     );
   }
 
-  const name = profile?.displayName || user.email?.split('@')[0] || 'Profile';
+  const name = profile?.displayName || user.email?.split('@')[0] || t(ui.profile);
   return (
     <Menu.Root modal={false}>
       <Menu.Trigger
         className="flex h-10 items-center gap-1.5 rounded-full pr-2 pl-1 text-white/80 transition outline-none hover:bg-white/10 hover:text-white data-[state=open]:bg-white/10"
-        aria-label="Account menu"
+        aria-label={t(ui.accountMenu)}
       >
         <span className="relative flex h-8 w-8 items-center justify-center rounded-full bg-gold text-sm font-bold text-ink">
           {name.charAt(0).toUpperCase()}

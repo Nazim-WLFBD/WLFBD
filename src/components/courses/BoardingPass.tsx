@@ -6,7 +6,7 @@ import { useT } from '@/i18n/t';
 import { btn } from '@/components/ui/Button';
 import { courses as copy } from '@/content/home';
 import { BRAND_CONTACT } from '@/lib/brand';
-import { cn, taka } from '@/lib/utils';
+import { cn, num, taka } from '@/lib/utils';
 import type { Course } from '@/types';
 
 /** "From" level shown on each pass: the level a student starts at. */
@@ -18,6 +18,24 @@ export const FROM_LEVEL: Record<string, string> = {
   'tef-canada': 'B1',
   'tcf-canada': 'B1',
 };
+
+/** Course copy in the given locale, falling back to English where no Bangla field is set. */
+export function courseText(c: Course, locale: string) {
+  const bn = locale === 'bn';
+  return {
+    title: bn ? c.banglaTitle : c.title,
+    altTitle: bn ? c.title : c.banglaTitle,
+    /** Short title without the " - subtitle" part, e.g. "DELF A1". */
+    shortTitle: c.title.split(' - ')[0],
+    tag: (bn && c.banglaTag) || c.tag,
+    duration: (bn && c.banglaDuration) || c.duration.split(' (')[0],
+    classesPerWeek: (bn && c.banglaClassesPerWeek) || c.classesPerWeek || (bn ? '২টি ক্লাস' : '2 Classes'),
+    targetClb: (bn && c.banglaTargetClb) || c.targetClb,
+    targetAudience: (bn && c.banglaTargetAudience) || c.targetAudience,
+    outcome: (bn && c.banglaOutcome) || c.outcome,
+    features: (bn && c.banglaFeatures?.length ? c.banglaFeatures : c.features),
+  };
+}
 
 export function Barcode({ className }: { className?: string }) {
   const bars = [3, 1, 2, 1, 1, 3, 1, 2, 2, 1, 3, 1, 1, 2, 1, 3, 2, 1, 1, 2, 3, 1, 2, 1, 1, 3, 1, 2];
@@ -39,6 +57,8 @@ interface Props {
 
 export function BoardingPass({ course: c, comparing, onCompare, notchClass = 'bg-bg' }: Props) {
   const t = useT();
+  const bn = t.locale === 'bn';
+  const x = courseText(c, t.locale);
   const to = c.isCustomPricing ? c.targetClb ?? c.code : c.code;
 
   return (
@@ -57,13 +77,13 @@ export function BoardingPass({ course: c, comparing, onCompare, notchClass = 'bg
       {/* Main */}
       <div className="flex flex-1 flex-col p-6">
         <div className="flex items-center justify-between text-[10px] font-bold tracking-[0.2em] text-muted uppercase">
-          <span>Boarding pass · WLF BD</span>
-          <span className={cn('rounded-md border px-2 py-0.5 text-[10px] tracking-normal normal-case', c.tagColor)}>{c.tag}</span>
+          <span>{t({ en: 'Boarding pass · WLF BD', bn: 'বোর্ডিং পাস · WLF BD' })}</span>
+          <span className={cn('rounded-md border px-2 py-0.5 text-[10px] tracking-normal normal-case', c.tagColor)}>{x.tag}</span>
         </div>
 
         <div className="mt-5 flex items-end justify-between gap-3">
           <div>
-            <p className="text-[10px] font-bold tracking-widest text-muted uppercase">From</p>
+            <p className="text-[10px] font-bold tracking-widest text-muted uppercase">{t({ en: 'From', bn: 'শুরু' })}</p>
             <p className="font-display text-4xl leading-none font-semibold text-muted/70">{FROM_LEVEL[c.id] ?? 'A0'}</p>
           </div>
           <div className="relative mb-3 flex flex-1 items-center">
@@ -72,39 +92,39 @@ export function BoardingPass({ course: c, comparing, onCompare, notchClass = 'bg
             <span className="h-px flex-1 border-t border-dashed border-fg/25" />
           </div>
           <div className="text-right">
-            <p className="text-[10px] font-bold tracking-widest text-muted uppercase">To</p>
+            <p className="text-[10px] font-bold tracking-widest text-muted uppercase">{t({ en: 'To', bn: 'গন্তব্য' })}</p>
             <p className="font-display text-4xl leading-none font-semibold text-fg">{to}</p>
           </div>
         </div>
 
-        <h3 className="font-display mt-5 text-[22px] leading-tight font-semibold">{c.title}</h3>
-        <p className="font-bangla mt-1 text-sm text-muted">{c.banglaTitle}</p>
+        <h3 className={cn('font-display mt-5 text-[22px] leading-tight font-semibold', bn && 'font-bangla')}>{x.title}</h3>
+        <p className={cn('mt-1 text-sm text-muted', !bn && 'font-bangla')}>{x.altTitle}</p>
 
         <dl className="mt-5 grid grid-cols-3 gap-2 rounded-2xl bg-surface-2/60 p-3 text-center">
           <div>
             <dt className="text-[9px] font-bold tracking-widest text-muted uppercase">{t(copy.duration)}</dt>
-            <dd className="mt-0.5 text-[13px] font-bold">{c.duration.split(' (')[0]}</dd>
+            <dd className="mt-0.5 text-[13px] font-bold">{x.duration}</dd>
           </div>
           <div className="border-x border-line">
             <dt className="text-[9px] font-bold tracking-widest text-muted uppercase">{t(copy.schedule)}</dt>
-            <dd className="mt-0.5 text-[13px] font-bold">{c.classCount}</dd>
+            <dd className="mt-0.5 text-[13px] font-bold">{num(c.classCount, t.locale)}</dd>
           </div>
           <div>
-            <dt className="text-[9px] font-bold tracking-widest text-muted uppercase">/ wk</dt>
-            <dd className="mt-0.5 text-[13px] font-bold">{c.classesPerWeek ?? '2/wk'}</dd>
+            <dt className="text-[9px] font-bold tracking-widest text-muted uppercase">{t({ en: '/ wk', bn: 'প্রতি সপ্তাহে' })}</dt>
+            <dd className="mt-0.5 text-[13px] font-bold">{x.classesPerWeek}</dd>
           </div>
         </dl>
-        {c.targetClb && (
+        {x.targetClb && (
           <p className="mt-3 text-sm">
-            <span className="text-muted">{t(copy.target)}:</span> <strong>{c.targetClb}</strong>
+            <span className="text-muted">{t(copy.target)}:</span> <strong>{x.targetClb}</strong>
           </p>
         )}
 
         <p className="mt-4 text-sm leading-relaxed">
-          <strong>{t(copy.outcome)}:</strong> <span className="text-muted">{c.outcome}</span>
+          <strong>{t(copy.outcome)}:</strong> <span className="text-muted">{x.outcome}</span>
         </p>
         <ul className="mt-4 space-y-2">
-          {c.features.slice(0, 4).map((f) => (
+          {x.features.slice(0, 4).map((f) => (
             <li key={f} className="flex items-start gap-2 text-[13.5px] leading-snug">
               <Check size={15} className="mt-0.5 shrink-0 text-mint" />
               {f}

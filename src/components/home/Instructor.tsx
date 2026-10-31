@@ -23,20 +23,20 @@ export function Instructor() {
               <p className="font-display relative text-2xl font-semibold">DELF A1–B2</p>
               <p className="relative text-sm text-white/60">Alliance Française</p>
               <span className="relative inline-flex items-center gap-1.5 rounded-full bg-mint px-3 py-1 text-xs font-bold">
-                <BadgeCheck size={14} /> {instructor.verified}
+                <BadgeCheck size={14} /> {t(instructor.verified)}
               </span>
             </div>
             <div className="p-7 md:p-10">
-              <h3 className="font-display text-3xl font-semibold">{instructor.name}</h3>
-              <p className="mt-1 font-semibold text-rouge">{instructor.role}</p>
+              <h3 className="font-display text-3xl font-semibold">{t(instructor.name)}</h3>
+              <p className="mt-1 font-semibold text-rouge">{t(instructor.role)}</p>
               <div className="mt-5 flex flex-wrap gap-2">
                 {[instructor.creds, instructor.experience, instructor.expert].map((c) => (
-                  <span key={c} className="rounded-full border border-line bg-surface-2/60 px-3 py-1.5 text-xs font-semibold">
-                    {c}
+                  <span key={c.en} className="rounded-full border border-line bg-surface-2/60 px-3 py-1.5 text-xs font-semibold">
+                    {t(c)}
                   </span>
                 ))}
               </div>
-              <p className="mt-6 text-[17px] leading-relaxed text-muted">{instructor.bio}</p>
+              <p className="mt-6 text-[17px] leading-relaxed text-muted">{t(instructor.bio)}</p>
             </div>
           </article>
         </Reveal>

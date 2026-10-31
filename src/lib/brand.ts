@@ -40,12 +40,38 @@ export const BRAND_META = {
   canonical: 'https://welearnfrenchbd.com',
 };
 
+/** Bangla variants of the SEO meta; `canonical` is shared. Pick with `brandMeta(locale)`. */
+export const BRAND_META_BN = {
+  defaultTitle: 'We Learn French BD | অনলাইনে ফরাসি ভাষা শিক্ষা',
+  defaultDescription:
+    'We Learn French BD একটি অনলাইন ফরাসি ভাষা শেখার প্ল্যাটফর্ম — DELF A1–B2, TEF Canada, TCF Canada, গ্রামার, ভোকাবুলারি ও ফরাসি স্পিকিং চর্চার জন্য কোর্স ও শিক্ষা উপকরণ।',
+  keywords:
+    'We Learn French BD, ফরাসি ভাষা কোর্স বাংলাদেশ, ফ্রেঞ্চ শেখা, TEF Canada বাংলাদেশ, TCF Canada প্রস্তুতি ঢাকা, DELF A1 A2 B1 B2 কোর্স, কানাডা Express Entry ফ্রেঞ্চ বোনাস, অনলাইন ফরাসি স্পিকিং',
+  canonical: BRAND_META.canonical,
+};
+
+/** Locale-aware meta: Bangla copy for 'bn', the English default otherwise. */
+export function brandMeta(locale: string): typeof BRAND_META {
+  return locale === 'bn' ? BRAND_META_BN : BRAND_META;
+}
+
 export const FACEBOOK_PIXEL_ID = '1397005205522598';
 
 export const WA_MESSAGES = {
   enroll: 'Bonjour! I want to enroll in We Learn French BD course.',
   question: 'Bonjour! I have a question about We Learn French BD.',
 };
+
+/** Bangla versions of WA_MESSAGES (same keys). */
+export const WA_MESSAGES_BN: Record<keyof typeof WA_MESSAGES, string> = {
+  enroll: 'Bonjour! আমি We Learn French BD-এর কোর্সে ভর্তি হতে চাই।',
+  question: 'Bonjour! We Learn French BD সম্পর্কে আমার একটি প্রশ্ন আছে।',
+};
+
+/** Pre-filled WhatsApp text in the visitor's language. */
+export function waMessage(key: keyof typeof WA_MESSAGES, locale: string) {
+  return locale === 'bn' ? WA_MESSAGES_BN[key] : WA_MESSAGES[key];
+}
 
 export function waLink(text?: string) {
   return text

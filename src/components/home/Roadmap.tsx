@@ -103,10 +103,10 @@ export function Roadmap() {
                   <span className={cn('flex h-12 w-12 items-center justify-center rounded-2xl text-white', COLOR[s.color])}>
                     <Icon name={s.icon} size={22} />
                   </span>
-                  <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] font-bold">{s.badge}</span>
+                  <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] font-bold">{t(s.badge)}</span>
                 </div>
                 <h3 className="font-display relative mt-6 text-2xl leading-tight font-semibold">{t(s.title)}</h3>
-                <p className="relative mt-1 text-sm font-semibold text-gold">{s.duration}</p>
+                <p className="relative mt-1 text-sm font-semibold text-gold">{t(s.duration)}</p>
                 <p className="relative mt-4 leading-relaxed text-white/70">{t(s.desc)}</p>
                 <p className="relative mt-auto flex items-center gap-2 pt-6 text-xs font-semibold text-white/55">
                   <CheckCircle2 size={14} className="text-mint" />

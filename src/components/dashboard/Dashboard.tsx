@@ -4,24 +4,44 @@ import { useEffect, useState } from 'react';
 import { collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
 import { ArrowRight, BookOpen, ClipboardCheck, LogOut, Megaphone, PlayCircle, Save, ShieldCheck, Sparkles } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
-import { useT } from '@/i18n/t';
+import { useT, type L } from '@/i18n/t';
 import { btn } from '@/components/ui/Button';
 import { useAuth } from '@/components/auth/AuthContext';
-import { GOALS, LEVELS } from '@/components/auth/AuthForm';
+import { GOAL_OPTIONS, LEVELS } from '@/components/auth/AuthForm';
 import { firebase } from '@/lib/firebase';
+import { cefrLabel } from '@/lib/quizScoring';
 import { RECORDED_COURSES } from '@/data/recordedCourses';
 import { BRAND_CONTACT } from '@/lib/brand';
-import { cn } from '@/lib/utils';
+import { cn, num } from '@/lib/utils';
 
 type Row = Record<string, unknown> & { id: string };
 
-const BATCH_TIMES = ['Fri & Sun 7–9 PM', 'Fri & Sun 9–11 PM', 'Sat & Mon 7–9 PM', 'Sat & Mon 9–11 PM', 'Custom'];
+/** Preferred batch: the English value is stored on the profile; `l` is the display label. */
+const BATCH_TIMES: { v: string; l: L }[] = [
+  { v: 'Fri & Sun 7–9 PM', l: { en: 'Fri & Sun 7–9 PM', bn: 'শুক্র ও রবি সন্ধ্যা ৭–৯টা' } },
+  { v: 'Fri & Sun 9–11 PM', l: { en: 'Fri & Sun 9–11 PM', bn: 'শুক্র ও রবি রাত ৯–১১টা' } },
+  { v: 'Sat & Mon 7–9 PM', l: { en: 'Sat & Mon 7–9 PM', bn: 'শনি ও সোম সন্ধ্যা ৭–৯টা' } },
+  { v: 'Sat & Mon 9–11 PM', l: { en: 'Sat & Mon 9–11 PM', bn: 'শনি ও সোম রাত ৯–১১টা' } },
+  { v: 'Custom', l: { en: 'Custom', bn: 'কাস্টম' } },
+];
 
 const STATUS: Record<string, string> = {
   Verified: 'bg-mint/15 text-mint',
   Pending: 'bg-gold/20 text-[#9a6b00] dark:text-gold',
   Failed: 'bg-rouge/15 text-rouge',
   Consultation: 'bg-bleu/15 text-bleu',
+};
+const STATUS_LABEL: Record<string, L> = {
+  Verified: { en: 'Verified', bn: 'যাচাইকৃত' },
+  Pending: { en: 'Pending', bn: 'অপেক্ষমাণ' },
+  Failed: { en: 'Failed', bn: 'ব্যর্থ' },
+  Consultation: { en: 'Consultation', bn: 'কাউন্সেলিং' },
+};
+const ROLE_LABEL: Record<string, L> = {
+  superAdmin: { en: 'Super admin', bn: 'সুপার অ্যাডমিন' },
+  admin: { en: 'Admin', bn: 'অ্যাডমিন' },
+  instructor: { en: 'Instructor', bn: 'ইন্সট্রাক্টর' },
+  student: { en: 'Student', bn: 'শিক্ষার্থী' },
 };
 
 export function Dashboard() {
@@ -100,7 +120,7 @@ export function Dashboard() {
           <div className="min-w-0 flex-1">
             <p className="font-display truncate text-2xl font-semibold">{name}</p>
             <p className="truncate text-sm text-white/60">
-              {user?.email} · <span className="capitalize">{profile?.role ?? 'student'}</span>
+              {user?.email} · <span>{t(ROLE_LABEL[profile?.role ?? 'student'] ?? ROLE_LABEL.student)}</span>
             </p>
           </div>
           <button onClick={logOut} className={btn('ghost-light', 'sm')}>
@@ -111,10 +131,10 @@ export function Dashboard() {
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {[
-            [t({ en: 'Enrollments', bn: 'ভর্তি' }), enrollments.length + recorded.length],
-            [t({ en: 'Quizzes taken', bn: 'কুইজ দিয়েছেন' }), attempts.length],
-            [t({ en: 'Average score', bn: 'গড় স্কোর' }), avg != null ? `${avg}%` : '—'],
-            [t({ en: 'Saved CRS', bn: 'সেভ করা CRS' }), profile?.crsScore ?? '—'],
+            [t({ en: 'Enrollments', bn: 'ভর্তি' }), num(enrollments.length + recorded.length, t.locale)],
+            [t({ en: 'Quizzes taken', bn: 'কুইজ দিয়েছেন' }), num(attempts.length, t.locale)],
+            [t({ en: 'Average score', bn: 'গড় স্কোর' }), avg != null ? `${num(avg, t.locale)}%` : '—'],
+            [t({ en: 'Saved CRS', bn: 'সেভ করা CRS' }), profile?.crsScore != null ? num(profile.crsScore, t.locale) : '—'],
           ].map(([k, v]) => (
             <div key={String(k)} className="rounded-2xl border border-line bg-surface p-4">
               <p className="text-[10px] font-bold tracking-widest text-muted uppercase">{k}</p>
@@ -140,7 +160,7 @@ export function Dashboard() {
               {recorded.map((r) => (
                 <li key={r.id} className="flex items-center gap-3 rounded-2xl bg-surface-2/60 p-4">
                   <PlayCircle size={20} className="text-rouge" />
-                  <span className="flex-1 font-semibold">{r.title}</span>
+                  <span className="flex-1 font-semibold">{t.locale === 'bn' ? r.banglaTitle : r.title}</span>
                   <Link href={`/learn/${r.slug}`} className={btn('rouge', 'sm')}>
                     {t({ en: 'Go to classroom', bn: 'ক্লাসরুমে যান' })}
                   </Link>
@@ -153,7 +173,7 @@ export function Dashboard() {
                     <span className="text-xs text-muted">{String(e.batchSchedule ?? '')}</span>
                   </span>
                   <span className={cn('rounded-full px-2.5 py-1 text-xs font-bold', STATUS[String(e.paymentStatus)] ?? 'bg-fg/10')}>
-                    {String(e.paymentStatus)}
+                    {STATUS_LABEL[String(e.paymentStatus)] ? t(STATUS_LABEL[String(e.paymentStatus)]) : String(e.paymentStatus ?? '')}
                   </span>
                 </li>
               ))}
@@ -167,7 +187,11 @@ export function Dashboard() {
             <h2 className="font-display flex items-center gap-2 text-xl font-semibold">
               <ClipboardCheck size={18} className="text-rouge" /> {t({ en: 'Quiz history', bn: 'কুইজ হিস্ট্রি' })}
             </h2>
-            {best != null && <span className="text-sm text-muted">Best: {best}%</span>}
+            {best != null && (
+              <span className="text-sm text-muted">
+                {t({ en: 'Best', bn: 'সেরা' })}: {num(best, t.locale)}%
+              </span>
+            )}
           </div>
           {attempts.length === 0 ? (
             <div className="mt-4 rounded-2xl border border-dashed border-line p-6 text-center text-sm text-muted">
@@ -180,8 +204,8 @@ export function Dashboard() {
               {attempts.map((a) => (
                 <li key={a.id} className="flex items-center gap-3 py-3 text-sm">
                   <span className="flex-1 font-semibold">{String(a.quizTitle)}</span>
-                  <span className="text-muted">{String(a.estimatedCEFR ?? '')}</span>
-                  <span className="font-display w-14 text-right text-lg font-semibold">{String(a.percentage)}%</span>
+                  <span className="text-muted">{t(cefrLabel(String(a.estimatedCEFR ?? '')))}</span>
+                  <span className="font-display w-14 text-right text-lg font-semibold">{num(String(a.percentage), t.locale)}%</span>
                 </li>
               ))}
             </ul>
@@ -197,32 +221,57 @@ export function Dashboard() {
             className="mt-4 flex flex-col gap-3"
             onSubmit={async (e) => {
               e.preventDefault();
-              await updateMyProfile(form);
-              setSaved(true);
-              setTimeout(() => setSaved(false), 2500);
+              try {
+                await updateMyProfile(form);
+                setSaved(true);
+                setTimeout(() => setSaved(false), 2500);
+              } catch {
+                alert(t({ en: 'Could not save. Check your connection and try again.', bn: 'সেভ করা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।' }));
+              }
             }}
           >
-            <input className={input} value={form.displayName} onChange={(e) => setForm({ ...form, displayName: e.target.value })} placeholder="Name" />
-            <input className={input} value={form.phoneNumber} onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })} placeholder="WhatsApp" inputMode="tel" />
+            <input
+              className={input}
+              value={form.displayName}
+              onChange={(e) => setForm({ ...form, displayName: e.target.value })}
+              placeholder={t({ en: 'Name', bn: 'নাম' })}
+            />
+            <input
+              className={input}
+              value={form.phoneNumber}
+              onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })}
+              placeholder={t({ en: 'WhatsApp', bn: 'হোয়াটসঅ্যাপ নম্বর' })}
+              inputMode="tel"
+            />
             <select className={input} value={form.targetGoal} onChange={(e) => setForm({ ...form, targetGoal: e.target.value })}>
-              <option value="">Goal…</option>
-              {GOALS.map((g) => (
-                <option key={g}>{g}</option>
+              <option value="">{t({ en: 'Goal…', bn: 'লক্ষ্য…' })}</option>
+              {GOAL_OPTIONS.map((g) => (
+                <option key={g.v} value={g.v}>
+                  {t(g.l)}
+                </option>
               ))}
             </select>
             <select className={input} value={form.currentFrenchLevel} onChange={(e) => setForm({ ...form, currentFrenchLevel: e.target.value })}>
-              <option value="">Level…</option>
+              <option value="">{t({ en: 'Level…', bn: 'লেভেল…' })}</option>
               {LEVELS.map((g) => (
                 <option key={g}>{g}</option>
               ))}
             </select>
             <select className={input} value={form.preferredBatchTime} onChange={(e) => setForm({ ...form, preferredBatchTime: e.target.value })}>
-              <option value="">Preferred batch…</option>
+              <option value="">{t({ en: 'Preferred batch…', bn: 'পছন্দের ব্যাচ…' })}</option>
               {BATCH_TIMES.map((g) => (
-                <option key={g}>{g}</option>
+                <option key={g.v} value={g.v}>
+                  {t(g.l)}
+                </option>
               ))}
             </select>
-            <textarea className={input} rows={3} value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} placeholder="Bio" />
+            <textarea
+              className={input}
+              rows={3}
+              value={form.bio}
+              onChange={(e) => setForm({ ...form, bio: e.target.value })}
+              placeholder={t({ en: 'Bio', bn: 'নিজের সম্পর্কে' })}
+            />
             <button className={btn('ink', 'sm', 'self-start')}>
               <Save size={14} /> {saved ? t({ en: 'Saved!', bn: 'সেভ হয়েছে!' }) : t({ en: 'Save', bn: 'সেভ' })}
             </button>
@@ -233,7 +282,9 @@ export function Dashboard() {
           <Sparkles size={20} />
           <span className="flex-1">
             <span className="block text-sm text-white/80">CRS</span>
-            <span className="font-display text-2xl font-semibold">{profile?.crsScore ?? t({ en: 'Calculate', bn: 'হিসাব করুন' })}</span>
+            <span className="font-display text-2xl font-semibold">
+              {profile?.crsScore != null ? num(profile.crsScore, t.locale) : t({ en: 'Calculate', bn: 'হিসাব করুন' })}
+            </span>
           </span>
         </Link>
 
@@ -246,13 +297,15 @@ export function Dashboard() {
               {news.map((n) => (
                 <li key={n.id} className="rounded-xl bg-surface-2/60 p-3">
                   <p className="text-sm font-bold">{String((t.locale === 'bn' && n.banglaTitle) || n.title)}</p>
-                  <p className="mt-1 text-sm text-muted">{String(n.content)}</p>
+                  <p className="mt-1 text-sm text-muted">{String((t.locale === 'bn' && n.banglaContent) || n.content || '')}</p>
                 </li>
               ))}
             </ul>
           </section>
         )}
-        <p className="text-center text-xs text-muted">Helpline: {BRAND_CONTACT.phone}</p>
+        <p className="text-center text-xs text-muted">
+          {t({ en: 'Helpline', bn: 'হেল্পলাইন' })}: {BRAND_CONTACT.phone}
+        </p>
       </aside>
     </div>
   );

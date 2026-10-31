@@ -4,17 +4,24 @@ export interface Course {
   title: string;
   banglaTitle: string;
   duration: string;
+  banglaDuration?: string;
   classCount: number;
   classesPerWeek?: string;
+  banglaClassesPerWeek?: string;
   targetClb?: string;
+  banglaTargetClb?: string;
   regularPrice: number;
   offerPrice: number;
   targetAudience: string;
+  banglaTargetAudience?: string;
   cefrLevel: string;
   outcome: string;
+  banglaOutcome?: string;
   features: string[];
+  banglaFeatures?: string[];
   popular?: boolean;
   tag: string;
+  banglaTag?: string;
   tagColor: string;
   isCustomPricing?: boolean;
   priceNotice?: string;
@@ -30,7 +37,9 @@ export interface ComboOffer {
   eligibility: string;
   eligibilityBangla: string;
   description: string;
+  banglaDescription?: string;
   badge?: string;
+  banglaBadge?: string;
 }
 
 
@@ -40,12 +49,17 @@ export interface Testimonial {
   studentName?: string;
   profession?: string;
   professionRole?: string;
+  banglaProfessionRole?: string;
   location: string;
+  banglaLocation?: string;
   targetCountry?: 'Canada' | 'France' | 'General';
   countryPath?: string;
   achievement?: string;
   examPassed?: string;
   score?: string;
+  banglaScore?: string;
+  /** Bangla version of the exam/course/achievement tag shown on the card */
+  banglaTag?: string;
   course?: string;
   quote: string;
   reviewText?: string;
@@ -82,6 +96,7 @@ export interface BatchSchedule {
   banglaDays?: string;
   dayKeys: DayKey[];
   timeSlot: string;
+  banglaTimeSlot?: string;
   type: 'Morning' | 'Evening' | 'Night';
   /** Optional: only shown when an admin sets them. */
   seatsTotal?: number;
@@ -162,6 +177,7 @@ export interface Announcement {
   title: string;
   banglaTitle?: string;
   content: string;
+  banglaContent?: string;
   category: 'General' | 'Class Update' | 'Exam Notice' | 'System';
   createdAt: string;
   createdBy?: string;
@@ -214,9 +230,13 @@ export interface RecordedCourse {
   description: string;
   banglaDescription: string;
   outcomes: string[];
+  banglaOutcomes?: string[];
   features: string[];
+  banglaFeatures?: string[];
   targetAudience: string;
+  banglaTargetAudience?: string;
   totalHours: string;
+  banglaTotalHours?: string;
   totalLessons: number;
   totalModules: number;
   hasCertificate: boolean;

@@ -11,6 +11,7 @@ import { RECORDED_COURSES } from '@/data/recordedCourses';
 import { FAQ_DATA } from '@/data/faq';
 import { QUIZ_CATEGORIES } from '@/data/quizData';
 import { SECTIONS, MEGA } from '@/content/nav';
+import { ui } from '@/content/home';
 import { quizHref } from '@/lib/quiz';
 import { Icon } from '@/components/ui/Icon';
 
@@ -66,8 +67,8 @@ export function CommandPalette() {
           className="fixed top-[12vh] left-1/2 z-[91] w-[min(640px,calc(100vw-24px))] -translate-x-1/2 overflow-hidden rounded-3xl border border-line bg-surface shadow-2xl"
           aria-describedby={undefined}
         >
-          <Dialog.Title className="sr-only">Search the site</Dialog.Title>
-          <Command label="Search the site" className="flex flex-col">
+          <Dialog.Title className="sr-only">{t(ui.searchSite)}</Dialog.Title>
+          <Command label={t(ui.searchSite)} className="flex flex-col">
             <div className="flex items-center gap-3 border-b border-line px-5">
               <Search size={18} className="text-muted" />
               <Command.Input
@@ -84,14 +85,14 @@ export function CommandPalette() {
                 {COURSES_DATA.map((c) => (
                   <Command.Item key={c.id} value={`${c.title} ${c.banglaTitle} ${c.code}`} onSelect={() => go(`/courses/${c.id}`)} className={item}>
                     <span className="font-display flex h-8 w-8 items-center justify-center rounded-lg bg-rouge text-[11px] font-bold text-white">{c.code}</span>
-                    <span className="flex-1">{c.title}</span>
+                    <span className="flex-1">{t.locale === 'bn' ? c.banglaTitle : c.title}</span>
                     <ArrowRight size={14} className="opacity-50" />
                   </Command.Item>
                 ))}
                 {RECORDED_COURSES.map((r) => (
                   <Command.Item key={r.id} value={`${r.title} ${r.banglaTitle} recorded`} onSelect={() => go(`/recorded/${r.slug}`)} className={item}>
                     <Icon name="video" size={16} className="mx-2" />
-                    <span className="flex-1">{r.title}</span>
+                    <span className="flex-1">{t.locale === 'bn' ? r.banglaTitle : r.title}</span>
                   </Command.Item>
                 ))}
               </Command.Group>

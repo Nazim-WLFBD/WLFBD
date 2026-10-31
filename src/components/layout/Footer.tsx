@@ -5,7 +5,7 @@ import { Link } from '@/i18n/navigation';
 import { useT } from '@/i18n/t';
 import { Logo } from '@/components/ui/Logo';
 import { btn } from '@/components/ui/Button';
-import { BRAND_CONTACT, BRAND_SOCIAL_LINKS, BRAND_TAGLINE_BANGLA, WA_MESSAGES, waLink } from '@/lib/brand';
+import { BRAND_CONTACT, BRAND_SOCIAL_LINKS, BRAND_TAGLINE_BANGLA, waLink, waMessage } from '@/lib/brand';
 import { footer, ui } from '@/content/home';
 import { WhatsAppGlyph } from './FloatingActions';
 import { Flag } from '@/components/ui/Flag';
@@ -49,7 +49,7 @@ export function Footer() {
             <Link href="/enroll" className={btn('rouge', 'lg')}>
               {t(ui.enroll)} <ArrowUpRight size={17} />
             </Link>
-            <a href={waLink(WA_MESSAGES.enroll)} target="_blank" rel="noopener" className={btn('ghost-light', 'lg')}>
+            <a href={waLink(waMessage('enroll', t.locale))} target="_blank" rel="noopener" className={btn('ghost-light', 'lg')}>
               <WhatsAppGlyph size={18} /> {BRAND_CONTACT.whatsapp}
             </a>
           </div>
@@ -58,7 +58,7 @@ export function Footer() {
 
       <div className="container-x grid grid-cols-2 gap-x-6 gap-y-10 border-t border-white/10 py-14 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] lg:gap-12">
         <div className="col-span-2 lg:col-span-1">
-          <Link href="/" aria-label="We Learn French BD Homepage">
+          <Link href="/" aria-label={t(ui.homepage)}>
             <Logo size={52} light />
           </Link>
           <p className="mt-5 max-w-sm text-sm leading-relaxed text-white/60">{t(footer.description)}</p>
@@ -83,7 +83,7 @@ export function Footer() {
         <FooterCol title={t(footer.pathways)}>
           {footer.pathwayLinks.map((p) => (
             <Link key={p.id} href={`/courses/${p.id}`} className="footer-link">
-              {p.label}
+              {t(p.label)}
             </Link>
           ))}
         </FooterCol>
@@ -104,11 +104,11 @@ export function Footer() {
             <span className="text-[#25d366]">
               <WhatsAppGlyph size={15} />
             </span>
-            WhatsApp: {BRAND_CONTACT.whatsapp}
+            {t(ui.whatsapp)}: {BRAND_CONTACT.whatsapp}
           </a>
           <a href={`tel:${BRAND_CONTACT.bkashPersonal}`} className="footer-link flex items-center gap-2.5">
             <span className="flex h-[18px] w-[18px] items-center justify-center rounded bg-bkash text-[8px] font-black">bK</span>
-            {footer.bkash}: {BRAND_CONTACT.bkashPersonal}
+            {t(footer.bkash)}: {BRAND_CONTACT.bkashPersonal}
           </a>
           <a href={`mailto:${BRAND_CONTACT.email}`} className="footer-link flex items-center gap-2.5">
             <Mail size={15} className="text-gold" /> {BRAND_CONTACT.email}
@@ -121,7 +121,7 @@ export function Footer() {
 
       <div className="container-x flex flex-col items-center justify-between gap-3 border-t border-white/10 py-6 text-xs text-white/45 sm:flex-row">
         <p>
-          © {year} {footer.rights}
+          © {year} {t(footer.rights)}
         </p>
         <p className="font-bangla flex items-center gap-2">
           <Flag country="fr" /> {BRAND_TAGLINE_BANGLA}

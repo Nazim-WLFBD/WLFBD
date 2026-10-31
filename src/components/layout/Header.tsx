@@ -10,7 +10,7 @@ import { btn } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { COURSES_DATA, COMBO_OFFERS } from '@/data/courses';
 import { RECORDED_COURSES } from '@/data/recordedCourses';
-import { BRAND_CONTACT, WA_MESSAGES, waLink } from '@/lib/brand';
+import { BRAND_CONTACT, waLink, waMessage } from '@/lib/brand';
 import { NAV, MEGA } from '@/content/nav';
 import { ui } from '@/content/home';
 import { cn, taka } from '@/lib/utils';
@@ -20,8 +20,14 @@ import { openPalette } from './CommandPalette';
 import { AccountMenu } from './AccountMenu';
 import { LangToggle } from './LangToggle';
 import { useAuth } from '@/components/auth/AuthContext';
+import type { Course } from '@/types';
 
 type MenuId = 'courses' | 'practice' | null;
+
+/** Short course name for menus: the part before " - " in the visitor's language. */
+function courseName(c: Course, locale: string) {
+  return (locale === 'bn' ? c.banglaTitle || c.title : c.title).split(' - ')[0];
+}
 
 export function Header() {
   const t = useT();
@@ -89,7 +95,7 @@ export function Header() {
       />
       <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-3">
         {/* Brand */}
-        <Link href="/" aria-label="We Learn French BD Homepage" className={cn(pill, 'shrink-0 pr-2 pl-2 xl:pr-5')}>
+        <Link href="/" aria-label={t(ui.homepage)} className={cn(pill, 'shrink-0 pr-2 pl-2 xl:pr-5')}>
           <span className="hidden xl:block">
             <Logo size={44} light />
           </span>
@@ -99,7 +105,7 @@ export function Header() {
         </Link>
 
         {/* Centre navigation */}
-        <nav className={cn(pill, 'hidden gap-0.5 px-1.5 lg:flex')} aria-label="Main" onMouseLeave={scheduleClose}>
+        <nav className={cn(pill, 'hidden gap-0.5 px-1.5 lg:flex')} aria-label={t(ui.mainNav)} onMouseLeave={scheduleClose}>
           <MenuTrigger id="courses" label={t(NAV.courses)} menu={menu} open={open} />
           <MenuTrigger id="practice" label={t(NAV.practice)} menu={menu} open={open} badge={t(ui.free)} />
           <NavLink href={{ pathname: '/', hash: 'schedule' }}>{t(NAV.schedule)}</NavLink>
@@ -129,7 +135,7 @@ export function Header() {
           <button
             className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-white/10 lg:hidden"
             onClick={() => setDrawer((d) => !d)}
-            aria-label="Menu"
+            aria-label={t(ui.menu)}
             aria-expanded={drawer}
           >
             {drawer ? <X size={20} /> : <Menu size={20} />}
@@ -165,9 +171,11 @@ export function Header() {
                           {c.code}
                         </span>
                         <span className="min-w-0">
-                          <span className="block truncate text-sm font-semibold">{c.title.split(' - ')[0]}</span>
+                          <span className="block truncate text-sm font-semibold">{courseName(c, t.locale)}</span>
                           <span className="block truncate text-xs text-white/55">
-                            {c.isCustomPricing ? c.targetClb : `${taka(c.offerPrice, t.locale)} · ${c.duration.split(' (')[0]}`}
+                            {c.isCustomPricing
+                              ? (t.locale === 'bn' ? (c.banglaTargetClb ?? c.targetClb) : c.targetClb)
+                              : `${taka(c.offerPrice, t.locale)} · ${t.locale === 'bn' ? (c.banglaDuration ?? c.duration) : c.duration.split(' (')[0]}`}
                           </span>
                         </span>
                       </Link>
@@ -186,7 +194,9 @@ export function Header() {
                         href={`/recorded/${r.slug}`}
                         className="flex items-center justify-between rounded-xl p-2.5 text-sm transition hover:bg-white/7"
                       >
-                        <span className="font-semibold">DELF {r.level} · Recorded</span>
+                        <span className="font-semibold">
+                          DELF {r.level} · {t(ui.recorded)}
+                        </span>
                         <span className="text-white/55">{taka(r.offerPrice, t.locale)}</span>
                       </Link>
                     ))}
@@ -250,7 +260,7 @@ export function Header() {
                   <span className="font-display flex h-9 w-9 items-center justify-center rounded-lg bg-rouge text-xs font-bold">
                     {c.code}
                   </span>
-                  <span className="text-[13px] leading-tight font-semibold">{c.title.split(' - ')[0]}</span>
+                  <span className="text-[13px] leading-tight font-semibold">{courseName(c, t.locale)}</span>
                 </Link>
               ))}
             </div>
@@ -283,11 +293,13 @@ export function Header() {
               <Link href="/enroll" className={btn('rouge', 'md')}>
                 {t(ui.enroll)}
               </Link>
-              <a href={waLink(WA_MESSAGES.enroll)} target="_blank" rel="noopener" className={btn('ghost-light', 'md')}>
-                WhatsApp
+              <a href={waLink(waMessage('enroll', t.locale))} target="_blank" rel="noopener" className={btn('ghost-light', 'md')}>
+                {t(ui.whatsapp)}
               </a>
             </div>
-            <p className="mt-3 text-center text-xs text-white/50">WhatsApp: {BRAND_CONTACT.whatsapp}</p>
+            <p className="mt-3 text-center text-xs text-white/50">
+              {t(ui.whatsapp)}: {BRAND_CONTACT.whatsapp}
+            </p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -313,7 +325,7 @@ function MobileAccount() {
       </Link>
       {isAdmin && (
         <Link href="/admin" className={cn(row, 'text-gold')}>
-          <ShieldCheck size={16} /> Admin
+          <ShieldCheck size={16} /> {t(ui.admin)}
         </Link>
       )}
       <button onClick={logOut} className={row}>

@@ -54,7 +54,7 @@ export function QuizHub() {
                 <span className={cn('flex h-11 w-11 items-center justify-center rounded-xl', q.isPlacementTest ? 'bg-gold text-ink' : 'bg-ink text-gold')}>
                   <Icon name={ICON[q.iconName] ?? 'clipboard'} size={20} />
                 </span>
-                <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[10px] font-bold tracking-wider">{q.badgeTag}</span>
+                <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[10px] font-bold tracking-wider">{t.locale === 'bn' && q.banglaBadgeTag ? q.banglaBadgeTag : q.badgeTag}</span>
               </div>
               <h3 className="font-display mt-5 text-xl leading-tight font-semibold">{t.locale === 'bn' ? q.banglaTitle : q.title}</h3>
               <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-muted">{t.locale === 'bn' ? q.banglaDescription : q.description}</p>
@@ -64,7 +64,7 @@ export function QuizHub() {
                     <ListChecks size={15} /> {num(ready ? count : q.questionCount, t.locale)}
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <Clock size={15} /> {num(q.durationMinutes, t.locale)} min
+                    <Clock size={15} /> {num(q.durationMinutes, t.locale)} {t({ en: 'min', bn: 'মিনিট' })}
                   </span>
                 </span>
                 {ready ? (

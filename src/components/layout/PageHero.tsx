@@ -1,5 +1,8 @@
 import { ChevronRight } from 'lucide-react';
+import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import type { Locale } from '@/i18n/routing';
+import { ui } from '@/content/home';
 import { cn } from '@/lib/utils';
 
 interface Props {
@@ -13,6 +16,8 @@ interface Props {
 
 /** Dark header band for inner pages (sits under the fixed site header). */
 export function PageHero({ eyebrow, title, intro, crumbs, children, className }: Props) {
+  // useLocale works in both server and client components, which this band is used from
+  const locale = useLocale() as Locale;
   return (
     <section className={cn('relative overflow-hidden bg-ink pt-32 pb-16 text-white md:pt-40 md:pb-20', className)}>
       <div aria-hidden className="pointer-events-none absolute inset-0">
@@ -21,7 +26,7 @@ export function PageHero({ eyebrow, title, intro, crumbs, children, className }:
       </div>
       <div className="container-x relative">
         {crumbs && (
-          <nav aria-label="Breadcrumb" className="mb-6 flex flex-wrap items-center gap-1.5 text-sm text-white/55">
+          <nav aria-label={ui.breadcrumb[locale]} className="mb-6 flex flex-wrap items-center gap-1.5 text-sm text-white/55">
             {crumbs.map((c, i) => (
               <span key={c.label} className="flex items-center gap-1.5">
                 {i > 0 && <ChevronRight size={14} />}

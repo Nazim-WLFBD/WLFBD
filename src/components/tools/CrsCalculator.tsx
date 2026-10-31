@@ -9,19 +9,20 @@ import { btn } from '@/components/ui/Button';
 import { MapleLeaf } from '@/components/ui/MapleLeaf';
 import { calculateCrs, FRENCH_BONUS, type Education, type EnglishLevel } from '@/lib/crs';
 import { cn, num } from '@/lib/utils';
+import type { L } from '@/i18n/t';
 
 const copy = {
-  tool: 'CANADA EXPRESS ENTRY TOOL',
+  tool: { en: 'CANADA EXPRESS ENTRY TOOL', bn: 'কানাডা EXPRESS ENTRY টুল' },
   title: { en: 'Canada CRS Point Simulator', bn: 'কানাডা CRS পয়েন্ট ক্যালকুলেটর' },
   age: { en: 'Your Age:', bn: 'আপনার বয়স (Age):' },
   education: { en: 'Education Level:', bn: 'শিক্ষাগত যোগ্যতা (Education):' },
   english: { en: 'English Ability (IELTS):', bn: 'ইংরেজি দক্ষতা (IELTS Score):' },
   french: { en: 'French TEF CLB 7 Proficiency:', bn: 'ফ্রেঞ্চ ভাষা দক্ষতা (TEF CLB 7 / B2):' },
   frenchSub: { en: 'Official IRCC Bonus Factor', bn: 'IRCC নিয়মানুযায়ী অতিরিক্ত পয়েন্ট' },
-  active: 'ACTIVE (+62)',
-  disabled: 'DISABLED (0)',
-  total: 'ESTIMATED TOTAL CRS SCORE',
-  bonus: '+62 French Bonus Added!',
+  active: { en: 'ACTIVE (+62)', bn: 'চালু (+৬২)' },
+  disabled: { en: 'DISABLED (0)', bn: 'বন্ধ (০)' },
+  total: { en: 'ESTIMATED TOTAL CRS SCORE', bn: 'আনুমানিক মোট CRS স্কোর' },
+  bonus: { en: '+62 French Bonus Added!', bn: '+৬২ ফ্রেঞ্চ বোনাস যুক্ত হয়েছে!' },
   good: {
     en: 'Highly competitive for French Category PR selection!',
     bn: 'ফ্রেঞ্চ শেখার ফলে আপনার ফাইল ক্যাটাগরি ড্র-তে সিলেক্ট হওয়ার সুযোগ ৯৫%+',
@@ -46,16 +47,16 @@ const copy = {
   },
 };
 
-const EDUCATION: { v: Education; l: string }[] = [
-  { v: 'bachelor', l: 'Bachelor’s Degree (৪ বছর মেয়াদী অনার্স)' },
-  { v: 'two_degrees', l: 'Two or More Certificates / Diplomas' },
-  { v: 'master', l: 'Master’s Degree (মাস্টার্স ডিগ্রি)' },
-  { v: 'phd', l: 'Ph.D. / Doctorate' },
+const EDUCATION: { v: Education; l: L }[] = [
+  { v: 'bachelor', l: { en: 'Bachelor’s Degree (4-year Honours)', bn: 'ব্যাচেলর ডিগ্রি (৪ বছর মেয়াদি অনার্স)' } },
+  { v: 'two_degrees', l: { en: 'Two or More Certificates / Diplomas', bn: 'দুই বা ততোধিক সার্টিফিকেট / ডিপ্লোমা' } },
+  { v: 'master', l: { en: 'Master’s Degree', bn: 'মাস্টার্স ডিগ্রি' } },
+  { v: 'phd', l: { en: 'Ph.D. / Doctorate', bn: 'পিএইচডি / ডক্টরেট' } },
 ];
-const ENGLISH: { v: EnglishLevel; l: string }[] = [
-  { v: 'ielts_6', l: 'IELTS CLB 7 (6.0 Each Band)' },
-  { v: 'ielts_7', l: 'IELTS CLB 8 (6.5 - 7.0 Overall)' },
-  { v: 'ielts_8', l: 'IELTS CLB 9+ (8.0 Listening, 7.0 Others)' },
+const ENGLISH: { v: EnglishLevel; l: L }[] = [
+  { v: 'ielts_6', l: { en: 'IELTS CLB 7 (6.0 Each Band)', bn: 'IELTS CLB 7 (প্রতি ব্যান্ডে 6.0)' } },
+  { v: 'ielts_7', l: { en: 'IELTS CLB 8 (6.5 - 7.0 Overall)', bn: 'IELTS CLB 8 (ওভারঅল 6.5 - 7.0)' } },
+  { v: 'ielts_8', l: { en: 'IELTS CLB 9+ (8.0 Listening, 7.0 Others)', bn: 'IELTS CLB 9+ (লিসেনিং 8.0, বাকিগুলো 7.0)' } },
 ];
 
 export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<void> | void }) {
@@ -82,7 +83,7 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
       {/* Inputs */}
       <div className="rounded-[28px] border border-line bg-surface p-6 md:p-8">
         <p className="flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] text-rouge">
-          <Calculator size={15} /> {copy.tool}
+          <Calculator size={15} /> {t(copy.tool)}
         </p>
         <h2 className="font-display mt-3 text-3xl font-semibold">{t(copy.title)}</h2>
 
@@ -100,8 +101,8 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
               className="w-full accent-[var(--rouge)]"
             />
             <span className="mt-1 flex justify-between text-xs text-muted">
-              <span>20</span>
-              <span>45</span>
+              <span>{num(20, t.locale)}</span>
+              <span>{num(45, t.locale)}</span>
             </span>
           </label>
           <label className="block">
@@ -109,7 +110,7 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
             <select value={education} onChange={(e) => setEducation(e.target.value as Education)} className={field}>
               {EDUCATION.map((o) => (
                 <option key={o.v} value={o.v}>
-                  {o.l}
+                  {t(o.l)}
                 </option>
               ))}
             </select>
@@ -119,7 +120,7 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
             <select value={english} onChange={(e) => setEnglish(e.target.value as EnglishLevel)} className={field}>
               {ENGLISH.map((o) => (
                 <option key={o.v} value={o.v}>
-                  {o.l}
+                  {t(o.l)}
                 </option>
               ))}
             </select>
@@ -138,7 +139,7 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
                 hasFrench ? 'bg-maple text-white shadow-md' : 'bg-fg/10 text-fg',
               )}
             >
-              {hasFrench ? copy.active : copy.disabled}
+              {t(hasFrench ? copy.active : copy.disabled)}
             </button>
           </div>
         </div>
@@ -148,7 +149,7 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
       <div className="relative flex flex-col overflow-hidden rounded-[28px] bg-ink p-6 text-white md:p-8">
         <MapleLeaf size={320} className="pointer-events-none absolute -right-16 -bottom-16 text-white/[.04]" />
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-[11px] font-bold tracking-[0.2em] text-white/55">{copy.total}</p>
+          <p className="text-[11px] font-bold tracking-[0.2em] text-white/55">{t(copy.total)}</p>
           <AnimatePresence>
             {hasFrench && (
               <motion.span
@@ -157,7 +158,7 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
                 exit={{ opacity: 0, scale: 0.8 }}
                 className="rounded-full bg-maple px-3 py-1 text-[11px] font-extrabold"
               >
-                {copy.bonus}
+                {t(copy.bonus)}
               </motion.span>
             )}
           </AnimatePresence>

@@ -18,7 +18,12 @@ export async function generateMetadata({ params }: P): Promise<Metadata> {
   const { slug, locale } = await params;
   const c = (await publicRecordedCourses()).find((x) => x.slug === slug);
   if (!c) return {};
-  return { title: locale === 'bn' ? c.banglaTitle : c.title, description: c.description, openGraph: { images: [c.thumbnail] } };
+  return {
+    title: locale === 'bn' ? c.banglaTitle : c.title,
+    description: locale === 'bn' ? c.banglaDescription || c.description : c.description,
+    openGraph: { images: [c.thumbnail] },
+    alternates: { canonical: `/${locale}/recorded/${slug}`, languages: { en: `/en/recorded/${slug}`, bn: `/bn/recorded/${slug}` } },
+  };
 }
 
 export default async function RecordedCoursePage({ params }: P) {

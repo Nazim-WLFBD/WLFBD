@@ -13,25 +13,27 @@ export const hero = {
     bn: 'কানাডা পিআর, ফ্রান্সে উচ্চশিক্ষা ও আন্তর্জাতিক ক্যারিয়ার গড়ার লক্ষ্যে প্রফেশনাল ফরাসি ভাষা প্রশিক্ষণ।',
   },
   chips: [
-    { title: 'DELF A1–B2', sub: 'Language Levels', icon: 'book' },
-    { title: 'TCF Canada', sub: 'Exam Preparation', icon: 'clipboard' },
-    { title: 'TEF Canada', sub: 'Immigration Prep', icon: 'maple' },
-    { title: 'Expert Guidance', sub: 'Structured Support', icon: 'users' },
+    { title: { en: 'DELF A1–B2', bn: 'DELF A1–B2' }, sub: { en: 'Language Levels', bn: 'ভাষার লেভেলসমূহ' }, icon: 'book' },
+    { title: { en: 'TCF Canada', bn: 'TCF Canada' }, sub: { en: 'Exam Preparation', bn: 'পরীক্ষার প্রস্তুতি' }, icon: 'clipboard' },
+    { title: { en: 'TEF Canada', bn: 'TEF Canada' }, sub: { en: 'Immigration Prep', bn: 'ইমিগ্রেশন প্রস্তুতি' }, icon: 'maple' },
+    { title: { en: 'Expert Guidance', bn: 'বিশেষজ্ঞ দিকনির্দেশনা' }, sub: { en: 'Structured Support', bn: 'সুসংগঠিত সাপোর্ট' }, icon: 'users' },
   ],
   ctaPrimary: { en: 'Explore Courses', bn: 'কোর্সগুলো দেখুন' },
   ctaSecondary: { en: 'Practice Free Test', bn: 'ফ্রি টেস্ট প্র্যাকটিস' },
   card: {
-    title: 'TCF / TEF Canada',
-    pre: 'Your Pathway to',
-    strong: 'Canada Opportunities',
+    title: { en: 'TCF / TEF Canada', bn: 'TCF / TEF Canada' },
+    pre: { en: 'Your Pathway to', bn: 'আপনার পথ' },
+    strong: { en: 'Canada Opportunities', bn: 'কানাডার সুযোগের দিকে' },
     checks: [
-      'Express Entry Preparation',
-      'Francophone Immigration (+62 CRS)',
-      'Global Career & Study Opportunities',
+      { en: 'Express Entry Preparation', bn: 'Express Entry প্রস্তুতি' },
+      { en: 'Francophone Immigration (+62 CRS)', bn: 'ফ্রাঙ্কোফোন ইমিগ্রেশন (+62 CRS)' },
+      { en: 'Global Career & Study Opportunities', bn: 'বৈশ্বিক ক্যারিয়ার ও পড়াশোনার সুযোগ' },
     ],
     cta: { en: 'Canada CRS Points Calculator', bn: 'কানাডা CRS পয়েন্ট ক্যালকুলেটর' },
-    disclaimer:
-      '* Official language test training courses. We do not provide immigration legal advice or visa guarantees.',
+    disclaimer: {
+      en: '* Official language test training courses. We do not provide immigration legal advice or visa guarantees.',
+      bn: '* অফিশিয়াল ভাষা পরীক্ষার প্রশিক্ষণ কোর্স। আমরা ইমিগ্রেশন সংক্রান্ত আইনি পরামর্শ বা ভিসার নিশ্চয়তা প্রদান করি না।',
+    },
   },
   features: [
     {
@@ -57,19 +59,19 @@ export const hero = {
   ],
 };
 
-export const marquee = [
-  'DELF A1',
-  'DELF A2',
-  'DELF B1',
-  'DELF B2',
-  'TEF Canada',
-  'TCF Canada',
-  'Express Entry',
-  'Carte de Séjour',
-  'Alliance Française',
-  'CLB 7',
-  '+62 CRS',
-  'Bonjour Dhaka',
+export const marquee: L[] = [
+  { en: 'DELF A1', bn: 'DELF A1' },
+  { en: 'DELF A2', bn: 'DELF A2' },
+  { en: 'DELF B1', bn: 'DELF B1' },
+  { en: 'DELF B2', bn: 'DELF B2' },
+  { en: 'TEF Canada', bn: 'TEF Canada' },
+  { en: 'TCF Canada', bn: 'TCF Canada' },
+  { en: 'Express Entry', bn: 'এক্সপ্রেস এন্ট্রি' },
+  { en: 'Carte de Séjour', bn: 'Carte de Séjour' },
+  { en: 'Alliance Française', bn: 'Alliance Française' },
+  { en: 'CLB 7', bn: 'CLB 7' },
+  { en: '+62 CRS', bn: '+62 CRS' },
+  { en: 'Bonjour Dhaka', bn: 'বঁজুর ঢাকা' },
 ];
 
 export const trust = {
@@ -241,7 +243,7 @@ export const law = {
     {
       tag: 'DELF A2',
       color: 'gold',
-      title: 'Multi-Year Residence Permit',
+      title: { en: 'Multi-Year Residence Permit', bn: 'বহুবর্ষী রেসিডেন্স পারমিট' },
       fr: 'Carte de Séjour Pluriannuelle',
       desc: {
         en: 'Mandatory DELF A2 certificate required for multi-year residency permit renewal.',
@@ -251,7 +253,7 @@ export const law = {
     {
       tag: 'DELF B1',
       color: 'bleu',
-      title: '10-Year Resident Card',
+      title: { en: '10-Year Resident Card', bn: '10 বছরের রেসিডেন্ট কার্ড' },
       fr: 'Carte de Résident (10 Ans)',
       desc: {
         en: 'DELF B1 certified proficiency required for the 10-year long-term resident card.',
@@ -261,7 +263,7 @@ export const law = {
     {
       tag: 'DELF B2',
       color: 'rouge',
-      title: 'French Naturalization',
+      title: { en: 'French Naturalization', bn: 'ফরাসি নাগরিকত্ব (ন্যাচারালাইজেশন)' },
       fr: 'Nationalité Française (Citizenship)',
       desc: {
         en: 'DELF B2 mastery is mandatory for French naturalization and citizenship application.',
@@ -288,11 +290,11 @@ export const pathways = {
     bn: 'কানাডা স্থায়ী বসবাস (PR) এবং ফ্রান্সে উচ্চশিক্ষার নিশ্চিত সুযোগ তৈরি করতে ফ্রেঞ্চ ভাষাই একমাত্র সবচেয়ে শক্তিশালী গেম-চেঞ্জার।',
   },
   canada: {
-    ribbon: 'CANADA PR SHORTCUT',
-    title: 'Canada Express Entry PR',
-    sub: { en: 'Category-Based Selection Draws', bn: 'TEF / TCF Canada (CLB 7 Target)' },
+    ribbon: { en: 'CANADA PR SHORTCUT', bn: 'কানাডা পিআর শর্টকাট' },
+    title: { en: 'Canada Express Entry PR', bn: 'কানাডা Express Entry পিআর' },
+    sub: { en: 'Category-Based Selection Draws', bn: 'ক্যাটাগরি-ভিত্তিক সিলেকশন ড্র' },
     statLabel: { en: 'Max Bonus CRS Points:', bn: 'সর্বোচ্চ অতিরিক্ত CRS পয়েন্ট:' },
-    stat: '+62 CRS Points',
+    stat: { en: '+62 CRS Points', bn: '+62 CRS পয়েন্ট' },
     calc: { en: 'Calculate Points', bn: 'পয়েন্ট হিসাব করুন' },
     bullets: [
       {
@@ -311,12 +313,12 @@ export const pathways = {
     cta: { en: 'Explore TEF Canada Pathway', bn: 'TEF Canada কোর্স সিলেবাস দেখুন' },
   },
   france: {
-    ribbon: 'EUROPE STUDY & WORK',
-    title: 'France University & Work Visa',
-    sub: { en: 'Free Tuition & EU Post-Study Visa', bn: 'DELF A1 ➔ B2 Official Diploma' },
+    ribbon: { en: 'EUROPE STUDY & WORK', bn: 'ইউরোপে পড়াশোনা ও কাজ' },
+    title: { en: 'France University & Work Visa', bn: 'ফ্রান্সে বিশ্ববিদ্যালয় ও ওয়ার্ক ভিসা' },
+    sub: { en: 'Free Tuition & EU Post-Study Visa', bn: 'ফ্রি টিউশন ও ইইউ পোস্ট-স্টাডি ভিসা' },
     statLabel: { en: 'University Tuition Fees:', bn: 'টিউশন ফি খরচ:' },
-    stat: 'Low / Zero Fees',
-    chip: 'EU Schengen Visa',
+    stat: { en: 'Low / Zero Fees', bn: 'নামমাত্র / শূন্য ফি' },
+    chip: { en: 'EU Schengen Visa', bn: 'ইইউ শেনজেন ভিসা' },
     bullets: [
       {
         en: 'Study in top public French universities with nearly free tuition for international students.',
@@ -350,7 +352,8 @@ export const recorded = {
     { icon: 'book', t: { en: 'PDF Notes & Mocks', bn: 'PDF নোট ও মক টেস্ট' }, s: { en: 'Downloadable', bn: 'ডাউনলোডযোগ্য শিট' } },
     { icon: 'award', t: { en: 'Official Certificate', bn: 'ভেরিফাইড সার্টিফিকেট' }, s: { en: 'Upon 100% completion', bn: 'কোর্স শেষে প্রদান' } },
   ],
-  tagRecorded: 'Recorded Video Course',
+  tagRecorded: { en: 'Recorded Video Course', bn: 'রেকর্ডেড ভিডিও কোর্স' },
+  off: { en: 'OFF', bn: 'ছাড়' },
   preview: { en: 'Watch Free Preview', bn: 'ফ্রি প্রিভিউ দেখুন' },
   lessons: { en: 'Lessons', bn: 'লেসন' },
   checks: [
@@ -381,9 +384,9 @@ export const courses = {
     bn: 'DELF A1 থেকে B2 সার্টিফিকেশন এবং কানাডা Express Entry-র TEF/TCF প্রস্তুতির নির্ভরযোগ্য অনলাইন প্ল্যাটফর্ম।',
   },
   filters: {
-    all: { en: 'All Pathways', bn: 'সকল কোর্স (All Pathways)' },
-    delf: { en: 'DELF A1–B2 (French Levels)', bn: 'DELF A1–B2 (French Levels)' },
-    canada: { en: 'TEF / TCF Canada (Immigration Prep)', bn: 'TEF / TCF Canada (Immigration Prep)' },
+    all: { en: 'All Pathways', bn: 'সকল কোর্স' },
+    delf: { en: 'DELF A1–B2 (French Levels)', bn: 'DELF A1–B2 (ফরাসি ভাষার লেভেল)' },
+    canada: { en: 'TEF / TCF Canada (Immigration Prep)', bn: 'TEF / TCF Canada (ইমিগ্রেশন প্রস্তুতি)' },
   },
   popular: { en: 'MOST POPULAR', bn: 'সবচেয়ে জনপ্রিয়' },
   duration: { en: 'Duration', bn: 'মেয়াদ' },
@@ -399,12 +402,12 @@ export const courses = {
   compareN: { en: 'Compare courses', bn: 'কোর্স তুলনা করুন' },
   clear: { en: 'Clear', bn: 'মুছুন' },
   comboTag: { en: 'SPECIAL COMBO PACKAGES', bn: 'স্পেশাল কম্বো অফার' },
-  comboTagSub: '(Official Discount Bundle)',
+  comboTagSub: { en: '(Official Discount Bundle)', bn: '(অফিশিয়াল ডিসকাউন্ট বান্ডেল)' },
   comboTitle: { en: 'Combined Learning Packages', bn: 'ধারাবাহিক শিক্ষার কম্বো প্যাকেজ' },
   eligibilityLabel: { en: 'Eligibility Condition:', bn: 'যোগ্যতার শর্ত:' },
   eligibility: {
     en: 'Available exclusively for existing and regular students.',
-    bn: 'পূর্বের ও নিয়মিত শিক্ষার্থীদের জন্য প্রযোজ্য (Existing / Regular Students)',
+    bn: 'পূর্বের ও নিয়মিত শিক্ষার্থীদের জন্য প্রযোজ্য',
   },
   included: { en: 'Included Pathways:', bn: 'অন্তর্ভুক্ত কোর্স:' },
   combinedFee: { en: 'Combined Offer Fee:', bn: 'কম্বো অফার ফি:' },
@@ -434,10 +437,10 @@ export const schedule = {
     mon: { en: 'Mon', bn: 'সোম' },
   },
   slots: [
-    { id: '7pm', label: '7–9 PM' },
-    { id: '9pm', label: '9–11 PM' },
+    { id: '7pm', label: { en: '7–9 PM', bn: 'সন্ধ্যা ৭–৯টা' } },
+    { id: '9pm', label: { en: '9–11 PM', bn: 'রাত ৯–১১টা' } },
   ],
-  bst: 'BST',
+  bst: { en: 'BST', bn: 'সময়' },
   perWeek: { en: '2 Classes / Week', bn: 'সপ্তাহে ২টি ক্লাস' },
   book: { en: 'Book Seat in This Batch', bn: 'এই ব্যাচে সীট বুক করুন' },
   bookAny: { en: 'Book your seat', bn: 'আপনার সীট বুক করুন' },
@@ -477,11 +480,11 @@ export const roadmap = {
   steps: [
     {
       n: '01',
-      badge: 'Zero to A1',
+      badge: { en: 'Zero to A1', bn: 'শূন্য থেকে A1' },
       icon: 'target',
       color: 'bleu',
       title: { en: 'Step 1: Foundation (DELF A1)', bn: 'লেভেল ১: ফাউন্ডেশন (A1)' },
-      duration: '3 Months (৩ মাস)',
+      duration: { en: '3 Months', bn: '৩ মাস' },
       desc: {
         en: 'Master basic sentence formation, phonetics, self-introduction and everyday conversation.',
         bn: 'শূন্য থেকে প্রাথমিক বাক্য গঠন, সঠিক উচ্চারণ ও সামাজিক কথা বলার আত্মবিশ্বাস।',
@@ -490,11 +493,11 @@ export const roadmap = {
     },
     {
       n: '02',
-      badge: '2026 Mandate',
+      badge: { en: '2026 Mandate', bn: '২০২৬ আইনি শর্ত' },
       icon: 'message',
       color: 'gold',
       title: { en: 'Step 2: Residency Level (DELF A2)', bn: 'লেভেল ২: এসেনশিয়ালস (A2)' },
-      duration: '3 Months (৩ মাস)',
+      duration: { en: '3 Months', bn: '৩ মাস' },
       desc: {
         en: 'Compliant with strict 2026 French immigration laws for multi-year residence permits.',
         bn: '২০২৬ ফ্রেঞ্চ আইন মেনে রেসিডেন্স পারমিট (Carte de Séjour) নবায়নের প্রয়োজনীয় এ২ দক্ষতা।',
@@ -503,11 +506,11 @@ export const roadmap = {
     },
     {
       n: '03',
-      badge: 'High Distinction',
+      badge: { en: 'High Distinction', bn: 'উচ্চতর দক্ষতা' },
       icon: 'award',
       color: 'rouge',
       title: { en: 'Step 3: Exam Mastery (B1/B2/TEF)', bn: 'লেভেল ৩: এক্সাম স্পেশালাইজেশন (B1/B2/TEF)' },
-      duration: '6 Months (৬ মাস)',
+      duration: { en: '6 Months', bn: '৬ মাস' },
       desc: {
         en: 'Target TEF Canada CLB 7 for +62 CRS points or DELF B1/B2 for university & citizenship.',
         bn: 'কানাডা পিআর (TEF CLB 7) অথবা ফ্রান্সের ১০ বছরের রেসিডেন্স কার্ড ও ইউনিভারসিটি অ্যাডমিশন।',
@@ -516,11 +519,11 @@ export const roadmap = {
     },
     {
       n: '04',
-      badge: 'Goal Achieved',
+      badge: { en: 'Goal Achieved', bn: 'লক্ষ্য অর্জিত' },
       icon: 'plane',
       color: 'mint',
       title: { en: 'Step 4: Visa & Canada PR Granted', bn: 'লেভেল ৪: ভিসা ও পিআর প্রাপ্তি' },
-      duration: 'Goal Achieved!',
+      duration: { en: 'Goal Achieved!', bn: 'লক্ষ্য অর্জিত!' },
       desc: {
         en: 'Pass Alliance Française exam, receive CoPR or French University visa with full support.',
         bn: 'অফিশিয়াল এক্সাম পাসের পর কানাডা এক্সপ্রেস এন্ট্রি ড্র অথবা ফ্রান্স ভিসা কমপ্লিশন।',
@@ -533,21 +536,25 @@ export const roadmap = {
 };
 
 export const testimonials = {
-  badge: "Students' Voice",
-  title: { en: "Students' Voice", bn: "শিক্ষার্থীদের মতামত (Students' Voice)" },
+  badge: { en: "Students' Voice", bn: 'শিক্ষার্থীদের কণ্ঠ' },
+  title: { en: "Students' Voice", bn: "শিক্ষার্থীদের মতামত" },
   intro: {
     en: 'Real experiences from learners who are building their French journey with We Learn French BD.',
     bn: 'We Learn French BD-এর সাথে ভাষা শেখার যাত্রা শুরু করা শিক্ষার্থীদের বাস্তব অভিজ্ঞতা।',
   },
   filters: {
-    all: { en: 'All Reviews', bn: 'সকল অভিজ্ঞতা (All)' },
-    Canada: { en: 'Canada Pathway', bn: 'Canada Pathway' },
-    France: { en: 'France Pathway', bn: 'France Pathway' },
-    General: { en: 'General & NGO', bn: 'General & NGO' },
+    all: { en: 'All Reviews', bn: 'সকল অভিজ্ঞতা' },
+    Canada: { en: 'Canada Pathway', bn: 'কানাডা পাথওয়ে' },
+    France: { en: 'France Pathway', bn: 'ফ্রান্স পাথওয়ে' },
+    General: { en: 'General & NGO', bn: 'সাধারণ ও এনজিও' },
   },
   empty: { en: 'No reviews found for this category.', bn: 'এই বিভাগে কোনো রিভিউ পাওয়া যায়নি।' },
-  prev: 'Previous Review',
-  next: 'Next Review',
+  prev: { en: 'Previous Review', bn: 'আগের রিভিউ' },
+  next: { en: 'Next Review', bn: 'পরের রিভিউ' },
+  readFull: { en: 'Read full review', bn: 'পুরো রিভিউ পড়ুন' },
+  close: { en: 'Close', bn: 'বন্ধ করুন' },
+  /** Star rating label; {n} is replaced with the rating. */
+  rating: { en: '{n} out of 5', bn: '৫-এর মধ্যে {n}' },
 };
 
 export const instructor = {
@@ -560,13 +567,22 @@ export const instructor = {
     en: 'Our Alliance Française certified instructor combines deep French expertise with clear Bangla explanations.',
     bn: 'আমাদের ট্রেইন্ড শিক্ষক প্রতিটি ক্লাস সাবলীল বাংলায় পরিচালনা করেন যাতে শেখা হয় সহজ ও দ্রুত।',
   },
-  name: 'Engr. Al-Amin Hossain',
-  role: 'French Instructor, Interpreter & TCF expert',
-  creds: 'DELF A1–B2 Certified | Alliance Française Trained',
-  experience: '3+ Years Teaching Experience',
-  expert: 'DELF, TCF & TEF Expert',
-  bio: 'Specialist in making French simple, practical, and exam-oriented—helping learners build strong foundations to achieve their language goals with confidence. (DELF, TCF & TEF Preparation)',
-  verified: 'Verified',
+  name: { en: 'Engr. Al-Amin Hossain', bn: 'ইঞ্জি. আল-আমিন হোসেন' },
+  role: {
+    en: 'French Instructor, Interpreter & TCF expert',
+    bn: 'ফরাসি ভাষার শিক্ষক, ইন্টারপ্রেটার ও TCF বিশেষজ্ঞ',
+  },
+  creds: {
+    en: 'DELF A1–B2 Certified | Alliance Française Trained',
+    bn: 'DELF A1–B2 সার্টিফাইড | Alliance Française প্রশিক্ষিত',
+  },
+  experience: { en: '3+ Years Teaching Experience', bn: '3+ বছরের শিক্ষকতার অভিজ্ঞতা' },
+  expert: { en: 'DELF, TCF & TEF Expert', bn: 'DELF, TCF ও TEF বিশেষজ্ঞ' },
+  bio: {
+    en: 'Specialist in making French simple, practical, and exam-oriented—helping learners build strong foundations to achieve their language goals with confidence. (DELF, TCF & TEF Preparation)',
+    bn: 'ফরাসি ভাষাকে সহজ, ব্যবহারিক ও পরীক্ষামুখী করে শেখানোয় বিশেষজ্ঞ — যাতে শিক্ষার্থীরা মজবুত ভিত্তি গড়ে আত্মবিশ্বাসের সাথে নিজেদের ভাষার লক্ষ্যে পৌঁছাতে পারেন। (DELF, TCF ও TEF প্রস্তুতি)',
+  },
+  verified: { en: 'Verified', bn: 'ভেরিফাইড' },
 };
 
 export const faq = {
@@ -581,6 +597,15 @@ export const faq = {
     bn: 'প্রশ্ন খুঁজুন... (যেমন: ২০২৬ আইন, কিস্তি, মিসড ক্লাস)',
   },
   categories: ['All', 'General', 'Immigration', 'Classes', 'Payment', 'Exams'] as const,
+  /** Display labels for the category keys above (keys are also the FAQ data's category values). */
+  categoryLabels: {
+    All: { en: 'All', bn: 'সব' },
+    General: { en: 'General', bn: 'সাধারণ' },
+    Immigration: { en: 'Immigration', bn: 'ইমিগ্রেশন' },
+    Classes: { en: 'Classes', bn: 'ক্লাস' },
+    Payment: { en: 'Payment', bn: 'পেমেন্ট' },
+    Exams: { en: 'Exams', bn: 'পরীক্ষা' },
+  } satisfies Record<'All' | 'General' | 'Immigration' | 'Classes' | 'Payment' | 'Exams', L>,
   none: { en: 'No questions match your search.', bn: 'আপনার খোঁজার সাথে কোনো প্রশ্ন মেলেনি।' },
   customTitle: { en: 'Have a custom question not listed here?', bn: 'আপনার অন্য কোনো প্রশ্ন আছে?' },
   customCta: {
@@ -596,17 +621,17 @@ export const footer = {
   },
   pathways: { en: 'Pathways', bn: 'কোর্স পাথওয়ে' },
   pathwayLinks: [
-    { label: 'DELF A1 Beginner', id: 'delf-a1' },
-    { label: 'DELF A2 Elementary', id: 'delf-a2' },
-    { label: 'DELF B1 Intermediate', id: 'delf-b1' },
-    { label: 'DELF B2 Advanced', id: 'delf-b2' },
-    { label: 'TEF Canada (+62 CRS)', id: 'tef-canada' },
-    { label: 'TCF Canada Prep', id: 'tcf-canada' },
+    { label: { en: 'DELF A1 Beginner', bn: 'DELF A1 বিগিনার' }, id: 'delf-a1' },
+    { label: { en: 'DELF A2 Elementary', bn: 'DELF A2 এলিমেন্টারি' }, id: 'delf-a2' },
+    { label: { en: 'DELF B1 Intermediate', bn: 'DELF B1 ইন্টারমিডিয়েট' }, id: 'delf-b1' },
+    { label: { en: 'DELF B2 Advanced', bn: 'DELF B2 অ্যাডভান্সড' }, id: 'delf-b2' },
+    { label: { en: 'TEF Canada (+62 CRS)', bn: 'TEF Canada (+62 CRS)' }, id: 'tef-canada' },
+    { label: { en: 'TCF Canada Prep', bn: 'TCF Canada প্রস্তুতি' }, id: 'tcf-canada' },
   ],
   aboutTitle: { en: 'About Us', bn: 'আমাদের সম্পর্কে' },
   contactTitle: { en: 'Contact Us', bn: 'যোগাযোগ অফিশিয়াল' },
-  bkash: 'bKash Personal (payments)',
-  rights: 'We Learn French BD. All Rights Reserved.',
+  bkash: { en: 'bKash Personal (payments)', bn: 'বিকাশ পার্সোনাল (পেমেন্ট)' },
+  rights: { en: 'We Learn French BD. All Rights Reserved.', bn: 'We Learn French BD. সর্বস্বত্ব সংরক্ষিত।' },
   ctaTitle: { en: 'Your French journey starts here.', bn: 'আপনার ফরাসি যাত্রা এখান থেকেই শুরু।' },
   ctaSub: {
     en: 'Your French Journey, Our Commitment.',
@@ -622,4 +647,24 @@ export const ui = {
   backToTop: { en: 'Back to top', bn: 'উপরে যান' } as L,
   whatsapp: { en: 'WhatsApp', bn: 'হোয়াটসঅ্যাপ' } as L,
   freeQuiz: { en: 'Free Quiz', bn: 'ফ্রি কুইজ' } as L,
+  // Chrome / accessibility labels shared by the layout components
+  homepage: { en: 'We Learn French BD Homepage', bn: 'We Learn French BD হোমপেজ' } as L,
+  logoAlt: { en: 'We Learn French BD official logo', bn: 'We Learn French BD অফিশিয়াল লোগো' } as L,
+  mainNav: { en: 'Main', bn: 'প্রধান মেনু' } as L,
+  menu: { en: 'Menu', bn: 'মেনু' } as L,
+  admin: { en: 'Admin', bn: 'অ্যাডমিন' } as L,
+  recorded: { en: 'Recorded', bn: 'রেকর্ডেড' } as L,
+  searchSite: { en: 'Search the site', bn: 'সাইটে খুঁজুন' } as L,
+  call: { en: 'Call', bn: 'কল করুন' } as L,
+  chatWhatsapp: { en: 'Chat on WhatsApp', bn: 'হোয়াটসঅ্যাপে চ্যাট করুন' } as L,
+  quickActions: { en: 'Quick actions', bn: 'দ্রুত অ্যাকশন' } as L,
+  breadcrumb: { en: 'Breadcrumb', bn: 'ব্রেডক্রাম্ব' } as L,
+  pageSections: { en: 'Page sections', bn: 'পেজের সেকশনসমূহ' } as L,
+  language: { en: 'Language', bn: 'ভাষা' } as L,
+  profile: { en: 'Profile', bn: 'প্রোফাইল' } as L,
+  accountMenu: { en: 'Account menu', bn: 'অ্যাকাউন্ট মেনু' } as L,
+  toLight: { en: 'Switch to light theme', bn: 'লাইট থিমে যান' } as L,
+  toDark: { en: 'Switch to dark theme', bn: 'ডার্ক থিমে যান' } as L,
+  skip: { en: 'Skip to content', bn: 'মূল কন্টেন্টে যান' } as L,
+  close: { en: 'Close', bn: 'বন্ধ করুন' } as L,
 };

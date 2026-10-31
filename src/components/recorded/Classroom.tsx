@@ -8,8 +8,26 @@ import { useT } from '@/i18n/t';
 import { btn } from '@/components/ui/Button';
 import { useAuth } from '@/components/auth/AuthContext';
 import { firebase } from '@/lib/firebase';
-import { cn } from '@/lib/utils';
+import { cn, num, toBnDigits } from '@/lib/utils';
+import { safeEmbedUrl, safeHttpsUrl } from '@/lib/embed';
 import type { RecordedCourse } from '@/types';
+import type { L } from '@/i18n/t';
+
+/** Lesson length such as "42 min" in the current locale ("৪২ মিনিট" in Bangla). */
+const dur = (d: string, locale: string) =>
+  locale === 'bn' ? toBnDigits(d.replace(/\b(mins?|minutes?)\b/i, 'মিনিট').replace(/\b(hrs?|hours?)\b/i, 'ঘণ্টা')) : d;
+
+/** Messages for the certificate API's error codes (the server's English `error` is the fallback). */
+const CERT_ERRORS: Record<string, L> = {
+  rate_limited: { en: 'Too many attempts. Please try again later.', bn: 'অনেকবার চেষ্টা করা হয়েছে। একটু পরে আবার চেষ্টা করুন।' },
+  no_certificate: { en: 'This course does not include a certificate.', bn: 'এই কোর্সে কোনো সার্টিফিকেট নেই।' },
+  not_enrolled: { en: 'You are not enrolled in this course.', bn: 'আপনি এই কোর্সে ভর্তি নন।' },
+  incomplete: { en: 'Complete every lesson first, then request the certificate.', bn: 'আগে সব লেসন সম্পন্ন করুন, তারপর সার্টিফিকেটের জন্য আবেদন করুন।' },
+  name_required: {
+    en: 'Add your full name in your profile first, then request the certificate.',
+    bn: 'আগে আপনার প্রোফাইলে পুরো নাম যোগ করুন, তারপর সার্টিফিকেটের জন্য আবেদন করুন।',
+  },
+};
 
 export function Classroom({ slug }: { slug: string }) {
   const t = useT();
@@ -20,15 +38,26 @@ export function Classroom({ slug }: { slug: string }) {
   const [done, setDone] = useState<string[]>([]);
   const [cert, setCert] = useState<string | null>(null);
   const [certErr, setCertErr] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
+    setCourse(null);
+    setFailed(false);
     authFetch(`/api/learn/${slug}`)
-      .then((r) => r.json())
+      .then(async (r) => {
+        if (!r.ok) throw new Error(String(r.status));
+        return r.json();
+      })
       .then((d) => {
+        if (cancelled) return;
         setCourse(d.course);
         setAccess(!!d.access);
       })
-      .catch(() => {});
+      .catch(() => !cancelled && setFailed(true));
+    return () => {
+      cancelled = true;
+    };
     // authFetch identity changes every render; the slug is what matters
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug, user?.uid]);
@@ -47,6 +76,15 @@ export function Classroom({ slug }: { slug: string }) {
       .catch(() => setCurrent(lessons[0]?.id ?? null));
   }, [user, course, lessons]);
 
+  if (failed || (course && lessons.length === 0))
+    return (
+      <div className="mx-auto max-w-md rounded-[24px] border border-line bg-surface p-8 text-center">
+        <p className="font-display text-xl font-semibold">{t({ en: 'This course is not available.', bn: 'এই কোর্সটি পাওয়া যায়নি।' })}</p>
+        <Link href="/recorded" className={btn('ink', 'md', 'mt-5')}>
+          {t({ en: 'Browse recorded courses', bn: 'রেকর্ডেড কোর্স দেখুন' })}
+        </Link>
+      </div>
+    );
   if (!course)
     return (
       <div className="flex justify-center py-20 text-muted">
@@ -90,21 +128,41 @@ export function Classroom({ slug }: { slug: string }) {
 
   const getCert = async () => {
     setCertErr(null);
-    const r = await authFetch('/api/certificate', { method: 'POST', body: JSON.stringify({ courseId: course.id }) });
-    const d = await r.json();
-    if (r.ok) setCert(d.certificateNumber);
-    else setCertErr(d.error);
+    try {
+      const r = await authFetch('/api/certificate', { method: 'POST', body: JSON.stringify({ courseId: course.id }) });
+      const d = await r.json().catch(() => ({}));
+      if (r.ok) setCert(d.certificateNumber);
+      else {
+        const known = typeof d.code === 'string' ? CERT_ERRORS[d.code] : undefined;
+        setCertErr(known ? t(known) : d.error ?? t({ en: 'Could not issue the certificate. Please try again.', bn: 'সার্টিফিকেট তৈরি করা যায়নি। আবার চেষ্টা করুন।' }));
+      }
+    } catch {
+      setCertErr(t({ en: 'Network error. Please try again.', bn: 'নেটওয়ার্ক সমস্যা। আবার চেষ্টা করুন।' }));
+    }
   };
+  const videoSrc = unlocked(lesson) ? safeEmbedUrl(lesson.videoUrl) : null;
+  const pdfHref = unlocked(lesson) ? safeHttpsUrl(lesson.pdfUrl) : null;
+  const bn = t.locale === 'bn';
+  const lessonTitle = bn && lesson.banglaTitle ? lesson.banglaTitle : lesson.title;
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
       <div>
         <Link href={`/recorded/${course.slug}`} className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-fg">
-          <ChevronLeft size={15} /> {course.title}
+          <ChevronLeft size={15} /> {bn && course.banglaTitle ? course.banglaTitle : course.title}
         </Link>
         <div className="overflow-hidden rounded-[24px] bg-ink">
-          {unlocked(lesson) && lesson.videoUrl ? (
-            <iframe key={lesson.id} src={lesson.videoUrl} title={lesson.title} className="aspect-video w-full" allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
+          {videoSrc ? (
+            <iframe
+              key={lesson.id}
+              src={videoSrc}
+              title={lessonTitle}
+              className="aspect-video w-full"
+              sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allow="autoplay; encrypted-media; picture-in-picture"
+              allowFullScreen
+            />
           ) : (
             <div className="flex aspect-video flex-col items-center justify-center gap-3 text-white">
               <Lock size={32} className="text-gold" />
@@ -117,19 +175,33 @@ export function Classroom({ slug }: { slug: string }) {
         </div>
         <div className="mt-5 flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="font-display text-2xl font-semibold">{lesson.title}</h1>
-            {lesson.banglaTitle && <p className="font-bangla text-muted">{lesson.banglaTitle}</p>}
+            <h1 className={cn('font-display text-2xl font-semibold', bn && lesson.banglaTitle && 'font-bangla')}>{lessonTitle}</h1>
+            {bn && lesson.banglaTitle ? (
+              <p className="text-muted">{lesson.title}</p>
+            ) : (
+              lesson.banglaTitle && <p className="font-bangla text-muted">{lesson.banglaTitle}</p>
+            )}
           </div>
           <div className="flex gap-2">
-            <button onClick={() => idx > 0 && go(lessons[idx - 1].id)} disabled={idx <= 0} className={btn('ghost', 'sm')} aria-label="Previous lesson">
+            <button
+              onClick={() => idx > 0 && go(lessons[idx - 1].id)}
+              disabled={idx <= 0}
+              className={btn('ghost', 'sm')}
+              aria-label={t({ en: 'Previous lesson', bn: 'আগের লেসন' })}
+            >
               <ChevronLeft size={16} />
             </button>
-            <button onClick={() => idx < lessons.length - 1 && go(lessons[idx + 1].id)} disabled={idx >= lessons.length - 1} className={btn('ghost', 'sm')} aria-label="Next lesson">
+            <button
+              onClick={() => idx < lessons.length - 1 && go(lessons[idx + 1].id)}
+              disabled={idx >= lessons.length - 1}
+              className={btn('ghost', 'sm')}
+              aria-label={t({ en: 'Next lesson', bn: 'পরের লেসন' })}
+            >
               <ChevronRight size={16} />
             </button>
           </div>
         </div>
-        <p className="mt-3 leading-relaxed text-muted">{t.locale === 'bn' ? lesson.banglaSummary : lesson.summary}</p>
+        <p className="mt-3 leading-relaxed text-muted">{bn ? lesson.banglaSummary || lesson.summary : lesson.summary}</p>
         <div className="mt-5 flex flex-wrap gap-2">
           {access && (
             <button onClick={markDone} className={btn(done.includes(lesson.id) ? 'ghost' : 'ink', 'md')}>
@@ -137,8 +209,8 @@ export function Classroom({ slug }: { slug: string }) {
               {done.includes(lesson.id) ? t({ en: 'Completed', bn: 'সম্পন্ন' }) : t({ en: 'Mark as completed', bn: 'সম্পন্ন হিসেবে চিহ্নিত করুন' })}
             </button>
           )}
-          {unlocked(lesson) && lesson.pdfUrl && (
-            <a href={lesson.pdfUrl} target="_blank" rel="noopener" className={btn('ghost', 'md')}>
+          {pdfHref && (
+            <a href={pdfHref} target="_blank" rel="noopener noreferrer" className={btn('ghost', 'md')}>
               <FileText size={16} /> PDF
             </a>
           )}
@@ -150,7 +222,7 @@ export function Classroom({ slug }: { slug: string }) {
           <div className="rounded-[22px] bg-ink p-5 text-white">
             <div className="flex justify-between text-sm">
               <span>{t({ en: 'Progress', bn: 'অগ্রগতি' })}</span>
-              <span className="font-bold">{pct}%</span>
+              <span className="font-bold">{num(pct, t.locale)}%</span>
             </div>
             <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
               <div className="h-full bg-gold transition-all" style={{ width: `${pct}%` }} />
@@ -171,7 +243,9 @@ export function Classroom({ slug }: { slug: string }) {
         <div className="max-h-[70vh] overflow-y-auto rounded-[22px] border border-line bg-surface">
           {course.modules?.map((m) => (
             <div key={m.id}>
-              <p className="sticky top-0 border-b border-line bg-surface-2 px-4 py-2.5 text-xs font-bold">{m.title}</p>
+              <p className={cn('sticky top-0 border-b border-line bg-surface-2 px-4 py-2.5 text-xs font-bold', bn && m.banglaTitle && 'font-bangla')}>
+                {bn && m.banglaTitle ? m.banglaTitle : m.title}
+              </p>
               {m.lessons.map((l) => (
                 <button
                   key={l.id}
@@ -185,8 +259,8 @@ export function Classroom({ slug }: { slug: string }) {
                   ) : (
                     <Lock size={14} className="shrink-0 text-muted" />
                   )}
-                  <span className="flex-1">{l.title}</span>
-                  <span className="text-xs text-muted">{l.duration}</span>
+                  <span className={cn('flex-1', bn && l.banglaTitle && 'font-bangla')}>{bn && l.banglaTitle ? l.banglaTitle : l.title}</span>
+                  <span className="text-xs text-muted">{dur(l.duration, t.locale)}</span>
                 </button>
               ))}
             </div>

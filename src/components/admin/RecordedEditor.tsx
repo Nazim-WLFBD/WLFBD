@@ -6,6 +6,7 @@ import { Loader2, Save } from 'lucide-react';
 import { btn } from '@/components/ui/Button';
 import { useAuth } from '@/components/auth/AuthContext';
 import { firebase } from '@/lib/firebase';
+import { EMBED_HINT, safeEmbedUrl, safeHttpsUrl } from '@/lib/embed';
 import type { RecordedCourse } from '@/types';
 
 /** Edit recorded courses stored in Firestore: price, publish, and each lesson's links/preview flag. */
@@ -66,6 +67,15 @@ export function RecordedEditor() {
     setBusy(true);
     setMsg(null);
     try {
+      // Links are rendered inside iframes/anchors on the public site, so only allowed shapes are saved
+      for (const m of c.modules ?? [])
+        for (const l of m.lessons) {
+          const v = links[l.id]?.videoUrl ?? (l.isPreview ? l.videoUrl : '') ?? '';
+          const p = links[l.id]?.pdfUrl ?? (l.isPreview ? l.pdfUrl : '') ?? '';
+          if (v && !safeEmbedUrl(v)) throw new Error(`"${l.title}": invalid video link. ${EMBED_HINT}`);
+          if (p && !safeHttpsUrl(p)) throw new Error(`"${l.title}": the PDF link must start with https://`);
+        }
+      if (c.thumbnail && !safeHttpsUrl(c.thumbnail)) throw new Error('The thumbnail must be an https:// link.');
       const modules = (c.modules ?? []).map((m) => ({
         ...m,
         lessons: m.lessons.map((l) => (l.isPreview ? { ...l, videoUrl: links[l.id]?.videoUrl ?? l.videoUrl ?? '', pdfUrl: links[l.id]?.pdfUrl ?? l.pdfUrl ?? null } : { ...l, videoUrl: '', pdfUrl: null })),
@@ -82,9 +92,11 @@ export function RecordedEditor() {
       for (const m of c.modules ?? [])
         for (const l of m.lessons)
           if (!l.isPreview) await setDoc(doc(fb.db, 'recordedCourses', c.id, 'private', l.id), { videoUrl: links[l.id]?.videoUrl ?? '', pdfUrl: links[l.id]?.pdfUrl ?? null });
+      // Clear the server's short cache so the classroom sees the new links at once
+      await authFetch('/api/admin', { method: 'POST', body: JSON.stringify({ action: 'refreshRecordedCourses' }) }).catch(() => {});
       setMsg('Saved. The public site updates within 5 minutes.');
     } catch (e) {
-      setMsg(String(e));
+      setMsg(e instanceof Error ? e.message : String(e));
     } finally {
       setBusy(false);
     }

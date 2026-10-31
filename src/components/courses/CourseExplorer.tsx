@@ -9,13 +9,14 @@ import { btn } from '@/components/ui/Button';
 import { Reveal } from '@/components/ui/Reveal';
 import { COURSES_DATA, COMBO_OFFERS } from '@/data/courses';
 import { courses as copy } from '@/content/home';
-import { cn, taka } from '@/lib/utils';
-import { BoardingPass } from './BoardingPass';
+import { cn, num, taka } from '@/lib/utils';
+import { BoardingPass, courseText } from './BoardingPass';
 
 type Filter = 'all' | 'delf' | 'canada';
 
 export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }) {
   const t = useT();
+  const bn = t.locale === 'bn';
   const [filter, setFilter] = useState<Filter>('all');
   const [compare, setCompare] = useState<string[]>([]);
   const [showTable, setShowTable] = useState(false);
@@ -32,7 +33,7 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
       <div
         className="no-scrollbar -mx-4 mb-10 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0 [&>button]:shrink-0 [&>button]:whitespace-nowrap"
         role="tablist"
-        aria-label="Filter courses"
+        aria-label={t({ en: 'Filter courses', bn: 'কোর্স ফিল্টার করুন' })}
       >
         {(Object.keys(copy.filters) as Filter[]).map((f) => (
           <button
@@ -54,7 +55,7 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
       </div>
 
       <p className="-mt-6 mb-2 flex items-center gap-1.5 text-xs font-semibold text-muted md:hidden">
-        {t({ en: `Swipe to see all ${list.length} courses`, bn: `সব ${list.length}টি কোর্স দেখতে সোয়াইপ করুন` })} →
+        {t({ en: `Swipe to see all ${list.length} courses`, bn: `সব ${num(list.length, 'bn')}টি কোর্স দেখতে সোয়াইপ করুন` })} →
       </p>
       <LayoutGroup>
         {/* Phones: horizontal swipe row (saves several screens of scrolling). Tablet/desktop: grid */}
@@ -85,7 +86,7 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
         <Reveal className="mb-8 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <div>
             <p className="text-[11px] font-bold tracking-[0.2em] text-rouge uppercase">
-              {t(copy.comboTag)} <span className="text-muted normal-case">{copy.comboTagSub}</span>
+              {t(copy.comboTag)} <span className="text-muted normal-case">{t(copy.comboTagSub)}</span>
             </p>
             <h3 className="font-display mt-3 text-[clamp(1.8rem,3.4vw,2.6rem)] font-semibold">{t(copy.comboTitle)}</h3>
           </div>
@@ -103,9 +104,9 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
                 <div className="dots pointer-events-none absolute inset-0 opacity-20" />
                 <div className="relative flex flex-wrap items-center gap-2">
                   <span className="rounded-full bg-gold px-3 py-1 text-[10px] font-extrabold tracking-wider text-ink uppercase">
-                    {combo.badge ?? 'COMBO'}
+                    {(bn && combo.banglaBadge) || combo.badge || t({ en: 'COMBO', bn: 'কম্বো' })}
                   </span>
-                  <span className="text-xs text-white/60">{combo.eligibility}</span>
+                  <span className="text-xs text-white/60">{bn ? combo.eligibilityBangla : combo.eligibility}</span>
                 </div>
                 {/* Connecting flight */}
                 <div className="relative mt-6 flex items-center gap-3">
@@ -122,9 +123,13 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
                     </div>
                   ))}
                 </div>
-                <h4 className="font-display relative mt-6 text-2xl font-semibold">{combo.title}</h4>
-                <p className="font-bangla relative text-sm text-white/55">{combo.banglaTitle}</p>
-                <p className="relative mt-3 text-sm leading-relaxed text-white/70">{combo.description}</p>
+                <h4 className={cn('font-display relative mt-6 text-2xl font-semibold', bn && 'font-bangla')}>
+                  {bn ? combo.banglaTitle : combo.title}
+                </h4>
+                <p className={cn('relative text-sm text-white/55', !bn && 'font-bangla')}>{bn ? combo.title : combo.banglaTitle}</p>
+                <p className="relative mt-3 text-sm leading-relaxed text-white/70">
+                  {(bn && combo.banglaDescription) || combo.description}
+                </p>
                 <div className="relative mt-auto flex flex-wrap items-end justify-between gap-4 pt-7">
                   <div>
                     <p className="text-[11px] font-bold tracking-wider text-white/55 uppercase">{t(copy.combinedFee)}</p>
@@ -189,7 +194,7 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
                           <th className="p-3" />
                           {compared.map((c) => (
                             <th key={c.id} className="font-display p-3 text-base font-semibold tracking-normal text-white normal-case">
-                              {c.title.split(' - ')[0]}
+                              {courseText(c, t.locale).shortTitle}
                             </th>
                           ))}
                         </tr>
@@ -197,11 +202,11 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
                       <tbody className="[&_td]:border-t [&_td]:border-white/10 [&_td]:p-3 [&_th]:border-t [&_th]:border-white/10 [&_th]:p-3">
                         {(
                           [
-                            [t(copy.target), (c) => c.targetClb ?? c.cefrLevel],
-                            [t(copy.duration), (c) => c.duration],
-                            [t(copy.schedule), (c) => `${c.classCount} · ${c.classesPerWeek}`],
+                            [t(copy.target), (c) => courseText(c, t.locale).targetClb ?? c.cefrLevel],
+                            [t(copy.duration), (c) => (bn ? courseText(c, 'bn').duration : c.duration)],
+                            [t(copy.schedule), (c) => `${num(c.classCount, t.locale)} · ${courseText(c, t.locale).classesPerWeek}`],
                             [t(copy.fee), (c) => (c.isCustomPricing ? t(copy.feeCustom) : taka(c.offerPrice, t.locale))],
-                            ['Audience', (c) => c.targetAudience],
+                            [t({ en: 'Audience', bn: 'কাদের জন্য' }), (c) => courseText(c, t.locale).targetAudience],
                           ] as [string, (c: (typeof compared)[number]) => string][]
                         ).map(([label, get]) => (
                           <tr key={label}>

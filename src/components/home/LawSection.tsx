@@ -68,7 +68,7 @@ export function LawSection() {
                       </svg>
                     </div>
                     <div className="min-w-0">
-                      <p className="font-display text-lg leading-tight font-semibold">{c.title}</p>
+                      <p className="font-display text-lg leading-tight font-semibold">{t(c.title)}</p>
                       <p className="mt-1.5 text-[12.5px] leading-snug text-ink/70">{t(c.desc)}</p>
                     </div>
                   </div>

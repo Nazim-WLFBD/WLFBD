@@ -104,7 +104,7 @@ export function Hero() {
             className="mt-8 grid max-w-xl grid-cols-2 gap-2.5 sm:grid-cols-4"
           >
             {hero.chips.map((c) => (
-              <div key={c.title} className="glass flex flex-col gap-2 rounded-2xl p-3">
+              <div key={c.title.en} className="glass flex flex-col gap-2 rounded-2xl p-3">
                 <span
                   className={cn(
                     'flex h-8 w-8 items-center justify-center rounded-full',
@@ -113,8 +113,8 @@ export function Hero() {
                 >
                   <Icon name={c.icon} size={15} />
                 </span>
-                <span className="text-[13px] leading-tight font-bold">{c.title}</span>
-                <span className="-mt-1 text-[11px] text-white/55">{c.sub}</span>
+                <span className="text-[13px] leading-tight font-bold">{t(c.title)}</span>
+                <span className="-mt-1 text-[11px] text-white/55">{t(c.sub)}</span>
               </div>
             ))}
           </motion.div>
@@ -155,17 +155,17 @@ export function Hero() {
                     <MapleLeaf size={24} />
                   </span>
                   <div>
-                    <p className="font-display text-xl font-semibold">{hero.card.title}</p>
+                    <p className="font-display text-xl font-semibold">{t(hero.card.title)}</p>
                     <p className="text-sm text-white/70">
-                      {hero.card.pre} <strong className="font-extrabold text-white">{hero.card.strong}</strong>
+                      {t(hero.card.pre)} <strong className="font-extrabold text-white">{t(hero.card.strong)}</strong>
                     </p>
                   </div>
                 </div>
                 <ul className="mt-4 space-y-2">
                   {hero.card.checks.map((c) => (
-                    <li key={c} className="flex items-center gap-2 text-sm text-white/85">
+                    <li key={c.en} className="flex items-center gap-2 text-sm text-white/85">
                       <CheckCircle2 size={16} className="shrink-0 text-mint" />
-                      {c}
+                      {t(c)}
                     </li>
                   ))}
                 </ul>
@@ -179,7 +179,7 @@ export function Hero() {
                   </span>
                   <ArrowRight size={16} />
                 </Link>
-                <p className="mt-3 text-[10px] leading-snug text-white/45">{hero.card.disclaimer}</p>
+                <p className="mt-3 text-[10px] leading-snug text-white/45">{t(hero.card.disclaimer)}</p>
               </div>
             </Tilt>
           </motion.div>
@@ -208,7 +208,7 @@ export function Hero() {
         <div className="flex w-max animate-marquee gap-10 whitespace-nowrap">
           {[...marquee, ...marquee].map((m, i) => (
             <span key={i} className="font-display flex items-center gap-10 text-lg font-semibold italic">
-              {m}
+              {t(m)}
               <MapleLeaf size={14} className="text-white/60" />
             </span>
           ))}

@@ -9,8 +9,8 @@ import { Icon } from '@/components/ui/Icon';
 import { Reveal } from '@/components/ui/Reveal';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { recorded } from '@/content/home';
-import { WA_MESSAGES, waLink } from '@/lib/brand';
-import { taka } from '@/lib/utils';
+import { waLink, waMessage } from '@/lib/brand';
+import { num, taka } from '@/lib/utils';
 import type { RecordedCourse } from '@/types';
 import { WhatsAppGlyph } from '@/components/layout/FloatingActions';
 
@@ -49,13 +49,15 @@ export function RecordedTeaser({ courses }: { courses: RecordedCourse[] }) {
         <div className="grid gap-6 md:grid-cols-2">
           {courses.map((c, i) => {
             const off = Math.round(((c.regularPrice - c.offerPrice) / c.regularPrice) * 100);
+            const bn = t.locale === 'bn';
+            const hours = bn && c.banglaTotalHours ? c.banglaTotalHours.split(' ')[0] : num(c.totalHours.split(' ')[0], t.locale);
             return (
               <Reveal key={c.id} delay={i * 0.1}>
                 <article className="group flex h-full flex-col overflow-hidden rounded-[28px] border border-line bg-surface transition duration-500 hover:shadow-[var(--shadow-lift)]">
                   <Link href={`/recorded/${c.slug}`} className="relative block aspect-[16/9] overflow-hidden bg-ink">
                     <Image
                       src={c.thumbnail}
-                      alt={c.title}
+                      alt={bn ? c.banglaTitle : c.title}
                       fill
                       sizes="(min-width: 768px) 50vw, 100vw"
                       className="object-cover opacity-80 transition duration-700 group-hover:scale-105 group-hover:opacity-60"
@@ -64,9 +66,11 @@ export function RecordedTeaser({ courses }: { courses: RecordedCourse[] }) {
                     <div className="absolute top-4 left-4 flex flex-wrap gap-2">
                       <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-extrabold text-ink">DELF {c.level}</span>
                       <span className="rounded-full bg-ink/70 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur">
-                        {recorded.tagRecorded}
+                        {t(recorded.tagRecorded)}
                       </span>
-                      <span className="rounded-full bg-rouge px-2.5 py-1 text-[11px] font-extrabold text-white">{off}% OFF</span>
+                      <span className="rounded-full bg-rouge px-2.5 py-1 text-[11px] font-extrabold text-white">
+                        {num(off, t.locale)}% {t(recorded.off)}
+                      </span>
                     </div>
                     <span className="absolute inset-0 flex items-center justify-center">
                       <span className="flex items-center gap-2 rounded-full bg-white/95 px-5 py-2.5 text-sm font-bold text-ink shadow-xl transition group-hover:scale-105">
@@ -76,14 +80,17 @@ export function RecordedTeaser({ courses }: { courses: RecordedCourse[] }) {
                     </span>
                     <div className="absolute right-4 bottom-4 left-4 flex justify-between text-xs font-bold text-white">
                       <span>
-                        {c.totalLessons} {t(recorded.lessons)}
+                        {num(c.totalLessons, t.locale)} {t(recorded.lessons)}
                       </span>
-                      <span>{c.totalHours.split(' ')[0]}</span>
+                      <span>{hours}</span>
                     </div>
                   </Link>
                   <div className="flex flex-1 flex-col p-6 md:p-7">
-                    <h3 className="font-display text-2xl leading-tight font-semibold">{c.title}</h3>
-                    <p className="font-bangla mt-1 text-sm text-muted">{c.banglaTitle}</p>
+                    {/* Bangla readers get the Bangla title as the headline, with the English name as the subline */}
+                    <h3 className={bn ? 'font-bangla text-2xl leading-tight font-semibold' : 'font-display text-2xl leading-tight font-semibold'}>
+                      {bn ? c.banglaTitle : c.title}
+                    </h3>
+                    <p className={bn ? 'font-display mt-1 text-sm text-muted' : 'font-bangla mt-1 text-sm text-muted'}>{bn ? c.title : c.banglaTitle}</p>
                     <p className="mt-3 line-clamp-3 text-[15px] leading-relaxed text-muted">
                       {t.locale === 'bn' ? c.banglaDescription : c.description}
                     </p>
@@ -129,7 +136,7 @@ export function RecordedTeaser({ courses }: { courses: RecordedCourse[] }) {
               <Sparkles size={16} />
               {t(recorded.quizCta)}
             </Link>
-            <a href={waLink(WA_MESSAGES.question)} target="_blank" rel="noopener" className={btn('ghost-light', 'md')}>
+            <a href={waLink(waMessage('question', t.locale))} target="_blank" rel="noopener" className={btn('ghost-light', 'md')}>
               <WhatsAppGlyph size={17} />
               {t(recorded.helpCta)}
               <ArrowRight size={15} />

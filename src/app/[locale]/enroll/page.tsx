@@ -11,7 +11,11 @@ export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
-  return { title: enroll.title[locale], description: enroll.intro[locale], alternates: { canonical: `/${locale}/enroll` } };
+  return {
+    title: enroll.title[locale],
+    description: enroll.intro[locale],
+    alternates: { canonical: `/${locale}/enroll`, languages: { en: '/en/enroll', bn: '/bn/enroll' } },
+  };
 }
 
 export default async function EnrollPage({ params }: { params: Promise<{ locale: Locale }> }) {
@@ -20,7 +24,7 @@ export default async function EnrollPage({ params }: { params: Promise<{ locale:
   return (
     <>
       <PageHero
-        eyebrow="Admissions · bKash · Nagad"
+        eyebrow={locale === 'bn' ? 'ভর্তি · bKash · Nagad' : 'Admissions · bKash · Nagad'}
         title={enroll.title[locale]}
         intro={enroll.intro[locale]}
         crumbs={[{ href: '/', label: locale === 'bn' ? 'হোম' : 'Home' }, { label: locale === 'bn' ? 'ভর্তি' : 'Enroll' }]}

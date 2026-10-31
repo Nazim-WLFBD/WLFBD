@@ -2,10 +2,12 @@
 
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/navigation';
+import type { Locale } from '@/i18n/routing';
+import { ui } from '@/content/home';
 import { cn } from '@/lib/utils';
 
 export function LangSwitch({ light = true }: { light?: boolean }) {
-  const locale = useLocale();
+  const locale = useLocale() as Locale;
   const pathname = usePathname();
   const router = useRouter();
 
@@ -17,7 +19,7 @@ export function LangSwitch({ light = true }: { light?: boolean }) {
   return (
     <div
       role="group"
-      aria-label="Language"
+      aria-label={ui.language[locale]}
       className={cn('flex rounded-full p-1 text-xs font-bold', light ? 'bg-white/8' : 'bg-fg/5')}
     >
       {(['bn', 'en'] as const).map((l) => (

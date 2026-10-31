@@ -32,10 +32,10 @@ export const enroll = {
   method: { en: 'Select Payment Method:', bn: 'পেমেন্ট মেথড নির্বাচন করুন:' },
   bkashHow: { en: 'Send Money using bKash app or *247#', bn: 'বিকাশ অ্যাপ বা *247# থেকে Send Money করুন' },
   bkashSteps: [
-    '১. bKash অ্যাপে যান ➔ Send Money (সেন্ড মানি) সিলেক্ট করুন',
-    '২. প্রাপক নম্বর লিখুন: 01872981277',
-    '৩. টাকার পরিমাণ:',
-    '৪. রেফারেন্সে আপনার নাম লিখুন এবং TrxID নিচে দিন',
+    { en: '1. Open the bKash app ➔ select Send Money', bn: '১. bKash অ্যাপে যান ➔ Send Money (সেন্ড মানি) সিলেক্ট করুন' },
+    { en: '2. Enter the recipient number: 01872981277', bn: '২. প্রাপক নম্বর লিখুন: 01872981277' },
+    { en: '3. Amount:', bn: '৩. টাকার পরিমাণ:' },
+    { en: '4. Write your name in the reference and enter the TrxID below', bn: '৪. রেফারেন্সে আপনার নাম লিখুন এবং TrxID নিচে দিন' },
   ],
   copy: { en: 'Copy', bn: 'কপি করুন' },
   copied: { en: 'Copied', bn: 'কপি হয়েছে' },
@@ -60,7 +60,7 @@ export const enroll = {
   },
   receipt: { en: 'Enrollment receipt', bn: 'ভর্তির রসিদ' },
   waConfirm: { en: 'Confirm your slip on WhatsApp (Instant)', bn: 'WhatsApp-এ স্লিপ নিশ্চিত করুন (Instant)' },
-  helpline: 'Official Helpline: 01758599797',
+  helpline: { en: 'Official Helpline: 01758599797', bn: 'অফিশিয়াল হেল্পলাইন: 01758599797' },
   newOne: { en: 'Submit another enrollment', bn: 'আরেকটি ভর্তি ফর্ম জমা দিন' },
   errors: {
     required: { en: 'Please fill in this field.', bn: 'এই ঘরটি পূরণ করুন।' },

@@ -93,7 +93,7 @@ export function AdminPortal() {
               { key: 'cefrLevel', label: 'Level', type: 'text' },
               { key: 'issueDate', label: 'Issue date (YYYY-MM-DD)', type: 'text' },
             ]}
-            newDefaults={{ certificateNumber: `WLF-BD-${Math.floor(100000 + Math.random() * 900000)}`, issueDate: new Date().toISOString().slice(0, 10) }}
+            newDefaults={{ certificateNumber: `WLF-BD-${Math.floor(100000 + Math.random() * 900000)}`, issueDate: new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Dhaka' }).format(new Date()) }}
           />
         )}
         {tab === 'Reviews' && (
@@ -162,6 +162,9 @@ function useAction() {
       const r = await authFetch('/api/admin', { method: 'POST', body: JSON.stringify(body) });
       if (!r.ok) alert((await r.json().catch(() => ({}))).error ?? 'Action failed');
       return r.ok;
+    } catch {
+      alert('Network error. Check your connection and try again.');
+      return false;
     } finally {
       setBusy(null);
     }
@@ -315,7 +318,7 @@ function Enrollments() {
 }
 
 function Users() {
-  const { rows, load } = useRows('users', 'createdAt', 500);
+  const { rows, load } = useRows('users', 'lastLoginAt', 500);
   const { profile } = useAuth();
   const { busy, run } = useAction();
   const [q, setQ] = useState('');
