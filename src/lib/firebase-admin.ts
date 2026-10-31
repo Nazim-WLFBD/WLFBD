@@ -47,6 +47,9 @@ export async function getCaller(req: Request): Promise<Caller | null> {
     const email = (d.email ?? '').toLowerCase();
     let role = (d.role as Role) ?? 'student';
     if (email && SUPER_ADMINS.includes(email) && d.email_verified !== false) role = 'superAdmin';
+    // A suspended account is treated as signed out everywhere on the server
+    const profile = await adminDb().collection('users').doc(d.uid).get();
+    if (profile.data()?.status === 'Suspended' && role !== 'superAdmin') return null;
     return { uid: d.uid, email, role };
   } catch {
     return null;

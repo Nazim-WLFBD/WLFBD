@@ -13,11 +13,13 @@ async function fromDb<T>(path: string, fallback: T[], keep: (d: Record<string, u
   try {
     const s = await adminDb().collection(path).get();
     if (s.empty) return fallback;
-    // Strip Firestore timestamps so the data can be passed to client components
+    // Strip Firestore timestamps so the data can be passed to client components.
+    // Fields the database copy lacks (e.g. Bangla text added after seeding) come from the built-in item with the same id.
+    const builtIn = new Map((fallback as unknown as { id: string }[]).map((f) => [f.id, f]));
     return s.docs
       .map((d) => {
         const { createdAt: _c, updatedAt: _u, ...rest } = d.data(); // eslint-disable-line @typescript-eslint/no-unused-vars
-        return { ...rest, id: d.id };
+        return { ...(builtIn.get(d.id) ?? {}), ...rest, id: d.id };
       })
       .filter(keep) as T[];
   } catch (e) {

@@ -19,6 +19,23 @@ export async function rateLimit(key: string, max: number, windowSec: number) {
   return count <= max;
 }
 
+/**
+ * Caller's IP as seen by the hosting platform. Netlify sets `x-nf-client-connection-ip`;
+ * otherwise the LAST `x-forwarded-for` entry is used, since clients can prepend their own
+ * values to that header but the platform's proxy always appends the real address.
+ */
 export function clientIp(req: Request) {
-  return (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim() || req.headers.get('x-real-ip') || 'unknown';
+  const nf = req.headers.get('x-nf-client-connection-ip');
+  if (nf) return nf.trim();
+  const xff = (req.headers.get('x-forwarded-for') ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return xff[xff.length - 1] || req.headers.get('x-real-ip') || 'unknown';
+}
+
+/** Rate limit for anonymous endpoints: per IP plus a global ceiling, so a flood can't exhaust quotas. */
+export async function publicRateLimit(scope: string, req: Request, perIp: number, windowSec: number, global = 300) {
+  const [ipOk, allOk] = await Promise.all([rateLimit(`${scope}:${clientIp(req)}`, perIp, windowSec), rateLimit(`${scope}:all`, global, windowSec)]);
+  return ipOk && allOk;
 }

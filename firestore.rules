@@ -17,10 +17,14 @@ service cloud.firestore {
 
     match /users/{uid} {
       allow read: if isOwner(uid) || isAdmin();
-      // New profiles start as plain students with no courses
+      // New profiles start as plain students with no courses and an active status, under their own identity
       allow create: if isOwner(uid)
         && request.resource.data.get('role', 'student') == 'student'
-        && request.resource.data.get('enrolledCourses', []).size() == 0;
+        && request.resource.data.get('status', 'Active') == 'Active'
+        && request.resource.data.get('enrolledCourses', []) is list
+        && request.resource.data.get('enrolledCourses', []).size() == 0
+        && request.resource.data.get('uid', uid) == uid
+        && request.resource.data.get('email', request.auth.token.get('email', '')) == request.auth.token.get('email', '');
       // Students can't change their role, status or course access
       allow update: if (isOwner(uid) && !request.resource.data.diff(resource.data).affectedKeys()
                           .hasAny(['role', 'status', 'enrolledCourses', 'uid', 'email']))
@@ -34,6 +38,10 @@ service cloud.firestore {
       match /courseProgress/{courseId} {
         allow read: if isOwner(uid) || isAdmin();
         allow create, update: if isOwner(uid) && (enrolledIn(courseId) || isAdmin());
+      }
+      // Written by the server when a certificate is issued
+      match /certificates/{courseId} {
+        allow read: if isOwner(uid) || isAdmin();
       }
     }
 
@@ -49,11 +57,13 @@ service cloud.firestore {
 
     match /recordedCourses/{courseId} {
       allow read: if true;
-      allow write: if isStaff();
+      // Lesson links are embedded on the public site, so only admins may edit courses
+      allow create, update: if isAdmin();
+      allow delete: if role() == 'superAdmin';
       // Paid lesson video/PDF links: only enrolled students and staff
       match /private/{lessonId} {
         allow read: if isStaff() || enrolledIn(courseId);
-        allow write: if isStaff();
+        allow write: if isAdmin();
       }
     }
 
@@ -64,12 +74,18 @@ service cloud.firestore {
 
     match /batches/{id} { allow read: if true; allow write: if isAdmin(); }
     match /announcements/{id} { allow read: if true; allow write: if isAdmin(); }
-    match /certificates/{id} { allow read: if true; allow write: if isAdmin(); }
+    // Anyone may look up one certificate by its number; only admins may list them all
+    match /certificates/{id} {
+      allow get: if true;
+      allow list: if isAdmin();
+      allow write: if isAdmin();
+    }
     match /faq/{id} { allow read: if true; allow write: if isAdmin(); }
     match /reviews/{id} {
       allow read: if resource.data.get('published', false) == true || isAdmin();
       allow write: if isAdmin();
     }
     match /auditLogs/{id} { allow read: if isAdmin(); }
+    // trxIds and rateLimits: server-only (denied by the catch-all above)
   }
 }
