@@ -47,7 +47,6 @@ export const SECTIONS = [
   { id: 'recorded-courses', label: { en: 'Recorded', bn: 'রেকর্ডেড' } },
   { id: 'courses', label: { en: 'Courses', bn: 'কোর্স' } },
   { id: 'schedule', label: { en: 'Schedule', bn: 'সময়সূচী' } },
-  { id: 'roadmap', label: { en: 'Roadmap', bn: 'রোডম্যাপ' } },
   { id: 'students-voice', label: { en: 'Reviews', bn: 'রিভিউ' } },
   { id: 'faq', label: { en: 'FAQ', bn: 'প্রশ্নোত্তর' } },
 ] as const;

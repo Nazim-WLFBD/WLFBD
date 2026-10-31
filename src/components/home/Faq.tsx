@@ -57,7 +57,7 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
       <div className="container-x grid gap-12 lg:grid-cols-[0.9fr_1.3fr] lg:gap-16">
         {/* Sticky heading column */}
         <div className="lg:sticky lg:top-28 lg:self-start">
-          <SectionHeading tag={t(copy.tag)} title={t(copy.title)} intro={t(copy.intro)} num="11" className="mb-8 md:mb-10" />
+          <SectionHeading tag={t(copy.tag)} title={t(copy.title)} intro={t(copy.intro)} num="10" className="mb-8 md:mb-10" />
           <Reveal className="card accent-top p-6 md:p-7">
             <p className="font-display text-xl font-semibold md:text-2xl">{t(copy.customTitle)}</p>
             <a href={waLink(waMessage('question', t.locale))} target="_blank" rel="noopener" className={btn('rouge', 'md', 'mt-5 w-full sm:w-auto')}>

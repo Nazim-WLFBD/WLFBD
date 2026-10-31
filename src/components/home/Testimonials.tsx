@@ -135,7 +135,7 @@ export function Testimonials({ items = TESTIMONIALS_DATA }: { items?: Testimonia
   return (
     <section id="students-voice" className="relative bg-surface py-20 md:py-28">
       <div className="container-x">
-        <SectionHeading tag={t(copy.badge)} title={t(copy.title)} intro={t(copy.intro)} num="09" className="mb-6 md:mb-8" />
+        <SectionHeading tag={t(copy.badge)} title={t(copy.title)} intro={t(copy.intro)} num="08" className="mb-6 md:mb-8" />
 
         {/* Counter + controls on a hairline */}
         <Reveal className="hairline mb-8 flex items-center justify-between pt-4">
@@ -174,7 +174,7 @@ export function Testimonials({ items = TESTIMONIALS_DATA }: { items?: Testimonia
         role="region"
         aria-roledescription="carousel"
         aria-label={t(copy.badge)}
-        className="no-scrollbar relative flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-[var(--gutter)] pb-6 [--gutter:16px] [scroll-padding-inline:var(--gutter)] sm:[--gutter:24px] xl:[--gutter:calc((100vw-1240px)/2+24px)]"
+        className="no-scrollbar container-x relative flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-6 [scroll-padding-inline:16px] sm:[scroll-padding-inline:24px]"
       >
         {list.map((r, i) => {
           const quote = quoteOf(r, t.locale);
@@ -187,7 +187,7 @@ export function Testimonials({ items = TESTIMONIALS_DATA }: { items?: Testimonia
               aria-roledescription="slide"
               aria-label={`${i + 1} / ${list.length}`}
               className={cn(
-                'card flex min-h-[420px] w-[86vw] shrink-0 snap-start flex-col p-7 transition-colors duration-300 sm:w-[400px] lg:w-[calc((min(100vw,1240px)-48px-40px)/3)]',
+                'card flex min-h-[420px] w-[86vw] shrink-0 snap-start flex-col p-7 transition-colors duration-300 sm:w-[400px] lg:w-[calc((100%-40px)/3)]',
                 i === index && 'border-fg/25',
               )}
             >
