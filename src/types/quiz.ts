@@ -46,7 +46,36 @@ export interface Question {
   explanation?: string;
   banglaExplanation?: string;
   points: number;
+  // Writing tasks (marked by an instructor, never auto-scored)
+  minWords?: number;
+  maxWords?: number;
+  modelAnswer?: string; // Admin-only marking notes; never shown to students
+  /** Derived: true when type === 'writing-task' (see `needsReview`). */
+  requiresReview?: boolean;
 }
+
+/** Whether a question is marked by an instructor instead of auto-scored. */
+export const needsReview = (q: Pick<Question, 'type' | 'requiresReview'>) => q.type === 'writing-task' || q.requiresReview === true;
+
+/** A writing answer waiting for an instructor's mark (stored on the attempt). */
+export interface PendingReview {
+  id: string;
+  prompt: string;
+  answer: string;
+  points: number;
+  minWords?: number;
+  maxWords?: number;
+  modelAnswer?: string;
+}
+
+/** An instructor's mark for one writing answer. */
+export interface ReviewedAnswer {
+  id: string;
+  points: number;
+  comment?: string;
+}
+
+export type ReviewStatus = 'pending' | 'reviewed' | 'none';
 
 export interface QuizCategory {
   id: string;
@@ -111,4 +140,6 @@ export interface QuizAttemptHistory {
   estimatedCEFR: CEFRLevel;
   totalScore: number;
   maxScore: number;
+  reviewStatus?: ReviewStatus;
+  reviewed?: ReviewedAnswer[];
 }

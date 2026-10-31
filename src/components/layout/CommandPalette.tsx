@@ -6,7 +6,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { ArrowRight, CornerDownLeft, Search } from 'lucide-react';
 import { useRouter } from '@/i18n/navigation';
 import { useT, type L } from '@/i18n/t';
-import { COURSES_DATA } from '@/data/courses';
+import { useCourses } from '@/components/CoursesProvider';
 import { RECORDED_COURSES } from '@/data/recordedCourses';
 import { FAQ_DATA } from '@/data/faq';
 import { QUIZ_CATEGORIES } from '@/data/quizData';
@@ -33,6 +33,7 @@ const GROUPS = {
 
 export function CommandPalette() {
   const t = useT();
+  const { courses } = useCourses();
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
@@ -79,11 +80,11 @@ export function CommandPalette() {
               />
               <kbd className="rounded-md border border-line px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-muted">ESC</kbd>
             </div>
-            <Command.List className="max-h-[min(60vh,460px)] overflow-y-auto p-2">
+            <Command.List data-lenis-prevent className="max-h-[min(60vh,460px)] overflow-y-auto p-2">
               <Command.Empty className="p-6 text-center text-sm text-muted">{t(GROUPS.empty)}</Command.Empty>
 
               <Command.Group heading={t(GROUPS.courses)} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-[0.14em] [&_[cmdk-group-heading]]:text-muted [&_[cmdk-group-heading]]:uppercase [&:not(:first-child)]:mt-1 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-line [&:not(:first-child)]:pt-1">
-                {COURSES_DATA.map((c) => (
+                {courses.map((c) => (
                   <Command.Item key={c.id} value={`${c.title} ${c.banglaTitle} ${c.code}`} onSelect={() => go(`/courses/${c.id}`)} className={item}>
                     <span className="font-display flex h-8 w-8 items-center justify-center rounded-md bg-ink text-[11px] font-semibold text-white">{c.code}</span>
                     <span className="flex-1">{t.locale === 'bn' ? c.banglaTitle : c.title}</span>

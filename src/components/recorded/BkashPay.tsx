@@ -64,7 +64,7 @@ export function BkashPay({ course, open, onClose }: { course: RecordedCourse; op
     <Dialog.Root open={open} onOpenChange={(o) => !o && onClose()}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[90] bg-ink/70" />
-        <Dialog.Content className="accent-top fixed top-1/2 left-1/2 z-[91] max-h-[92vh] w-[min(520px,calc(100vw-24px))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[var(--radius)] border border-line bg-surface p-6 text-fg shadow-[var(--shadow-lift)]" aria-describedby={undefined}>
+        <Dialog.Content data-lenis-prevent className="accent-top fixed top-1/2 left-1/2 z-[91] max-h-[92vh] w-[min(520px,calc(100vw-24px))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[var(--radius)] border border-line bg-surface p-6 text-fg shadow-[var(--shadow-lift)]" aria-describedby={undefined}>
           <div className="flex items-start justify-between gap-3">
             <Dialog.Title className="font-display text-2xl font-semibold">{t({ en: 'Pay with bKash', bn: 'বিকাশে পেমেন্ট' })}</Dialog.Title>
             <Dialog.Close aria-label={t({ en: 'Close', bn: 'বন্ধ করুন' })} className="-mt-1 -mr-1 flex h-10 w-10 items-center justify-center rounded-lg hover:bg-fg/10">

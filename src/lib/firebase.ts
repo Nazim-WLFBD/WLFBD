@@ -3,6 +3,7 @@
 import { getApps, initializeApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator, type Auth } from 'firebase/auth';
 import { getFirestore, connectFirestoreEmulator, type Firestore } from 'firebase/firestore';
+import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
 const config = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -20,6 +21,7 @@ const useEmulator = process.env.NEXT_PUBLIC_FIREBASE_EMULATOR === '1';
 let app: FirebaseApp | undefined;
 let auth: Auth | undefined;
 let db: Firestore | undefined;
+let storage: FirebaseStorage | undefined;
 
 export function firebase() {
   if (!firebaseConfigured) return null;
@@ -27,10 +29,12 @@ export function firebase() {
     app = getApps()[0] ?? initializeApp(config);
     auth = getAuth(app);
     db = getFirestore(app);
+    // Uploads (quiz audio) go to the default bucket from NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    storage = getStorage(app);
     if (useEmulator) {
       connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
       connectFirestoreEmulator(db, '127.0.0.1', 8080);
     }
   }
-  return { app: app!, auth: auth!, db: db! };
+  return { app: app!, auth: auth!, db: db!, storage: storage! };
 }

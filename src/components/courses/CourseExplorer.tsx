@@ -7,7 +7,7 @@ import { Link } from '@/i18n/navigation';
 import { useT } from '@/i18n/t';
 import { btn } from '@/components/ui/Button';
 import { Reveal } from '@/components/ui/Reveal';
-import { COURSES_DATA, COMBO_OFFERS } from '@/data/courses';
+import { useCourses } from '@/components/CoursesProvider';
 import { courses as copy } from '@/content/home';
 import { cn, num, taka } from '@/lib/utils';
 import { BoardingPass, courseText } from './BoardingPass';
@@ -17,16 +17,17 @@ type Filter = 'all' | 'delf' | 'canada';
 export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }) {
   const t = useT();
   const bn = t.locale === 'bn';
+  const { courses, combos } = useCourses();
   const [filter, setFilter] = useState<Filter>('all');
   const [compare, setCompare] = useState<string[]>([]);
   const [showTable, setShowTable] = useState(false);
 
-  const list = COURSES_DATA.filter((c) =>
+  const list = courses.filter((c) =>
     filter === 'all' ? true : filter === 'delf' ? c.id.startsWith('delf') : c.id.includes('tef') || c.id.includes('tcf'),
   );
   const toggleCompare = (id: string) =>
     setCompare((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : cur.length >= 3 ? [...cur.slice(1), id] : [...cur, id]));
-  const compared = COURSES_DATA.filter((c) => compare.includes(c.id));
+  const compared = courses.filter((c) => compare.includes(c.id));
 
   return (
     <>
@@ -99,7 +100,7 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
           </p>
         </Reveal>
         <div className="grid gap-6 lg:grid-cols-2">
-          {COMBO_OFFERS.map((combo, i) => (
+          {combos.map((combo, i) => (
             <Reveal key={combo.id} delay={i * 0.1}>
               <article className="relative flex h-full flex-col rounded-[var(--radius)] bg-ink p-7 text-white md:p-8">
                 <div className="flex flex-wrap items-center gap-3">
@@ -184,7 +185,7 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
                   exit={{ height: 0, opacity: 0 }}
                   className="overflow-hidden"
                 >
-                  <div className="mt-3 max-h-[50vh] overflow-auto border-t border-line">
+                  <div data-lenis-prevent className="mt-3 max-h-[50vh] overflow-auto border-t border-line">
                     <table className="w-full text-left text-sm">
                       <thead>
                         <tr className="text-[10px] tracking-widest text-muted uppercase">

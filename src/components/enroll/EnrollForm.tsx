@@ -7,7 +7,7 @@ import { ArrowLeft, ArrowRight, Check, CheckCircle2, Copy, Loader2 } from 'lucid
 import { useT } from '@/i18n/t';
 import { btn } from '@/components/ui/Button';
 import { WhatsAppGlyph } from '@/components/layout/FloatingActions';
-import { COURSES_DATA, COMBO_OFFERS } from '@/data/courses';
+import { useCourses } from '@/components/CoursesProvider';
 import { BATCH_SCHEDULES } from '@/data/schedules';
 import { enroll as copy } from '@/content/enroll';
 import { BRAND_CONTACT, waLink } from '@/lib/brand';
@@ -83,10 +83,11 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
   const t = useT();
   const bn = t.locale === 'bn';
   const params = useSearchParams();
+  const { courses, combos } = useCourses();
 
   const options: Option[] = useMemo(
     () => [
-      ...COURSES_DATA.filter((c) => !c.whatsappOnly).map((c) => ({
+      ...courses.filter((c) => !c.whatsappOnly).map((c) => ({
         id: c.id,
         title: bn ? c.banglaTitle : c.title,
         sub: c.isCustomPricing
@@ -97,7 +98,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
         fee: c.isCustomPricing ? null : c.offerPrice,
         combo: false,
       })),
-      ...COMBO_OFFERS.map((c) => ({
+      ...combos.map((c) => ({
         id: c.id,
         title: bn ? c.banglaTitle : c.title,
         sub: c.courses.join(' + '),
@@ -105,7 +106,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
         combo: true,
       })),
     ],
-    [t, bn],
+    [t, bn, courses, combos],
   );
 
   const initialCourse = options.find((o) => o.id === params.get('course'))?.id ?? 'delf-a1';

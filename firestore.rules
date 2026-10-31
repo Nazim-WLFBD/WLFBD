@@ -76,6 +76,10 @@ service cloud.firestore {
     }
 
     match /batches/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /courses/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /combos/{id} { allow read: if true; allow write: if isAdmin(); }
+    // Admin review queue: collection-group query over every student's attempts
+    match /{path=**}/quizAttempts/{id} { allow read: if isAdmin(); }
     match /announcements/{id} { allow read: if true; allow write: if isAdmin(); }
     // Anyone may look up one certificate by its number; only admins may list them all
     match /certificates/{id} {

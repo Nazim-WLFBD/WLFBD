@@ -2,19 +2,23 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { addDoc, collection, doc, getDocs, serverTimestamp, updateDoc } from 'firebase/firestore';
-import { ArrowLeft, ArrowRight, CheckCircle2, Clock, Flag, RotateCcw, Star, Volume2, XCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle2, Clock, Flag, Hourglass, RotateCcw, Star, Volume2, XCircle } from 'lucide-react';
 import { Link, usePathname } from '@/i18n/navigation';
 import { useT } from '@/i18n/t';
 import { btn } from '@/components/ui/Button';
 import { useAuth } from '@/components/auth/AuthContext';
+import { useCourses } from '@/components/CoursesProvider';
 import { WhatsAppGlyph } from '@/components/layout/FloatingActions';
 import { firebase } from '@/lib/firebase';
-import { builtInQuestions, categoryLabel, cefrLabel, courseTitle, rate, scoreQuiz, type ScoredQuiz } from '@/lib/quizScoring';
+import { builtInQuestions, categoryLabel, cefrLabel, courseTitle, rate, scoreQuiz, wordCount, type ScoredQuiz } from '@/lib/quizScoring';
 import { waLink } from '@/lib/brand';
 import { cn, num } from '@/lib/utils';
-import type { Question, QuizCategory } from '@/types/quiz';
+import { needsReview, type Question, type QuizCategory } from '@/types/quiz';
 
 type Phase = 'intro' | 'running' | 'review' | 'done';
+
+/** How many times a listening clip may be played in full. */
+const AUDIO_PLAY_LIMIT = 2;
 
 function shuffle<T>(a: T[]) {
   const r = [...a];
@@ -29,6 +33,8 @@ const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '
 
 export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
   const t = useT();
+  const { courses } = useCourses();
+  const locale = t.locale;
   const { user, profile, updateMyProfile } = useAuth();
   const pathname = usePathname();
   const storeKey = `wlf_quiz_${quiz.id}`;
@@ -38,6 +44,7 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
   const [i, setI] = useState(0);
   const [answers, setAnswers] = useState<Record<string, unknown>>({});
   const [flags, setFlags] = useState<string[]>([]);
+  const [plays, setPlays] = useState<Record<string, number>>({}); // completed plays per listening question
   const [left, setLeft] = useState(quiz.durationMinutes * 60);
   const [result, setResult] = useState<ScoredQuiz | null>(null);
   const [saved, setSaved] = useState(false);
@@ -69,6 +76,7 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
       if (s?.answers) {
         setAnswers(s.answers);
         setFlags(s.flags ?? []);
+        setPlays(s.plays ?? {});
         if (typeof s.left === 'number' && s.left > 0) setLeft(s.left);
       }
     } catch {}
@@ -77,9 +85,9 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
   useEffect(() => {
     if (phase !== 'running' && phase !== 'review') return;
     try {
-      localStorage.setItem(storeKey, JSON.stringify({ answers, flags, left }));
+      localStorage.setItem(storeKey, JSON.stringify({ answers, flags, plays, left }));
     } catch {}
-  }, [answers, flags, left, phase, storeKey]);
+  }, [answers, flags, plays, left, phase, storeKey]);
 
   const finish = useCallback(() => {
     const r = scoreQuiz(quiz, questions, answersRef.current); // latest answers, not a stale snapshot
@@ -108,7 +116,12 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
     if (!result || !user || !fb || saved) return;
     setSaved(true);
     const rating = rate(quiz, result);
+    const pending = result.pendingReview.length > 0;
     addDoc(collection(fb.db, 'users', user.uid, 'quizAttempts'), {
+      userId: user.uid,
+      userEmail: user.email ?? profile?.email ?? '',
+      userName: profile?.displayName || user.displayName || '',
+      locale,
       quizId: quiz.id,
       quizTitle: quiz.title,
       percentage: result.percentage,
@@ -119,10 +132,17 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
       timeTakenSeconds: Math.round((Date.now() - startedAt.current) / 1000),
       estimatedCEFR: result.estimatedCEFR,
       performanceRating: rating.stars,
+      // Writing answers are marked by an instructor (/api/admin gradeWriting) and then added to the score
+      answers: Object.fromEntries(result.pendingReview.map((p) => [p.id, p.answer])),
+      pendingReview: result.pendingReview,
+      autoScore: result.totalScore,
+      autoMax: result.maxScore,
+      reviewStatus: pending ? 'pending' : 'none',
+      ...(pending ? { status: 'pending-review' } : {}),
       completedAt: serverTimestamp(),
     }).catch(() => {});
     if (quiz.isPlacementTest) updateDoc(doc(fb.db, 'users', user.uid), { currentFrenchLevel: result.estimatedCEFR }).catch(() => {});
-  }, [result, user, saved, quiz, updateMyProfile]);
+  }, [result, user, profile, locale, saved, quiz, updateMyProfile]);
 
   const q = questions[i];
   const answered = questions.filter((x) => answersRef.current[x.id] != null && answersRef.current[x.id] !== '').length;
@@ -219,6 +239,11 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
               <p className="mt-2 text-sm text-muted">
                 {num(result.totalScore, t.locale)} / {num(result.maxScore, t.locale)}
               </p>
+              {result.pendingMax > 0 && (
+                <p className="mt-1 text-xs text-muted">
+                  + {num(result.pendingMax, t.locale)} {t({ en: 'pts awaiting review', bn: 'পয়েন্ট রিভিউর অপেক্ষায়' })}
+                </p>
+              )}
             </div>
             <div>
               <div className="flex gap-1 text-rouge">
@@ -247,7 +272,7 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
           </div>
           <div className="flex flex-wrap gap-2 border-t border-line bg-surface-2/60 p-6">
             <Link href={{ pathname: '/enroll', query: { course: result.recommendedCourseId } }} className={btn('rouge', 'md')}>
-              {t({ en: 'Join', bn: 'ভর্তি হোন:' })} {courseTitle(result.recommendedCourseId, t.locale).split(' - ')[0]} <ArrowRight size={16} />
+              {t({ en: 'Join', bn: 'ভর্তি হোন:' })} {courseTitle(result.recommendedCourseId, t.locale, courses).split(' - ')[0]} <ArrowRight size={16} />
             </Link>
             <a
               href={waLink(
@@ -266,6 +291,34 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
             </Link>
           </div>
         </div>
+
+        {result.pendingReview.length > 0 && (
+          <section className="card border-gold/40 bg-gold/10 p-6">
+            <p className="flex items-start gap-3 font-semibold">
+              <Hourglass size={18} className="mt-0.5 shrink-0 text-[#9a6b00] dark:text-gold" />
+              <span>
+                {t({
+                  en: 'Your writing answer is awaiting review by the instructor; your score will update once it has been marked.',
+                  bn: 'আপনার রাইটিং উত্তরটি ইন্সট্রাক্টরের রিভিউর অপেক্ষায় আছে; মার্কিং হয়ে গেলে আপনার স্কোর আপডেট হবে।',
+                })}
+                {user && <> {t({ en: 'You will get an email when it is marked.', bn: 'মার্কিং হলে আপনাকে ইমেইল পাঠানো হবে।' })}</>}
+              </span>
+            </p>
+            <ol className="mt-4 flex flex-col gap-4">
+              {result.pendingReview.map((p, k) => (
+                <li key={p.id} className="rounded-xl bg-surface p-4 text-sm">
+                  <p className="font-semibold">
+                    {num(k + 1, t.locale)}. {p.prompt}
+                  </p>
+                  <p className="mt-2 leading-relaxed whitespace-pre-line text-muted">{p.answer}</p>
+                  <p className="mt-2 text-xs text-muted">
+                    {num(wordCount(p.answer), t.locale)} {t({ en: 'words', bn: 'শব্দ' })} · {num(p.points, t.locale)} {t({ en: 'pts', bn: 'পয়েন্ট' })}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
 
         <div className="grid gap-6 lg:grid-cols-[1fr_1.4fr]">
           <section className="card p-6">
@@ -308,7 +361,7 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
           </section>
           <section className="card p-6">
             <h3 className="font-display text-xl font-semibold">{t({ en: 'Answer review', bn: 'উত্তর পর্যালোচনা' })}</h3>
-            <ol className="mt-4 flex max-h-[560px] flex-col overflow-y-auto pr-1">
+            <ol data-lenis-prevent className="mt-4 flex max-h-[560px] flex-col overflow-y-auto pr-1">
               {result.review.map((rv, k) => (
                 <li key={rv.id} className="hairline py-4 text-sm first:border-t-0">
                   <p className="flex gap-2 font-semibold">
@@ -389,19 +442,32 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
         </div>
 
         {q.passage && (
-          <div className="mt-6 max-h-72 overflow-y-auto rounded-xl bg-surface-2 p-5 text-[15px] leading-relaxed whitespace-pre-line">{q.passage}</div>
+          <div data-lenis-prevent className="mt-6 max-h-72 overflow-y-auto rounded-xl bg-surface-2 p-5 text-[15px] leading-relaxed whitespace-pre-line">{q.passage}</div>
         )}
-        {q.type === 'audio-listening' && q.audioText && (
-          <button onClick={() => speak(q.audioText!)} className={btn('ink', 'sm', 'mt-6')}>
-            <Volume2 size={16} /> {t({ en: 'Play audio', bn: 'অডিও শুনুন' })}
-          </button>
+        {q.audioUrl ? (
+          <AudioPlayer
+            key={q.id}
+            src={q.audioUrl}
+            plays={plays[q.id] ?? 0}
+            onEnded={() => setPlays((p) => ({ ...p, [q.id]: (p[q.id] ?? 0) + 1 }))}
+            locale={t.locale}
+          />
+        ) : (
+          q.type === 'audio-listening' &&
+          q.audioText && (
+            <button onClick={() => speak(q.audioText!)} className={btn('ink', 'sm', 'mt-6')}>
+              <Volume2 size={16} /> {t({ en: 'Play audio', bn: 'অডিও শুনুন' })}
+            </button>
+          )
         )}
         <h2 className="font-display mt-6 text-2xl leading-snug font-semibold">{q.prompt}</h2>
         {t.locale === 'bn' && q.banglaPrompt && <p className="font-bangla mt-1 text-muted">{q.banglaPrompt}</p>}
         {q.frenchContext && <p className="font-display mt-2 text-lg text-muted italic">{q.frenchContext}</p>}
 
         <div className="mt-6">
-          {q.type === 'fill-blank' ? (
+          {needsReview(q) ? (
+            <WritingAnswer q={q} value={String(given ?? '')} onChange={setAnswer} locale={t.locale} />
+          ) : q.type === 'fill-blank' ? (
             <input
               value={String(given ?? '')}
               onChange={(e) => setAnswer(e.target.value)}
@@ -504,6 +570,94 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
         </div>
         {profile && <p className="text-center text-xs text-muted">{profile.displayName}</p>}
       </aside>
+    </div>
+  );
+}
+
+/** Listening clip with a limit on full plays (counted on `ended`, so pausing/seeking doesn't use one up). */
+function AudioPlayer({ src, plays, onEnded, locale }: { src: string; plays: number; onEnded: () => void; locale: 'en' | 'bn' }) {
+  const ref = useRef<HTMLAudioElement>(null);
+  const done = plays >= AUDIO_PLAY_LIMIT;
+  useEffect(() => {
+    if (done) ref.current?.pause();
+  }, [done]);
+  const remaining = Math.max(0, AUDIO_PLAY_LIMIT - plays);
+  return (
+    <div className="mt-6 rounded-xl border border-line bg-surface-2 p-4">
+      <p className="flex items-center gap-2 text-[11px] font-bold tracking-[0.14em] text-muted uppercase">
+        <Volume2 size={14} /> {locale === 'bn' ? 'লিসেনিং' : 'Listening'}
+      </p>
+      <audio
+        ref={ref}
+        src={src}
+        controls
+        preload="metadata"
+        controlsList="nodownload"
+        aria-disabled={done}
+        className={cn('mt-3 w-full', done && 'pointer-events-none opacity-50')}
+        onPlay={(e) => {
+          if (done) e.currentTarget.pause();
+        }}
+        onEnded={onEnded}
+      />
+      <p className={cn('mt-2 text-xs', done ? 'font-semibold text-rouge' : 'text-muted')}>
+        {done
+          ? locale === 'bn'
+            ? 'প্লে সীমা শেষ — অডিওটি আর শোনা যাবে না।'
+            : 'Play limit reached — the audio can no longer be played.'
+          : locale === 'bn'
+            ? `আপনি অডিওটি সর্বোচ্চ ${num(AUDIO_PLAY_LIMIT, 'bn')} বার শুনতে পারবেন (${num(remaining, 'bn')} বার বাকি)।`
+            : `You may play the audio up to ${AUDIO_PLAY_LIMIT} times (${remaining} left).`}
+      </p>
+    </div>
+  );
+}
+
+/** Free-text answer for writing tasks: marked by an instructor, so only a word count is shown here. */
+function WritingAnswer({ q, value, onChange, locale }: { q: Question; value: string; onChange: (v: string) => void; locale: 'en' | 'bn' }) {
+  const words = wordCount(value);
+  const min = Number(q.minWords) > 0 ? Number(q.minWords) : undefined;
+  const max = Number(q.maxWords) > 0 ? Number(q.maxWords) : undefined;
+  const tooShort = min != null && words > 0 && words < min;
+  const tooLong = max != null && words > max;
+  const range =
+    min != null && max != null
+      ? locale === 'bn'
+        ? `${num(min, 'bn')}–${num(max, 'bn')} শব্দ`
+        : `${min}–${max} words`
+      : min != null
+        ? locale === 'bn'
+          ? `কমপক্ষে ${num(min, 'bn')} শব্দ`
+          : `At least ${min} words`
+        : max != null
+          ? locale === 'bn'
+            ? `সর্বোচ্চ ${num(max, 'bn')} শব্দ`
+            : `Up to ${max} words`
+          : null;
+  return (
+    <div>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        rows={8}
+        lang="fr"
+        spellCheck={false}
+        placeholder={locale === 'bn' ? 'এখানে ফরাসিতে আপনার উত্তর লিখুন…' : 'Write your answer in French here…'}
+        className="w-full rounded-xl border border-line bg-surface px-4 py-3 leading-relaxed outline-none transition focus:border-bleu focus:ring-2 focus:ring-bleu/20"
+      />
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <span className="text-muted">{range}</span>
+        <span className={cn('font-semibold tabular-nums', tooShort || tooLong ? 'text-rouge' : 'text-muted')}>
+          {num(words, locale)} {locale === 'bn' ? 'শব্দ' : 'words'}
+          {tooShort && (locale === 'bn' ? ' · আরও লিখুন' : ' · too short')}
+          {tooLong && (locale === 'bn' ? ' · সীমার বেশি' : ' · over the limit')}
+        </span>
+      </div>
+      <p className="mt-2 text-xs text-muted">
+        {locale === 'bn'
+          ? 'এই উত্তরটি একজন ইন্সট্রাক্টর পড়ে মার্কিং করবেন; এটি স্বয়ংক্রিয়ভাবে মূল্যায়ন করা হয় না।'
+          : 'This answer is read and marked by an instructor; it is not scored automatically.'}
+      </p>
     </div>
   );
 }

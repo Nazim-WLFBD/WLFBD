@@ -234,6 +234,7 @@ export function Testimonials({ items = TESTIMONIALS_DATA }: { items?: Testimonia
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-[90] bg-ink/70" />
           <Dialog.Content
+            data-lenis-prevent
             className="fixed top-1/2 left-1/2 z-[91] max-h-[88vh] w-[min(640px,calc(100vw-24px))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[var(--radius)] border border-line bg-surface p-7 text-fg md:p-9"
             aria-describedby={undefined}
           >

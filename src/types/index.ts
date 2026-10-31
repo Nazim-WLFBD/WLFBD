@@ -26,6 +26,8 @@ export interface Course {
   isCustomPricing?: boolean;
   /** Booked by WhatsApp inquiry instead of the enrollment form (e.g. One-to-One Sessions). */
   whatsappOnly?: boolean;
+  /** Hidden from the site when false (admin panel). */
+  published?: boolean;
   /** Pre-filled WhatsApp inquiry for whatsappOnly courses. */
   whatsappMessage?: { en: string; bn: string };
   priceNotice?: string;
@@ -44,6 +46,7 @@ export interface ComboOffer {
   banglaDescription?: string;
   badge?: string;
   banglaBadge?: string;
+  published?: boolean;
 }
 
 

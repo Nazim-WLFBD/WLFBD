@@ -241,7 +241,7 @@ export function Classroom({ slug }: { slug: string }) {
             {certErr && <p className="mt-2 text-xs text-[#ff8a98]">{certErr}</p>}
           </div>
         )}
-        <div className="card max-h-[70vh] overflow-y-auto">
+        <div data-lenis-prevent className="card max-h-[70vh] overflow-y-auto">
           {course.modules?.map((m, mi) => (
             <div key={m.id}>
               <p className={cn('sticky top-0 z-10 flex items-center gap-3 border-b border-line bg-surface-2 px-4 py-2.5 text-[11px] font-bold tracking-[0.14em] uppercase', bn && m.banglaTitle && 'font-bangla tracking-normal')}>

@@ -64,7 +64,7 @@ export function Footer() {
       <div className="container-x grid grid-cols-2 gap-x-6 gap-y-10 border-t border-white/10 py-14 lg:grid-cols-[minmax(0,1.5fr)_auto_auto_auto] lg:justify-between lg:gap-16">
         <div className="col-span-2 lg:col-span-1">
           <Link href="/" aria-label={t(ui.homepage)}>
-            <Logo size={52} light />
+            <Logo size={64} />
           </Link>
           <p className="mt-5 max-w-sm text-sm leading-relaxed text-white/60">{t(footer.description)}</p>
           <div className="mt-6 flex gap-2">

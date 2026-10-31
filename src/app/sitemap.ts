@@ -1,17 +1,18 @@
 import type { MetadataRoute } from 'next';
-import { COURSES_DATA } from '@/data/courses';
 import { RECORDED_COURSES } from '@/data/recordedCourses';
 import { QUIZ_CATEGORIES } from '@/data/quizData';
 import { routing } from '@/i18n/routing';
 import { BRAND_META } from '@/lib/brand';
 import { quizHref } from '@/lib/quiz';
+import { getCourses } from '@/lib/content';
 import { BLOG_PATHS } from '@/data/blog';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const courses = await getCourses();
   const paths = [
     '',
     '/courses',
-    ...COURSES_DATA.map((c) => `/courses/${c.id}`),
+    ...courses.map((c) => `/courses/${c.id}`),
     '/recorded',
     ...RECORDED_COURSES.map((r) => `/recorded/${r.slug}`),
     '/quiz',

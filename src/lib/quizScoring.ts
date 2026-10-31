@@ -1,6 +1,7 @@
 import { QUESTION_BANK, QUIZ_CATEGORIES } from '@/data/quizData';
-import type { CEFRLevel, Question, QuizCategory } from '@/types/quiz';
+import { needsReview, type CEFRLevel, type PendingReview, type Question, type QuizCategory } from '@/types/quiz';
 import { COURSES_DATA } from '@/data/courses';
+import type { Course } from '@/types';
 import type { L } from '@/i18n/t';
 
 /** Quizzes that share another quiz's question set. */
@@ -17,8 +18,12 @@ export function builtInQuestions(quizId: string): Question[] {
   return QUESTION_BANK.filter((q) => q.quizId === id);
 }
 
+/** Word count for writing answers (whitespace-separated tokens). */
+export const wordCount = (s: unknown) => String(s ?? '').trim().split(/\s+/).filter(Boolean).length;
+
 export function isCorrect(q: Question, given: unknown): boolean {
   if (given == null || given === '') return false;
+  if (needsReview(q)) return false; // writing answers are marked by an instructor, never auto-scored
   if (q.type === 'matching' && q.matchPairs) {
     const g = given as Record<string, string>;
     return q.matchPairs.every((p) => g[p.id] === p.englishOrBangla);
@@ -63,6 +68,10 @@ export interface ScoredQuiz {
   recommendedCourseId: string;
   strengths: string[];
   weaknesses: string[];
+  /** Writing answers awaiting an instructor's mark; their points are not in totalScore/maxScore yet. */
+  pendingReview: PendingReview[];
+  /** Points reserved for the pending writing answers (added to the max once marked). */
+  pendingMax: number;
   review: {
     id: string;
     prompt: string;
@@ -84,10 +93,31 @@ export function scoreQuiz(quiz: QuizCategory, questions: Question[], answers: Re
   let max = 0;
   let correct = 0;
   const review: ScoredQuiz['review'] = [];
+  const pendingReview: PendingReview[] = [];
+  let pendingMax = 0;
+  let autoCount = 0;
   for (const q of questions) {
-    const ok = isCorrect(q, answers[q.id]);
     const pts = Number(q.points) > 0 ? Number(q.points) : 1; // admin-entered questions may lack points
     const cat = (CATS as readonly string[]).includes(q.category) ? (q.category as keyof Breakdown) : 'Grammar';
+    if (needsReview(q)) {
+      // Writing tasks: kept out of the auto score and max until an instructor marks them
+      const answer = String(answers[q.id] ?? '').trim();
+      if (answer) {
+        pendingReview.push({
+          id: q.id,
+          prompt: q.prompt,
+          answer,
+          points: pts,
+          ...(q.minWords != null ? { minWords: Number(q.minWords) } : {}),
+          ...(q.maxWords != null ? { maxWords: Number(q.maxWords) } : {}),
+          ...(q.modelAnswer ? { modelAnswer: q.modelAnswer } : {}),
+        });
+        pendingMax += pts;
+      }
+      continue;
+    }
+    autoCount++;
+    const ok = isCorrect(q, answers[q.id]);
     breakdown[cat].max += pts;
     max += pts;
     if (ok) {
@@ -127,7 +157,21 @@ export function scoreQuiz(quiz: QuizCategory, questions: Question[], answers: Re
     if (!b.max) continue;
     (b.score / b.max >= 0.7 ? strengths : weaknesses).push(c);
   }
-  return { totalScore: total, maxScore: max, percentage, correct, wrong: questions.length - correct, breakdown, estimatedCEFR, recommendedCourseId, strengths, weaknesses, review };
+  return {
+    totalScore: total,
+    maxScore: max,
+    percentage,
+    correct,
+    wrong: autoCount - correct,
+    breakdown,
+    estimatedCEFR,
+    recommendedCourseId,
+    strengths,
+    weaknesses,
+    pendingReview,
+    pendingMax,
+    review,
+  };
 }
 
 export interface Rating {
@@ -256,9 +300,9 @@ export function rate(quiz: QuizCategory, s: ScoredQuiz): Rating {
   };
 }
 
-/** Course name for a recommendation in the given locale (falls back to the id). */
-export const courseTitle = (id: string, locale: 'en' | 'bn' = 'en') => {
-  const c = COURSES_DATA.find((x) => x.id === id);
+/** Course name for a recommendation in the given locale (falls back to the id). Pass the admin-edited list when available. */
+export const courseTitle = (id: string, locale: 'en' | 'bn' = 'en', courses: Course[] = COURSES_DATA) => {
+  const c = courses.find((x) => x.id === id);
   if (!c) return id;
   return locale === 'bn' ? c.banglaTitle || c.title : c.title;
 };

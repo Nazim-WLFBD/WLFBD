@@ -200,13 +200,36 @@ export function Dashboard() {
             </div>
           ) : (
             <ul className="mt-4 divide-y divide-line">
-              {attempts.map((a) => (
-                <li key={a.id} className="flex items-center gap-3 py-3 text-sm">
-                  <span className="flex-1 font-semibold">{String(a.quizTitle)}</span>
-                  <span className="text-muted">{t(cefrLabel(String(a.estimatedCEFR ?? '')))}</span>
-                  <span className="font-display w-14 text-right text-lg font-semibold">{num(String(a.percentage), t.locale)}%</span>
-                </li>
-              ))}
+              {attempts.map((a) => {
+                const pendingReview = a.reviewStatus === 'pending';
+                const comments = (Array.isArray(a.reviewed) ? (a.reviewed as { comment?: string }[]) : []).map((r) => r.comment).filter(Boolean) as string[];
+                return (
+                  <li key={a.id} className="py-3 text-sm">
+                    <div className="flex items-center gap-3">
+                      <span className="flex-1 font-semibold">
+                        {String(a.quizTitle)}
+                        {pendingReview && (
+                          <span className={cn('ml-2 rounded-full px-2 py-0.5 text-[11px] font-bold whitespace-nowrap', STATUS.Pending)}>
+                            {t({ en: 'Awaiting review', bn: 'রিভিউর অপেক্ষায়' })}
+                          </span>
+                        )}
+                      </span>
+                      <span className="text-muted">{t(cefrLabel(String(a.estimatedCEFR ?? '')))}</span>
+                      <span className="font-display w-14 text-right text-lg font-semibold">{num(String(a.percentage), t.locale)}%</span>
+                    </div>
+                    {pendingReview && (
+                      <p className="mt-1 text-xs text-muted">
+                        {t({ en: 'Your writing answer is being marked; the score will update.', bn: 'আপনার রাইটিং উত্তর মার্কিং চলছে; স্কোর আপডেট হবে।' })}
+                      </p>
+                    )}
+                    {comments.length > 0 && (
+                      <p className="mt-1 text-xs text-muted">
+                        <span className="font-semibold text-fg">{t({ en: "Instructor's comment", bn: 'ইন্সট্রাক্টরের মন্তব্য' })}:</span> {comments.join(' · ')}
+                      </p>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </section>

@@ -2,14 +2,17 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
-import { Download, Pencil, Plus, Trash2, X } from 'lucide-react';
+import { getDownloadURL, ref as storageRef, uploadBytesResumable } from 'firebase/storage';
+import { Download, Pencil, Plus, Trash2, Upload, X } from 'lucide-react';
 import { btn } from '@/components/ui/Button';
 import { firebase } from '@/lib/firebase';
 
 export type Field =
-  | { key: string; label: string; type: 'text' | 'textarea' | 'number' | 'checkbox' }
-  | { key: string; label: string; type: 'select'; options: string[] }
-  | { key: string; label: string; type: 'list'; hint?: string };
+  | { key: string; label: string; type: 'text' | 'textarea' | 'number' | 'checkbox'; hint?: string }
+  | { key: string; label: string; type: 'select'; options: string[]; hint?: string }
+  | { key: string; label: string; type: 'list'; hint?: string }
+  /** Uploads to Firebase Storage under `folder/` and stores the download URL (a URL can also be pasted). */
+  | { key: string; label: string; type: 'file'; accept: string; folder: string; hint?: string };
 
 type Row = Record<string, unknown> & { id: string };
 
@@ -139,7 +142,7 @@ export function CrudTab({ path, fields, columns, seed, seedId, newDefaults = {},
 
       {edit && (
         <div className="fixed inset-0 z-[90] flex items-center justify-center bg-ink/60 p-3" onClick={() => setEdit(null)}>
-          <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-3xl bg-surface p-6" onClick={(e) => e.stopPropagation()}>
+          <div data-lenis-prevent className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-3xl bg-surface p-6" onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-center justify-between">
               <p className="font-display text-xl font-semibold">{edit.id ? 'Edit' : 'Add'}</p>
               <button onClick={() => setEdit(null)} aria-label="Close">
@@ -150,7 +153,9 @@ export function CrudTab({ path, fields, columns, seed, seedId, newDefaults = {},
               {fields.map((f) => (
                 <label key={f.key} className="text-xs font-bold text-muted">
                   {f.label}
-                  {f.type === 'textarea' ? (
+                  {f.type === 'file' ? (
+                    <FileField field={f} value={String(edit[f.key] ?? '')} onChange={(url) => setEdit({ ...edit, [f.key]: url })} inputClass={input} />
+                  ) : f.type === 'textarea' ? (
                     <textarea rows={4} className={`${input} mt-1`} value={String(edit[f.key] ?? '')} onChange={(e) => setEdit({ ...edit, [f.key]: e.target.value })} />
                   ) : f.type === 'checkbox' ? (
                     <input type="checkbox" className="ml-2" checked={!!edit[f.key]} onChange={(e) => setEdit({ ...edit, [f.key]: e.target.checked })} />
@@ -172,6 +177,7 @@ export function CrudTab({ path, fields, columns, seed, seedId, newDefaults = {},
                   ) : (
                     <input type={f.type} className={`${input} mt-1`} value={String(edit[f.key] ?? '')} onChange={(e) => setEdit({ ...edit, [f.key]: e.target.value })} />
                   )}
+                  {f.type !== 'list' && f.hint && <span className="mt-1 block font-normal">{f.hint}</span>}
                 </label>
               ))}
             </div>
@@ -181,6 +187,73 @@ export function CrudTab({ path, fields, columns, seed, seedId, newDefaults = {},
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+const MAX_UPLOAD_MB = 15; // mirrors storage.rules
+
+/** File picker that uploads to Storage with progress; the stored value is the public download URL. */
+function FileField({
+  field,
+  value,
+  onChange,
+  inputClass,
+}: {
+  field: Extract<Field, { type: 'file' }>;
+  value: string;
+  onChange: (url: string) => void;
+  inputClass: string;
+}) {
+  const [progress, setProgress] = useState<number | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  const upload = (file: File) => {
+    const fb = firebase();
+    if (!fb) return;
+    if (file.size > MAX_UPLOAD_MB * 1024 * 1024) return setErr(`File is larger than ${MAX_UPLOAD_MB} MB.`);
+    setErr(null);
+    setProgress(0);
+    const safeName = file.name.replace(/[^\w.-]+/g, '_').slice(-80);
+    const task = uploadBytesResumable(storageRef(fb.storage, `${field.folder}/${Date.now()}-${safeName}`), file, { contentType: file.type || undefined });
+    task.on(
+      'state_changed',
+      (s) => setProgress(Math.round((s.bytesTransferred / s.totalBytes) * 100)),
+      (e) => {
+        setProgress(null);
+        setErr(e.code === 'storage/unauthorized' ? 'Upload refused: only admins may upload, and the file must match the allowed type/size.' : e.message);
+      },
+      async () => {
+        onChange(await getDownloadURL(task.snapshot.ref));
+        setProgress(null);
+      },
+    );
+  };
+
+  return (
+    <div className="mt-1 flex flex-col gap-2">
+      <input type="url" className={inputClass} placeholder="https://… (upload below or paste a URL)" value={value} onChange={(e) => onChange(e.target.value)} />
+      {value && field.accept.startsWith('audio') && <audio controls preload="metadata" src={value} className="w-full" />}
+      <label className={btn('ghost', 'sm', 'w-fit cursor-pointer')}>
+        <Upload size={14} /> {progress == null ? 'Upload file' : `Uploading… ${progress}%`}
+        <input
+          type="file"
+          accept={field.accept}
+          className="sr-only"
+          disabled={progress != null}
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) upload(f);
+            e.target.value = '';
+          }}
+        />
+      </label>
+      {progress != null && (
+        <div className="h-1.5 overflow-hidden rounded-sm bg-surface-2">
+          <div className="h-full bg-bleu transition-all" style={{ width: `${progress}%` }} />
+        </div>
+      )}
+      {err && <span className="font-normal text-rouge">{err}</span>}
     </div>
   );
 }

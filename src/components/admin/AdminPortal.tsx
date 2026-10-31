@@ -13,9 +13,11 @@ import { BATCH_SCHEDULES } from '@/data/schedules';
 import { QUIZ_CATEGORIES } from '@/data/quizData';
 import { CrudTab } from './CrudTab';
 import { RecordedEditor } from './RecordedEditor';
+import { CoursesEditor } from './CoursesEditor';
+import { WritingReviews } from './WritingReviews';
 
 type Row = Record<string, unknown> & { id: string };
-const TABS = ['Overview', 'Payments', 'Enrollments', 'Users', 'Free class', 'Recorded courses', 'Batches', 'Quiz questions', 'Announcements', 'Certificates', 'Reviews', 'FAQ', 'Audit log'] as const;
+const TABS = ['Overview', 'Payments', 'Enrollments', 'Users', 'Free class', 'Courses', 'Recorded courses', 'Batches', 'Quiz questions', 'Writing reviews', 'Announcements', 'Certificates', 'Reviews', 'FAQ', 'Audit log'] as const;
 type Tab = (typeof TABS)[number];
 
 const fmtDate = (v: unknown) => {
@@ -45,7 +47,9 @@ export function AdminPortal() {
         {tab === 'Enrollments' && <Enrollments />}
         {tab === 'Users' && <Users />}
         {tab === 'Free class' && <FreeClass />}
+        {tab === 'Courses' && <CoursesEditor />}
         {tab === 'Recorded courses' && <RecordedEditor />}
+        {tab === 'Writing reviews' && <WritingReviews />}
         {tab === 'Batches' && (
           <CrudTab
             path="batches"
@@ -425,15 +429,21 @@ function QuestionsTab() {
       <CrudTab
         key={quiz}
         path={`quizzes/${quiz}/questions`}
-        columns={['prompt', 'category', 'correctAnswer']}
+        columns={['prompt', 'type', 'category', 'correctAnswer']}
         fields={[
+          { key: 'type', label: 'Question type', type: 'select', options: ['multiple-choice', 'true-false', 'fill-blank', 'audio-listening', 'writing-task'] },
           { key: 'prompt', label: 'Question', type: 'textarea' },
           { key: 'banglaPrompt', label: 'Bangla question (optional)', type: 'text' },
           { key: 'passage', label: 'Reading passage (optional)', type: 'textarea' },
-          { key: 'options', label: 'Options', type: 'list', hint: 'One option per line' },
-          { key: 'correctAnswer', label: 'Correct answer (exactly as one option)', type: 'text' },
+          { key: 'audioUrl', label: 'Audio file', type: 'file', accept: 'audio/*', folder: 'quiz-audio', hint: 'For listening questions: upload an MP3/M4A (max 15 MB) or paste a URL. Students may play it twice.' },
+          { key: 'audioText', label: 'Audio transcript (optional)', type: 'textarea', hint: 'French transcript; read aloud by the browser if no audio file is set.' },
+          { key: 'options', label: 'Options', type: 'list', hint: 'One option per line (multiple-choice / true-false / listening)' },
+          { key: 'correctAnswer', label: 'Correct answer (exactly as one option)', type: 'text', hint: 'Leave empty for writing tasks: they are marked by an instructor.' },
           { key: 'explanation', label: 'Explanation', type: 'textarea' },
-          { key: 'category', label: 'Category', type: 'select', options: ['Grammar', 'Vocabulary', 'Reading', 'Listening'] },
+          { key: 'minWords', label: 'Min words (writing)', type: 'number' },
+          { key: 'maxWords', label: 'Max words (writing)', type: 'number' },
+          { key: 'modelAnswer', label: 'Model answer / marking notes (writing, admin-only)', type: 'textarea', hint: 'Shown only in the Writing reviews tab, never to students.' },
+          { key: 'category', label: 'Category', type: 'select', options: ['Grammar', 'Vocabulary', 'Reading', 'Listening', 'Writing'] },
           { key: 'cefrLevel', label: 'Level', type: 'select', options: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'TEF', 'TCF'] },
           { key: 'points', label: 'Points', type: 'number' },
         ]}

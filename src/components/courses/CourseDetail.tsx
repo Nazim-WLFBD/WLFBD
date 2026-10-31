@@ -7,7 +7,7 @@ import { btn } from '@/components/ui/Button';
 import { Reveal } from '@/components/ui/Reveal';
 import { PageHero } from '@/components/layout/PageHero';
 import { WhatsAppGlyph } from '@/components/layout/FloatingActions';
-import { COURSES_DATA } from '@/data/courses';
+import { useCourses } from '@/components/CoursesProvider';
 import { courseDetail as copy } from '@/content/course';
 import { courses as cardCopy } from '@/content/home';
 import { waLink } from '@/lib/brand';
@@ -20,7 +20,7 @@ export function CourseDetail({ course: c }: { course: Course }) {
   const bn = t.locale === 'bn';
   const x = courseText(c, t.locale);
   const fee = c.isCustomPricing ? t(cardCopy.feeCustom) : taka(c.offerPrice, t.locale);
-  const others = COURSES_DATA.filter((o) => o.id !== c.id);
+  const others = useCourses().courses.filter((o) => o.id !== c.id);
   const waText = bn
     ? `Bonjour! আমি ${c.banglaTitle} (${c.title}) কোর্স সম্পর্কে বিস্তারিত জানতে চাই।`
     : `Bonjour! I want to know more about ${c.title}.`;

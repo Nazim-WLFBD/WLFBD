@@ -1,0 +1,23 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Admin roles come only from custom claims set by the server (same as firestore.rules)
+    function isAdmin() {
+      return request.auth != null && request.auth.token.get('role', 'student') in ['admin', 'superAdmin'];
+    }
+
+    // Listening-question clips: embedded on public quiz pages, uploaded from the admin portal
+    match /quiz-audio/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin()
+        && request.resource != null
+        && request.resource.size <= 15 * 1024 * 1024
+        && request.resource.contentType.matches('audio/.*');
+      allow delete: if isAdmin();
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -162,6 +162,7 @@ export function FloatingActions() {
           <Dialog.Overlay className="fixed inset-0 z-[90] bg-ink/60 backdrop-blur-sm" />
           <Dialog.Content
             aria-describedby={undefined}
+            data-lenis-prevent
             className="fixed inset-x-0 bottom-0 z-[91] max-h-[92dvh] overflow-y-auto rounded-t-[28px] bg-bg px-5 pt-3 pb-[max(20px,env(safe-area-inset-bottom))] shadow-2xl sm:inset-x-auto sm:top-1/2 sm:right-auto sm:bottom-auto sm:left-1/2 sm:w-[min(520px,calc(100vw-32px))] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[28px] sm:p-7"
           >
             <span className="mx-auto mb-4 block h-1.5 w-12 rounded-full bg-line sm:hidden" aria-hidden />

@@ -13,6 +13,12 @@ const Action = z.discriminatedUnion('action', [
   z.object({ action: z.literal('seedRecordedCourses') }),
   z.object({ action: z.literal('setApproval'), uid: z.string().max(128), approval: z.enum(['pending', 'approved', 'rejected']) }),
   z.object({ action: z.literal('refreshRecordedCourses') }),
+  z.object({
+    action: z.literal('gradeWriting'),
+    /** Firestore path of the attempt: users/{uid}/quizAttempts/{id} */
+    attemptPath: z.string().regex(/^users\/[A-Za-z0-9_-]{1,128}\/quizAttempts\/[A-Za-z0-9_-]{1,128}$/),
+    grades: z.array(z.object({ id: z.string().max(120), points: z.number().min(0).max(1000), comment: z.string().max(2000).optional() })).min(1).max(50),
+  }),
 ]);
 
 async function audit(caller: Caller, action: string, target: string, metadata: Record<string, unknown> = {}) {
@@ -136,6 +142,68 @@ export async function POST(req: Request) {
   if (a.action === 'refreshRecordedCourses') {
     invalidateRecordedCache();
     return json({ ok: true });
+  }
+
+  // Instructor marks the writing answers of one attempt; the marks are added to the auto score
+  if (a.action === 'gradeWriting') {
+    const ref = db.doc(a.attemptPath);
+    const at = (await ref.get()).data();
+    if (!at) return json({ error: 'Attempt not found' }, 404);
+    if (at.reviewStatus !== 'pending') return json({ error: 'This attempt has already been reviewed.' }, 409);
+    const pending = (Array.isArray(at.pendingReview) ? at.pendingReview : []) as { id: string; prompt?: string; answer?: string; points: number }[];
+    if (!pending.length) return json({ error: 'Nothing to review on this attempt.' }, 409);
+    // Every pending answer needs a mark, within that question's points
+    const byId = new Map(pending.map((p) => [p.id, p]));
+    for (const g of a.grades) {
+      const p = byId.get(g.id);
+      if (!p) return json({ error: `Unknown question ${g.id}` }, 400);
+      if (g.points > Number(p.points)) return json({ error: `Points for "${p.prompt ?? g.id}" exceed the maximum of ${p.points}.` }, 400);
+    }
+    const missing = pending.filter((p) => !a.grades.some((g) => g.id === p.id));
+    if (missing.length) return json({ error: `Every writing answer needs a mark (${missing.length} missing).` }, 400);
+
+    const reviewed = a.grades.map((g) => ({ id: g.id, points: g.points, ...(g.comment?.trim() ? { comment: g.comment.trim() } : {}) }));
+    const earned = reviewed.reduce((s, g) => s + g.points, 0);
+    const pendingMax = pending.reduce((s, p) => s + Number(p.points), 0);
+    const autoScore = Number(at.autoScore ?? at.totalScore ?? 0);
+    const autoMax = Number(at.autoMax ?? at.maxScore ?? 0);
+    const score = autoScore + earned;
+    const maxScore = autoMax + pendingMax;
+    const percentage = maxScore ? Math.round((score / maxScore) * 100) : 0;
+    await ref.update({
+      reviewed,
+      score,
+      totalScore: score,
+      maxScore,
+      percentage,
+      reviewStatus: 'reviewed',
+      status: 'reviewed',
+      reviewedBy: caller.email,
+      reviewedAt: FieldValue.serverTimestamp(),
+    });
+
+    if (at.userEmail) {
+      const bn = at.locale === 'bn';
+      const title = String(at.quizTitle ?? at.quizId ?? '');
+      await sendMail(
+        String(at.userEmail),
+        bn ? `আপনার রাইটিং উত্তর মার্ক করা হয়েছে: ${title}` : `Your writing answer has been marked: ${title}`,
+        layout(
+          bn ? 'রাইটিং রিভিউ সম্পন্ন' : 'Writing review complete',
+          bn
+            ? 'একজন ইন্সট্রাক্টর আপনার রাইটিং উত্তর পড়ে মার্কিং করেছেন। আপনার আপডেট হওয়া স্কোর ড্যাশবোর্ডে দেখুন।'
+            : 'An instructor has read and marked your writing answer. Your updated score is on your dashboard.',
+          [
+            [bn ? 'টেস্ট' : 'Test', title],
+            [bn ? 'রাইটিং মার্ক' : 'Writing marks', `${earned} / ${pendingMax}`],
+            [bn ? 'মোট স্কোর' : 'Total score', `${score} / ${maxScore} (${percentage}%)`],
+            ...reviewed.filter((g) => g.comment).map((g, k): [string, string] => [bn ? `মন্তব্য ${k + 1}` : `Comment ${k + 1}`, g.comment!]),
+          ],
+        ),
+      ).catch(() => {});
+    }
+    await audit(caller, 'gradeWriting', a.attemptPath, { score, maxScore, percentage, graded: reviewed.length });
+    return json({ ok: true, score, maxScore, percentage });
   }
 
   // Copy built-in recorded courses into Firestore so they can be edited; lesson links go to /private.

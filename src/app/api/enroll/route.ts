@@ -4,7 +4,7 @@ import { adminDb, getCaller, json } from '@/lib/firebase-admin';
 import { ADMISSIONS_EMAIL, layout, sendMail } from '@/lib/email';
 import { publicRateLimit, rateLimit } from '@/lib/rate-limit';
 import { bdPhone } from '@/lib/phone';
-import { COURSES_DATA, COMBO_OFFERS } from '@/data/courses';
+import { getCombos, getCourses } from '@/lib/content';
 import { BRAND_CONTACT } from '@/lib/brand';
 
 const Body = z.object({
@@ -34,9 +34,10 @@ export async function POST(req: Request) {
   }
   const d = parsed.data;
 
-  // Price is decided on the server, never trusted from the browser
-  const course = COURSES_DATA.find((c) => c.id === d.courseId && !c.whatsappOnly);
-  const combo = COMBO_OFFERS.find((c) => c.id === d.courseId);
+  // Price is decided on the server, never trusted from the browser: the admin-edited copy is what students pay
+  const [courses, combos] = await Promise.all([getCourses(), getCombos()]);
+  const course = courses.find((c) => c.id === d.courseId && !c.whatsappOnly);
+  const combo = combos.find((c) => c.id === d.courseId);
   if (!course && !combo) return json({ error: 'Unknown course.', code: 'unknown_course' }, 400);
   const title = course?.title ?? combo!.title;
   const custom = !!course?.isCustomPricing;

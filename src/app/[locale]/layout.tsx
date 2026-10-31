@@ -17,6 +17,8 @@ import { CommandPalette } from '@/components/layout/CommandPalette';
 import { LegacyHashRedirect } from '@/components/layout/LegacyHashRedirect';
 import { themeScript } from '@/components/layout/ThemeToggle';
 import { Providers } from '@/components/Providers';
+import { CoursesProvider } from '@/components/CoursesProvider';
+import { getCombos, getCourses } from '@/lib/content';
 
 const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-fraunces', axes: ['opsz', 'SOFT'], display: 'swap' });
 const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-jakarta', display: 'swap' });
@@ -34,6 +36,9 @@ const bnDigits = localFont({
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
+
+// Live courses and combos are admin-editable, so every page re-renders with fresh data within 5 minutes
+export const revalidate = 300;
 
 export const viewport: Viewport = {
   themeColor: '#0e1a2f',
@@ -114,6 +119,7 @@ export default async function LocaleLayout({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
+  const [courses, combos] = await Promise.all([getCourses(), getCombos()]);
 
   return (
     <html
@@ -128,20 +134,22 @@ export default async function LocaleLayout({
       <body>
         <NextIntlClientProvider>
           <Providers>
-            <a
-              href="#main"
-              className="sr-only z-[200] rounded-full bg-gold px-4 py-2 font-semibold text-ink focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
-            >
-              {ui.skip[locale]}
-            </a>
-            <SmoothScroll />
-            <LegacyHashRedirect />
-            <Header />
-            <main id="main">{children}</main>
-            <Footer />
-            <FloatingActions />
-            <MobileBottomBar />
-            <CommandPalette />
+            <CoursesProvider courses={courses} combos={combos}>
+              <a
+                href="#main"
+                className="sr-only z-[200] rounded-full bg-gold px-4 py-2 font-semibold text-ink focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
+              >
+                {ui.skip[locale]}
+              </a>
+              <SmoothScroll />
+              <LegacyHashRedirect />
+              <Header />
+              <main id="main">{children}</main>
+              <Footer />
+              <FloatingActions />
+              <MobileBottomBar />
+              <CommandPalette />
+            </CoursesProvider>
           </Providers>
         </NextIntlClientProvider>
         <Script id="fb-pixel" strategy="afterInteractive">
