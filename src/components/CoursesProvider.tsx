@@ -1,7 +1,6 @@
 'use client';
 
 import { createContext, useContext, useMemo } from 'react';
-import { COMBO_OFFERS, COURSES_DATA } from '@/data/courses';
 import type { ComboOffer, Course } from '@/types';
 
 interface CoursesValue {
@@ -9,8 +8,9 @@ interface CoursesValue {
   combos: ComboOffer[];
 }
 
-// Built-in data by default, so a component rendered outside the provider (tests, isolated previews) still works
-const CoursesContext = createContext<CoursesValue>({ courses: COURSES_DATA, combos: COMBO_OFFERS });
+// Empty outside the provider: the layout always supplies the live (admin-edited) lists. Bundling the built-in data
+// here would ship it to every client and let stale built-in prices show by accident.
+const CoursesContext = createContext<CoursesValue>({ courses: [], combos: [] });
 
 /** Live courses and combo offers as loaded on the server (admin-edited copy when it exists). */
 export function CoursesProvider({ courses, combos, children }: CoursesValue & { children: React.ReactNode }) {

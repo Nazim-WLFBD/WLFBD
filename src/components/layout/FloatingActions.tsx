@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { ArrowUp, GraduationCap, Headset, Phone, X } from 'lucide-react';
+import { ArrowUp, Headset, Phone, X } from 'lucide-react';
 import { useT } from '@/i18n/t';
 import { BRAND_CONTACT, BRAND_SOCIAL_LINKS, waLink, waMessage } from '@/lib/brand';
 import { ui } from '@/content/home';
@@ -38,8 +38,8 @@ const COPY = {
 };
 
 /**
- * One floating support button. Desktop: opens Call / WhatsApp options.
- * Phones: opens a sheet with the free class registration form (plus Messenger).
+ * Floating support button (desktop only): opens Call / WhatsApp options.
+ * Phones get the free class sheet instead, opened by the bottom bar via the 'wlf:free-class' event.
  */
 export function FloatingActions() {
   const t = useT();
@@ -75,8 +75,6 @@ export function FloatingActions() {
     };
   }, [menu]);
 
-  const onSupport = () => (window.matchMedia('(min-width: 1024px)').matches ? setMenu((m) => !m) : setSheet(true));
-
   return (
     <>
       <div ref={wrap} className="fixed right-3 bottom-[84px] z-40 flex flex-col items-end gap-3 lg:right-6 lg:bottom-6">
@@ -86,7 +84,8 @@ export function FloatingActions() {
               initial={{ opacity: 0, scale: 0.6 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.6 }}
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              // Instant: Lenis owns the scroll position and swallows native smooth scrolls
+              onClick={() => window.scrollTo({ top: 0, behavior: 'auto' })}
               className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface text-fg shadow-md lg:h-11 lg:w-11"
               aria-label={t(ui.backToTop)}
               title={t(ui.backToTop)}
@@ -106,7 +105,7 @@ export function FloatingActions() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.97 }}
               transition={{ duration: 0.18 }}
-              className="w-72 overflow-hidden rounded-[20px] border border-line bg-surface shadow-[var(--shadow-lift)]"
+              className="hidden w-72 overflow-hidden rounded-[20px] border border-line bg-surface shadow-[var(--shadow-lift)] lg:block"
             >
               <p className="border-b border-line px-5 py-3.5 text-sm font-semibold">{t(COPY.title)}</p>
               <a role="menuitem" href={`tel:${BRAND_CONTACT.phone}`} className="flex items-center gap-3.5 px-5 py-3.5 transition hover:bg-surface-2">
@@ -138,21 +137,20 @@ export function FloatingActions() {
         </AnimatePresence>
 
         <button
-          onClick={onSupport}
+          type="button"
+          onClick={() => setMenu((m) => !m)}
           aria-label={t(COPY.support)}
           aria-expanded={menu}
           aria-haspopup="menu"
+          aria-controls="support-menu"
           title={t(COPY.support)}
           className={cn(
-            'relative flex h-10 w-10 items-center justify-center rounded-full text-white shadow-[0_10px_24px_-10px_rgba(13,27,51,.7)] transition hover:scale-105 lg:h-11 lg:w-11',
+            'relative hidden h-11 w-11 items-center justify-center rounded-full text-white shadow-[0_10px_24px_-10px_rgba(13,27,51,.7)] transition hover:scale-105 lg:flex',
             menu ? 'bg-ink' : 'bg-rouge',
           )}
         >
           {!menu && <span className="animate-pulse-ring absolute inset-0 rounded-full bg-rouge" />}
-          <span className="lg:hidden">
-            <GraduationCap size={19} />
-          </span>
-          <span className="hidden lg:block">{menu ? <X size={18} /> : <Headset size={19} />}</span>
+          {menu ? <X size={18} /> : <Headset size={19} />}
         </button>
       </div>
 

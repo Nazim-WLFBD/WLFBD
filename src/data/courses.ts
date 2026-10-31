@@ -182,7 +182,6 @@ export const COURSES_DATA: Course[] = [
     tag: 'Canada PR Pathway',
     banglaTag: 'কানাডা পিআর পাথওয়ে',
     tagColor: 'bg-rose-50 text-[#D71920] border-rose-200',
-    popular: true,
     features: [
       'Intensive Preparation Dedicated to TEF Canada Format',
       'Targeted CLB 7 Level Mastery (Compréhension & Expression)',

@@ -1,8 +1,10 @@
 import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
 import { FieldValue } from 'firebase-admin/firestore';
 import { adminAuth, adminDb, getCaller, isAdminRole, json, SUPER_ADMINS, type Caller } from '@/lib/firebase-admin';
 import { layout, sendMail } from '@/lib/email';
 import { invalidateRecordedCache } from '@/lib/recorded';
+import { invalidateCourseCache } from '@/lib/content';
 import { DEFAULT_RECORDED_COURSES } from '@/data/recordedCourses.server';
 
 const Action = z.discriminatedUnion('action', [
@@ -13,6 +15,7 @@ const Action = z.discriminatedUnion('action', [
   z.object({ action: z.literal('seedRecordedCourses') }),
   z.object({ action: z.literal('setApproval'), uid: z.string().max(128), approval: z.enum(['pending', 'approved', 'rejected']) }),
   z.object({ action: z.literal('refreshRecordedCourses') }),
+  z.object({ action: z.literal('refreshCourses') }),
   z.object({
     action: z.literal('gradeWriting'),
     /** Firestore path of the attempt: users/{uid}/quizAttempts/{id} */
@@ -91,6 +94,19 @@ export async function POST(req: Request) {
     if (!en) return json({ error: 'Not found' }, 404);
     await ref.update({ paymentStatus: a.status, verifiedAt: FieldValue.serverTimestamp(), verifiedBy: caller.email });
     if (a.status === 'Verified' && en.userId) await db.doc(`users/${en.userId}`).set({ enrolledCourses: FieldValue.arrayUnion(en.courseId) }, { merge: true });
+    // Keep the linked payment record in step, as approvePayment/rejectPayment do the other way round
+    if (typeof en.paymentDocId === 'string' && en.paymentDocId) {
+      const payRef = db.collection('coursePayments').doc(en.paymentDocId);
+      const pay = (await payRef.get()).data();
+      if (pay) {
+        if (a.status === 'Verified') await payRef.update({ status: 'Verified', verifiedAt: FieldValue.serverTimestamp(), verifiedBy: caller.email });
+        else if (a.status === 'Failed') {
+          await payRef.update({ status: 'Rejected', rejectionReason: 'Set from enrollment', verifiedAt: FieldValue.serverTimestamp(), verifiedBy: caller.email });
+          // Free the TrxID so the student can resubmit after fixing a typo
+          if (pay.trxId) await db.doc(`trxIds/${pay.trxId}`).delete().catch(() => {});
+        } else await payRef.update({ status: 'Pending', rejectionReason: FieldValue.delete() });
+      }
+    }
     if (a.status === 'Verified' && en.userEmail) {
       const bn = bnOf(en);
       await sendMail(
@@ -141,6 +157,14 @@ export async function POST(req: Request) {
 
   if (a.action === 'refreshRecordedCourses') {
     invalidateRecordedCache();
+    return json({ ok: true });
+  }
+
+  // "Publish changes now" in the Courses editor: drop the in-memory course cache and re-render every page
+  // (courses appear in the header menu, enroll form and pricing, so the whole locale layout is revalidated)
+  if (a.action === 'refreshCourses') {
+    invalidateCourseCache();
+    revalidatePath('/', 'layout');
     return json({ ok: true });
   }
 

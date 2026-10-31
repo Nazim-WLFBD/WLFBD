@@ -1,15 +1,14 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useReducedMotion } from 'motion/react';
 import { MAPLE_PATH } from '@/components/ui/MapleLeaf';
 
 /**
  * Maple leaves drifting down the left side of the hero. Pure CSS animation (see
- * leaf-fall / leaf-sway in globals.css); disabled for reduced-motion users.
+ * leaf-fall / leaf-sway in globals.css). Always rendered, so the server and client markup match;
+ * reduced-motion users never see it thanks to `motion-reduce:hidden`.
  */
 export function MapleDrift({ count = 14 }: { count?: number }) {
-  const reduce = useReducedMotion();
   // Deterministic pseudo-random layout so server and client render the same leaves
   const leaves = useMemo(
     () =>
@@ -32,9 +31,8 @@ export function MapleDrift({ count = 14 }: { count?: number }) {
       }),
     [count],
   );
-  if (reduce) return null;
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-1/2 overflow-hidden">
+    <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-1/2 overflow-hidden motion-reduce:hidden">
       {leaves.map((l, i) => (
         <span
           key={i}

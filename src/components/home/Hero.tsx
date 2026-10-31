@@ -18,11 +18,13 @@ const ease = [0.22, 1, 0.36, 1] as const;
  */
 export function Hero() {
   const t = useT();
+  // `initial` is always the same so the server and client markup match (useReducedMotion differs between them);
+  // reduced-motion users get the end state instantly through a zero-length transition instead.
   const reduce = useReducedMotion();
   const fade = (delay: number) => ({
-    initial: reduce ? false : { opacity: 0, y: 18 },
+    initial: { opacity: 0, y: 18 },
     animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.9, delay, ease },
+    transition: reduce ? { duration: 0 } : { duration: 0.9, delay, ease },
   });
 
   return (
@@ -37,7 +39,7 @@ export function Hero() {
           fetchPriority="high"
           decoding="async"
           className="h-full w-full object-cover object-[72%_center] sm:object-[60%_center]"
-          style={reduce ? undefined : { animation: 'ken-burns 18s ease-out forwards' }}
+          style={{ animation: 'ken-burns 18s ease-out forwards' }} // stopped for reduced motion by the global CSS rule
         />
       </picture>
       {/* Legibility wash: strong on the left, clear on the right so the skyline shows */}
@@ -88,9 +90,9 @@ export function Hero() {
 
         {/* Canada card, anchored bottom-right so the student in the photo stays visible */}
         <motion.aside
-          initial={reduce ? false : { opacity: 0, y: 28 }}
+          initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.8, ease }}
+          transition={reduce ? { duration: 0 } : { duration: 1, delay: 0.8, ease }}
           className="mt-10 w-full justify-self-end sm:max-w-[380px] lg:mt-0"
         >
           <div className="accent-top rounded-[var(--radius)] border border-white/15 bg-ink/70 p-5 shadow-2xl backdrop-blur-xl">

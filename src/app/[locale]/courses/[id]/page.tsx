@@ -62,7 +62,8 @@ export default async function CoursePage({ params }: { params: Promise<{ locale:
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      {/* `<` is escaped so admin-entered text can never close the script tag */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
       <CourseDetail course={course} />
     </>
   );

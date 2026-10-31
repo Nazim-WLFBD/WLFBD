@@ -20,16 +20,23 @@ const FILTERS: Record<Filter, { en: string; bn: string }> = {
   practice: { en: 'Practice & challenges', bn: 'প্র্যাকটিস ও চ্যালেঞ্জ' },
 };
 
+/** The placement test is the recommended first step, so it is pinned as the featured card. */
+const isFeatured = (q: (typeof QUIZ_CATEGORIES)[number]) => q.slug === 'placement-test' || /RECOMMENDED/i.test(q.badgeTag ?? '');
+
+/** Quizzes with only a handful of questions are shown as a "Sample" rather than hidden. */
+const SAMPLE_MAX = 4;
+
 export function QuizHub() {
   const t = useT();
   const [filter, setFilter] = useState<Filter>('all');
   // The two level tests share one question set; show it once
   const list = QUIZ_CATEGORIES.filter((q) => q.id !== 'french-level-test')
-    .map((q) => ({ q, count: builtInQuestions(q.id).length }))
+    .map((q) => ({ q, count: builtInQuestions(q.id).length, featured: isFeatured(q) }))
     .filter(({ q }) =>
       filter === 'all' ? true : filter === 'placement' ? q.isPlacementTest : filter === 'mock' ? q.isMockExam : !q.isPlacementTest && !q.isMockExam,
     )
-    .sort((a, b) => Number(b.count > 0) - Number(a.count > 0));
+    // Featured first, then anything playable, then "coming soon"
+    .sort((a, b) => Number(b.featured) - Number(a.featured) || Number(b.count > 0) - Number(a.count > 0));
 
   return (
     <>
@@ -50,26 +57,34 @@ export function QuizHub() {
         ))}
       </div>
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {list.map(({ q, count }, idx) => {
+        {list.map(({ q, count, featured }, idx) => {
           const ready = count > 0;
+          const sample = ready && count <= SAMPLE_MAX;
           const body = (
             <>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-3">
                 <span className="flex items-center gap-3">
                   <span className={cn('flex h-10 w-10 items-center justify-center rounded-lg', q.isPlacementTest ? 'bg-rouge text-white' : 'bg-ink text-white')}>
                     <Icon name={ICON[q.iconName] ?? 'clipboard'} size={18} />
                   </span>
                   <span className="section-num">{String(idx + 1).padStart(2, '0')}</span>
                 </span>
-                <span className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">{t.locale === 'bn' && q.banglaBadgeTag ? q.banglaBadgeTag : q.badgeTag}</span>
+                <span className={cn('text-right text-[11px] font-bold tracking-[0.14em] uppercase', featured ? 'text-rouge' : 'text-muted')}>
+                  {t.locale === 'bn' && q.banglaBadgeTag ? q.banglaBadgeTag : q.badgeTag}
+                </span>
               </div>
-              <h3 className="font-display mt-5 text-xl leading-tight font-semibold">{t.locale === 'bn' ? q.banglaTitle : q.title}</h3>
-              <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-muted">{t.locale === 'bn' ? q.banglaDescription : q.description}</p>
+              <h3 className={cn('font-display mt-5 leading-tight font-semibold', featured ? 'text-2xl md:text-3xl' : 'text-xl')}>
+                {t.locale === 'bn' ? q.banglaTitle : q.title}
+              </h3>
+              <p className={cn('mt-2 flex-1 text-sm leading-relaxed text-muted', !featured && 'line-clamp-3')}>{t.locale === 'bn' ? q.banglaDescription : q.description}</p>
               <div className="hairline mt-5 flex items-center justify-between pt-4 text-sm">
-                <span className="flex gap-4 text-muted">
+                <span className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted">
                   <span className="flex items-center gap-1.5">
                     <ListChecks size={15} /> {num(ready ? count : q.questionCount, t.locale)}
                   </span>
+                  {sample && (
+                    <span className="rounded-md bg-surface-2 px-2 py-0.5 text-[10px] font-bold tracking-[0.14em] text-fg uppercase">{t({ en: 'Sample', bn: 'নমুনা' })}</span>
+                  )}
                   <span className="flex items-center gap-1.5">
                     <Clock size={15} /> {num(q.durationMinutes, t.locale)} {t({ en: 'min', bn: 'মিনিট' })}
                   </span>
@@ -84,7 +99,7 @@ export function QuizHub() {
               </div>
             </>
           );
-          const cls = 'group card flex h-full flex-col p-6 transition';
+          const cls = cn('group card flex h-full flex-col p-6 transition', featured && 'border-rouge/50 md:col-span-2 md:p-8 xl:col-span-3');
           return ready ? (
             <Link key={q.id} href={quizHref(q.slug)} className={cn(cls, 'hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)]', q.isPlacementTest && 'accent-top')}>
               {body}

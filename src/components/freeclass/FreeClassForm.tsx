@@ -130,14 +130,14 @@ export function FreeClassForm({ source = 'page', compact = false }: { source?: '
         <label htmlFor={`fc-phone-${source}`} className={label}>
           {t(COPY.phone)}
         </label>
-        <input id={`fc-phone-${source}`} value={f.phone} onChange={set('phone')} inputMode="tel" autoComplete="tel" placeholder="01XXXXXXXXX" className={field(errors.phone)} />
+        <input id={`fc-phone-${source}`} value={f.phone} onChange={set('phone')} type="tel" inputMode="numeric" autoComplete="tel" placeholder="01XXXXXXXXX" className={field(errors.phone)} />
         {errText('phone')}
       </div>
       <div>
         <label htmlFor={`fc-wa-${source}`} className={label}>
           {t(COPY.whatsapp)}
         </label>
-        <input id={`fc-wa-${source}`} value={f.whatsapp} onChange={set('whatsapp')} inputMode="tel" placeholder="01XXXXXXXXX" className={field(errors.whatsapp)} />
+        <input id={`fc-wa-${source}`} value={f.whatsapp} onChange={set('whatsapp')} type="tel" inputMode="numeric" autoComplete="tel" placeholder="01XXXXXXXXX" className={field(errors.whatsapp)} />
         {errText('whatsapp')}
       </div>
       <div>

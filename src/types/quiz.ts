@@ -65,7 +65,6 @@ export interface PendingReview {
   points: number;
   minWords?: number;
   maxWords?: number;
-  modelAnswer?: string;
 }
 
 /** An instructor's mark for one writing answer. */

@@ -20,7 +20,7 @@ export function MobileBottomBar() {
         {t({ en: 'Courses', bn: 'কোর্স' })}
       </Link>
       <Link href="/quiz/placement-test" className={`${item} text-fg`}>
-        <Sparkles size={19} className="text-gold" />
+        <Sparkles size={19} className="text-rouge" />
         {t(ui.freeQuiz)}
       </Link>
       <button type="button" onClick={() => window.dispatchEvent(new Event('wlf:free-class'))} className={`${item} bg-rouge text-white`}>

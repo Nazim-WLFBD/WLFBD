@@ -120,6 +120,7 @@ export function AuthForm({ initial = 'login' }: { initial?: Tab }) {
   };
 
   const input = 'w-full rounded-xl border border-line bg-surface px-4 py-3 text-[15px] outline-none transition focus:border-bleu focus:ring-2 focus:ring-bleu/20';
+  const label = 'mb-2 block text-[11px] font-bold tracking-[0.14em] text-muted uppercase';
 
   return (
     <div className="card accent-top mx-auto max-w-md p-6 md:p-8">
@@ -139,25 +140,52 @@ export function AuthForm({ initial = 'login' }: { initial?: Tab }) {
           </button>
         ))}
       </div>
-      <form onSubmit={submit} className="flex flex-col gap-3.5">
-        {tab === 'signup' && <input required placeholder={t(copy.name)} value={f.name} onChange={set('name')} className={input} />}
-        <input required type="email" placeholder={t(copy.email)} value={f.email} onChange={set('email')} autoComplete="email" className={input} />
+      <form onSubmit={submit} className="flex flex-col gap-4">
+        {tab === 'signup' && (
+          <div>
+            <label htmlFor="auth-name" className={label}>
+              {t(copy.name)}
+            </label>
+            <input id="auth-name" required value={f.name} onChange={set('name')} autoComplete="name" className={input} />
+          </div>
+        )}
+        <div>
+          <label htmlFor="auth-email" className={label}>
+            {t(copy.email)}
+          </label>
+          <input id="auth-email" required type="email" value={f.email} onChange={set('email')} autoComplete="email" className={input} />
+        </div>
         {tab !== 'reset' && (
-          <input
-            required
-            type="password"
-            minLength={6}
-            placeholder={t(copy.password)}
-            value={f.password}
-            onChange={set('password')}
-            autoComplete={tab === 'login' ? 'current-password' : 'new-password'}
-            className={input}
-          />
+          <div>
+            <label htmlFor="auth-password" className={label}>
+              {t(copy.password)}
+            </label>
+            <input
+              id="auth-password"
+              required
+              type="password"
+              minLength={6}
+              value={f.password}
+              onChange={set('password')}
+              autoComplete={tab === 'login' ? 'current-password' : 'new-password'}
+              className={input}
+            />
+          </div>
         )}
         {tab === 'signup' && (
           <>
-            <input required type="password" minLength={6} placeholder={t(copy.confirm)} value={f.confirm} onChange={set('confirm')} autoComplete="new-password" className={input} />
-            <input placeholder={t(copy.phone)} value={f.phone} onChange={set('phone')} inputMode="tel" className={input} />
+            <div>
+              <label htmlFor="auth-confirm" className={label}>
+                {t(copy.confirm)}
+              </label>
+              <input id="auth-confirm" required type="password" minLength={6} value={f.confirm} onChange={set('confirm')} autoComplete="new-password" className={input} />
+            </div>
+            <div>
+              <label htmlFor="auth-phone" className={label}>
+                {t(copy.phone)}
+              </label>
+              <input id="auth-phone" value={f.phone} onChange={set('phone')} type="tel" inputMode="numeric" autoComplete="tel" placeholder="01XXXXXXXXX" className={input} />
+            </div>
             <div className="grid grid-cols-2 gap-2">
               <label className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">
                 {t(copy.goal)}

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { addDoc, collection, doc, getDocs, serverTimestamp, updateDoc } from 'firebase/firestore';
-import { ArrowLeft, ArrowRight, CheckCircle2, Clock, Flag, Hourglass, RotateCcw, Star, Volume2, XCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle2, Clock, Flag, Hourglass, ListChecks, RotateCcw, Star, Volume2, XCircle } from 'lucide-react';
 import { Link, usePathname } from '@/i18n/navigation';
 import { useT } from '@/i18n/t';
 import { btn } from '@/components/ui/Button';
@@ -31,7 +31,20 @@ function shuffle<T>(a: T[]) {
 
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
-export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
+/** Built-in questions followed by admin-added ones (an admin copy with the same id replaces the built-in one). */
+const withExtra = (quizId: string, extra: Question[]) => {
+  const built = builtInQuestions(quizId);
+  return extra.length ? [...built.filter((q) => !extra.some((e) => e.id === q.id)), ...extra] : built;
+};
+
+export function QuizRunner({
+  quiz,
+  extraQuestions,
+}: {
+  quiz: QuizCategory;
+  /** Admin-added questions loaded on the server; when omitted they are fetched from Firestore here. */
+  extraQuestions?: Question[];
+}) {
   const t = useT();
   const { courses } = useCourses();
   const locale = t.locale;
@@ -39,7 +52,7 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
   const pathname = usePathname();
   const storeKey = `wlf_quiz_${quiz.id}`;
 
-  const [questions, setQuestions] = useState<Question[]>(() => builtInQuestions(quiz.id));
+  const [questions, setQuestions] = useState<Question[]>(() => withExtra(quiz.id, extraQuestions ?? []));
   const [phase, setPhase] = useState<Phase>('intro');
   const [i, setI] = useState(0);
   const [answers, setAnswers] = useState<Record<string, unknown>>({});
@@ -52,24 +65,29 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
   answersRef.current = answers;
   const startedAt = useRef(0);
 
-  // Questions added by admins (Firestore) are appended to the built-in set
+  // Questions added by admins are normally passed in from the server; this fallback fetch is only for callers
+  // that render the runner without them
   useEffect(() => {
+    if (extraQuestions) return;
     const fb = firebase();
     if (!fb) return;
     getDocs(collection(fb.db, 'quizzes', quiz.id, 'questions'))
       .then((s) => {
-        const extra = s.docs.map((d) => ({ ...(d.data() as Question), id: d.id, quizId: quiz.id }));
-        if (extra.length) setQuestions((qs) => [...qs.filter((q) => !extra.some((e) => e.id === q.id)), ...extra]);
+        const extra = s.docs.map((d) => {
+          const { modelAnswer: _m, ...rest } = d.data() as Question & { modelAnswer?: string }; // eslint-disable-line @typescript-eslint/no-unused-vars
+          return { ...rest, id: d.id, quizId: quiz.id } as Question;
+        });
+        if (extra.length) setQuestions(withExtra(quiz.id, extra));
       })
       .catch(() => {});
-  }, [quiz.id]);
+  }, [quiz.id, extraQuestions]);
 
   const options = useMemo(
     () => Object.fromEntries(questions.map((q) => [q.id, q.options ? shuffle(q.options) : []])),
     [questions],
   );
 
-  // Resume saved progress
+  // Resume saved progress (startedAt too, so the time taken survives a reload)
   useEffect(() => {
     try {
       const s = JSON.parse(localStorage.getItem(storeKey) ?? 'null');
@@ -78,6 +96,7 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
         setFlags(s.flags ?? []);
         setPlays(s.plays ?? {});
         if (typeof s.left === 'number' && s.left > 0) setLeft(s.left);
+        if (typeof s.startedAt === 'number' && s.startedAt > 0) startedAt.current = s.startedAt;
       }
     } catch {}
   }, [storeKey]);
@@ -85,9 +104,16 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
   useEffect(() => {
     if (phase !== 'running' && phase !== 'review') return;
     try {
-      localStorage.setItem(storeKey, JSON.stringify({ answers, flags, plays, left }));
+      localStorage.setItem(storeKey, JSON.stringify({ answers, flags, plays, left, startedAt: startedAt.current }));
     } catch {}
   }, [answers, flags, plays, left, phase, storeKey]);
+
+  // Stop any text-to-speech when the question changes or the runner unmounts
+  useEffect(() => {
+    return () => {
+      if (typeof speechSynthesis !== 'undefined') speechSynthesis.cancel();
+    };
+  }, [i, phase]);
 
   const finish = useCallback(() => {
     const r = scoreQuiz(quiz, questions, answersRef.current); // latest answers, not a stale snapshot
@@ -197,7 +223,7 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
         <div className="mt-7 flex flex-wrap gap-3">
           <button
             onClick={() => {
-              startedAt.current = Date.now();
+              if (!resuming || !startedAt.current) startedAt.current = Date.now();
               setPhase('running');
             }}
             className={btn('rouge', 'lg')}
@@ -210,7 +236,9 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
               onClick={() => {
                 setAnswers({});
                 setFlags([]);
+                setPlays({});
                 setLeft(quiz.durationMinutes * 60);
+                startedAt.current = 0;
                 localStorage.removeItem(storeKey);
               }}
               className={btn('ghost', 'lg')}
@@ -425,10 +453,12 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
           left < 60 ? 'bg-rouge' : 'bg-ink',
         )}
       >
-        <span className="flex items-center gap-2 text-sm font-semibold">
-          <Clock size={16} /> {num(answered, t.locale)}/{num(questions.length, t.locale)}
+        <span className="flex items-center gap-2 text-sm font-semibold" aria-label={t({ en: 'Answered', bn: 'উত্তর দেওয়া হয়েছে' })}>
+          <ListChecks size={16} /> {num(answered, t.locale)}/{num(questions.length, t.locale)}
         </span>
-        <span className="font-display text-xl font-semibold tabular-nums">{fmt(left)}</span>
+        <span className="flex items-center gap-2 font-display text-xl font-semibold tabular-nums" aria-label={t({ en: 'Time left', bn: 'বাকি সময়' })}>
+          <Clock size={16} /> {fmt(left)}
+        </span>
       </div>
       <div className="card p-5 md:p-8">
         <div className="flex items-center justify-between gap-3">

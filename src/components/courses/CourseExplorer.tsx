@@ -14,8 +14,15 @@ import { BoardingPass, courseText } from './BoardingPass';
 
 type Filter = 'all' | 'delf' | 'canada';
 
-export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }) {
+interface Props {
+  notchClass?: string;
+  /** 'swipe' (home): phones get a horizontal snap row. 'grid' (/courses): phones stack the cards vertically. */
+  layout?: 'swipe' | 'grid';
+}
+
+export function CourseExplorer({ notchClass = 'bg-bg', layout = 'swipe' }: Props) {
   const t = useT();
+  const swipe = layout === 'swipe';
   const bn = t.locale === 'bn';
   const { courses, combos } = useCourses();
   const [filter, setFilter] = useState<Filter>('all');
@@ -31,9 +38,10 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
 
   return (
     <>
-      {/* Underlined text tabs */}
+      {/* Underlined text tabs; on phones a right-edge fade hints that the row scrolls */}
+      <div className="relative -mx-4 mb-10 sm:mx-0 after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:w-10 after:bg-gradient-to-l after:from-bg after:to-transparent sm:after:hidden">
       <div
-        className="no-scrollbar -mx-4 mb-10 flex gap-1 overflow-x-auto border-b border-line px-4 sm:mx-0 sm:px-0 [&>button]:shrink-0 [&>button]:whitespace-nowrap"
+        className="no-scrollbar flex gap-1 overflow-x-auto border-b border-line px-4 sm:px-0 [&>button]:shrink-0 [&>button]:whitespace-nowrap"
         role="tablist"
         aria-label={t({ en: 'Filter courses', bn: 'কোর্স ফিল্টার করুন' })}
       >
@@ -55,15 +63,24 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
           </button>
         ))}
       </div>
+      </div>
 
-      <p className="-mt-6 mb-2 flex items-center gap-1.5 text-xs font-semibold text-muted md:hidden">
-        {t({ en: `Swipe to see all ${list.length} courses`, bn: `সব ${num(list.length, 'bn')}টি কোর্স দেখতে সোয়াইপ করুন` })} →
-      </p>
+      {swipe && (
+        <p className="-mt-6 mb-2 flex items-center gap-1.5 text-xs font-semibold text-muted md:hidden">
+          {t({ en: `Swipe to see all ${list.length} courses`, bn: `সব ${num(list.length, 'bn')}টি কোর্স দেখতে সোয়াইপ করুন` })} →
+        </p>
+      )}
       <LayoutGroup>
-        {/* Phones: horizontal swipe row (saves several screens of scrolling). Tablet/desktop: grid */}
+        {/* Home (swipe): phones get a horizontal snap row (saves several screens of scrolling).
+            /courses (grid): phones stack the cards. Tablet/desktop: always a grid */}
         <motion.div
           layout
-          className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pt-4 pb-4 [scroll-padding-inline:16px] sm:-mx-6 sm:px-6 md:mx-0 md:grid md:grid-cols-2 md:gap-x-6 md:gap-y-8 md:overflow-visible md:px-0 md:pt-0 md:pb-0 xl:grid-cols-3"
+          className={cn(
+            'md:grid md:grid-cols-2 md:gap-x-6 md:gap-y-8 xl:grid-cols-3',
+            swipe
+              ? 'no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pt-4 pb-4 [scroll-padding-inline:16px] sm:-mx-6 sm:px-6 md:mx-0 md:overflow-visible md:px-0 md:pt-0 md:pb-0'
+              : 'grid gap-6',
+          )}
         >
           <AnimatePresence mode="popLayout">
             {list.map((c) => (
@@ -74,7 +91,7 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.96 }}
                 transition={{ duration: 0.35 }}
-                className="w-[84vw] max-w-[360px] shrink-0 snap-start md:w-auto md:max-w-none"
+                className={cn('min-w-0', swipe && 'w-[84vw] max-w-[360px] shrink-0 snap-start md:w-auto md:max-w-none')}
               >
                 <BoardingPass course={c} comparing={compare.includes(c.id)} onCompare={toggleCompare} notchClass={notchClass} />
               </motion.div>

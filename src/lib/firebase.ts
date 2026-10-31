@@ -3,7 +3,7 @@
 import { getApps, initializeApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator, type Auth } from 'firebase/auth';
 import { getFirestore, connectFirestoreEmulator, type Firestore } from 'firebase/firestore';
-import { getStorage, type FirebaseStorage } from 'firebase/storage';
+import type { FirebaseStorage } from 'firebase/storage';
 
 const config = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -29,12 +29,24 @@ export function firebase() {
     app = getApps()[0] ?? initializeApp(config);
     auth = getAuth(app);
     db = getFirestore(app);
-    // Uploads (quiz audio) go to the default bucket from NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-    storage = getStorage(app);
     if (useEmulator) {
       connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
       connectFirestoreEmulator(db, '127.0.0.1', 8080);
     }
   }
-  return { app: app!, auth: auth!, db: db!, storage: storage! };
+  return { app: app!, auth: auth!, db: db! };
+}
+
+/**
+ * Storage is only needed for admin uploads (quiz audio), so its SDK is loaded on demand instead of
+ * being bundled into every page. Uploads go to the default bucket from NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET.
+ */
+export async function getStorageLazy(): Promise<FirebaseStorage | null> {
+  const fb = firebase();
+  if (!fb) return null;
+  if (!storage) {
+    const { getStorage } = await import('firebase/storage');
+    storage = getStorage(fb.app);
+  }
+  return storage;
 }

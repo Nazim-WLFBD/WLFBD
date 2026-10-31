@@ -58,10 +58,10 @@ export function AdminPortal() {
             fields={[
               { key: 'batchName', label: 'Name', type: 'text' },
               { key: 'banglaBatchName', label: 'Bangla name', type: 'text' },
-              { key: 'days', label: 'Days', type: 'text' },
+              { key: 'days', label: 'Days', type: 'text', required: true },
               { key: 'banglaDays', label: 'Bangla days', type: 'text' },
               { key: 'dayKeys', label: 'Day keys (fri, sat, sun, mon…)', type: 'list' },
-              { key: 'timeSlot', label: 'Time slot', type: 'text' },
+              { key: 'timeSlot', label: 'Time slot', type: 'text', required: true },
               { key: 'type', label: 'Type', type: 'select', options: ['Morning', 'Evening', 'Night'] },
               { key: 'courseId', label: 'Course id (or any)', type: 'text' },
               { key: 'status', label: 'Status', type: 'select', options: ['Open', 'Filling Fast', 'Almost Full', 'Closed'] },
@@ -144,13 +144,27 @@ export function AdminPortal() {
   );
 }
 
-function useRows(path: string, order = 'submittedAt', max = 200) {
+/** Epoch ms of a Firestore Timestamp, ISO string or number (0 when missing), for client-side sorting. */
+const epoch = (v: unknown) => {
+  if (!v) return 0;
+  const s = (v as { seconds?: number }).seconds;
+  if (typeof s === 'number') return s * 1000;
+  const n = typeof v === 'number' ? v : Date.parse(String(v));
+  return Number.isFinite(n) ? n : 0;
+};
+
+/**
+ * Rows of a collection, newest first. With `order` the query sorts on the server (documents missing that field
+ * are not returned); with `order: null` everything is fetched and sorted here by `createdAt`.
+ */
+function useRows(path: string, order: string | null = 'submittedAt', max = 200) {
   const [rows, setRows] = useState<Row[] | null>(null);
   const load = useCallback(async () => {
     const fb = firebase();
     if (!fb) return;
-    const s = await getDocs(query(collection(fb.db, path), orderBy(order, 'desc'), limit(max)));
-    setRows(s.docs.map((d) => ({ id: d.id, ...d.data() })));
+    const s = await getDocs(order ? query(collection(fb.db, path), orderBy(order, 'desc'), limit(max)) : query(collection(fb.db, path), limit(max)));
+    const list: Row[] = s.docs.map((d) => ({ id: d.id, ...d.data() }));
+    setRows(order ? list : list.sort((a, b) => epoch(b.createdAt) - epoch(a.createdAt)));
   }, [path, order, max]);
   useEffect(() => {
     load().catch(() => setRows([]));
@@ -331,7 +345,8 @@ function Enrollments() {
 }
 
 function Users() {
-  const { rows, load } = useRows('users', 'lastLoginAt', 500);
+  // Sorted client-side so profiles that have never logged in (no lastLoginAt) still appear
+  const { rows, load } = useRows('users', null, 500);
   const { profile } = useAuth();
   const { busy, run } = useAction();
   const [q, setQ] = useState('');
@@ -425,14 +440,16 @@ function QuestionsTab() {
           </option>
         ))}
       </select>
-      <p className="mb-4 text-xs text-muted">Questions added here are shown to students in this quiz, after the built-in questions.</p>
+      <p className="mb-4 text-xs text-muted">Questions added here are shown to students in this quiz, after the built-in questions (the site picks them up within 5 minutes).</p>
       <CrudTab
         key={quiz}
         path={`quizzes/${quiz}/questions`}
         columns={['prompt', 'type', 'category', 'correctAnswer']}
+        // The model answer lives in quizzes/{quiz}/notes/{id}, which only staff may read; the questions doc is public
+        splitFields={{ keys: ['modelAnswer'], path: (id) => `quizzes/${quiz}/notes/${id}` }}
         fields={[
-          { key: 'type', label: 'Question type', type: 'select', options: ['multiple-choice', 'true-false', 'fill-blank', 'audio-listening', 'writing-task'] },
-          { key: 'prompt', label: 'Question', type: 'textarea' },
+          { key: 'type', label: 'Question type', type: 'select', options: ['multiple-choice', 'true-false', 'fill-blank', 'audio-listening', 'writing-task'], required: true },
+          { key: 'prompt', label: 'Question', type: 'textarea', required: true },
           { key: 'banglaPrompt', label: 'Bangla question (optional)', type: 'text' },
           { key: 'passage', label: 'Reading passage (optional)', type: 'textarea' },
           { key: 'audioUrl', label: 'Audio file', type: 'file', accept: 'audio/*', folder: 'quiz-audio', hint: 'For listening questions: upload an MP3/M4A (max 15 MB) or paste a URL. Students may play it twice.' },
@@ -490,7 +507,11 @@ function FreeClass() {
   };
   const exportCsv = () => {
     const cols = ['name', 'phone', 'whatsapp', 'email', 'interestLabel', 'status', 'locale'];
-    const cell = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    // A leading = + - @ or tab/CR would be run as a formula by Excel/Sheets, so such cells are prefixed with an apostrophe
+    const cell = (v: unknown) => {
+      const s = String(v ?? '');
+      return `"${(/^[=+\-@\t\r]/.test(s) ? `'${s}` : s).replace(/"/g, '""')}"`;
+    };
     const csv = [['date', ...cols].join(','), ...list.map((r) => [cell(fmtDate(r.submittedAt)), ...cols.map((c) => cell(r[c]))].join(','))].join('\n');
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob(['\ufeff' + csv], { type: 'text/csv' }));

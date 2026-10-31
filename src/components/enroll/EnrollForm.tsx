@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'motion/react';
 import { ArrowLeft, ArrowRight, Check, CheckCircle2, Copy, Loader2 } from 'lucide-react';
@@ -109,11 +109,13 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
     [t, bn, courses, combos],
   );
 
-  const initialCourse = options.find((o) => o.id === params.get('course'))?.id ?? 'delf-a1';
+  // Preferred course from the URL, else DELF A1; an admin may have unpublished either, so the
+  // effective selection below always falls back to the first option that is actually available.
+  const preferredCourse = params.get('course') || 'delf-a1';
   const initialBatch = batches.find((b) => b.id === params.get('batch'))?.id ?? batches[0]?.id ?? 'flexible';
 
   const [step, setStep] = useState(0);
-  const [courseId, setCourseId] = useState(initialCourse);
+  const [courseId, setCourseId] = useState<string | null>(null);
   const [batchId, setBatchId] = useState(initialBatch);
   const [name, setName] = useState(defaults?.name ?? '');
   const [phone, setPhone] = useState(defaults?.phone ?? '');
@@ -128,13 +130,27 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
   const [done, setDone] = useState<EnrollmentInput | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const course = options.find((o) => o.id === courseId)!;
-  const custom = course.fee == null;
-  const amount = custom ? 0 : plan === 'half' ? Math.round(course.fee! / 2) : course.fee!;
+  const course: Option | undefined =
+    (courseId ? options.find((o) => o.id === courseId) : undefined) ?? options.find((o) => o.id === preferredCourse) ?? options[0];
+  const fee = course?.fee ?? null;
+  const custom = fee == null;
+  const amount = fee == null ? 0 : plan === 'half' ? Math.round(fee / 2) : fee;
   const batch = batches.find((b) => b.id === batchId);
   const batchTime = (b: BatchSchedule) => (bn && b.banglaTimeSlot) || b.timeSlot;
   const batchLabel = batch ? `${(bn && batch.banglaDays) || batch.days}, ${batchTime(batch)}` : t(copy.flexible);
   const steps = custom ? copy.steps.slice(0, 2) : copy.steps;
+
+  // On step change: bring the card back under the fixed header (scroll-mt-28) and move focus to the step heading.
+  // Instant rather than smooth: Lenis owns the scroll position and swallows native smooth scrolls.
+  const card = useRef<HTMLDivElement>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
+  const prevStep = useRef(step);
+  useEffect(() => {
+    if (prevStep.current === step) return;
+    prevStep.current = step;
+    card.current?.scrollIntoView({ block: 'start', behavior: 'auto' });
+    heading.current?.focus({ preventScroll: true });
+  }, [step]);
 
   const validate = (s: number) => {
     const e: Record<string, string> = {};
@@ -154,9 +170,9 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
   const next = () => validate(step) && setStep((s) => s + 1);
 
   const submit = async () => {
-    if (!validate(step)) return;
+    if (!course || !validate(step)) return;
     const data: EnrollmentInput = {
-      courseId,
+      courseId: course.id,
       courseTitle: course.title,
       batchId,
       batchLabel,
@@ -209,6 +225,19 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
       'w-full rounded-xl border bg-surface px-4 py-3 text-[15px] outline-none transition focus:border-bleu focus:ring-2 focus:ring-bleu/20',
       err ? 'border-rouge' : 'border-line',
     );
+
+  if (!course) {
+    return (
+      <div className="card accent-top mx-auto max-w-2xl p-7 text-center md:p-10">
+        <h2 className="font-display text-2xl font-semibold md:text-3xl">{t(copy.noCoursesTitle)}</h2>
+        <p className="mx-auto mt-3 max-w-md text-muted">{t(copy.noCourses)}</p>
+        <a href={BRAND_CONTACT.whatsappUrl} target="_blank" rel="noopener" className={btn('rouge', 'md', 'mt-6')}>
+          <WhatsAppGlyph size={18} /> {t(copy.noCoursesCta)}
+        </a>
+        <p className="mt-4 text-xs text-muted">{t(copy.helpline)}</p>
+      </div>
+    );
+  }
 
   if (done) {
     return (
@@ -275,7 +304,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-      <div className="card p-6 md:p-8">
+      <div ref={card} className="card scroll-mt-28 p-6 md:p-8">
         {/* Stepper: numbered circles joined by a hairline */}
         <ol className="mb-8 flex items-center">
           {steps.map((s, i) => (
@@ -299,6 +328,10 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
         </ol>
 
         <motion.div key={step} initial={{ opacity: 0.4, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25 }}>
+            {/* Step heading: the focus target after Continue/Back (the stepper's labels are hidden on phones) */}
+            <h2 ref={heading} tabIndex={-1} className="mb-5 text-[11px] font-bold tracking-[0.14em] text-rouge uppercase outline-none">
+              {t({ en: `Step ${step + 1} of ${steps.length}`, bn: `ধাপ ${num(step + 1, 'bn')} / ${num(steps.length, 'bn')}` })} · {t(steps[step])}
+            </h2>
             {step === 0 && (
               <div className="flex flex-col gap-7">
                 <fieldset>
@@ -309,14 +342,14 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                         key={o.id}
                         className={cn(
                           'flex cursor-pointer items-start gap-3 rounded-xl border bg-surface p-3.5 transition',
-                          courseId === o.id ? 'border-ink ring-1 ring-ink dark:border-white dark:ring-white' : 'border-line hover:border-fg/30',
+                          course.id === o.id ? 'border-ink ring-1 ring-ink dark:border-white dark:ring-white' : 'border-line hover:border-fg/30',
                         )}
                       >
                         <input
                           type="radio"
                           name="course"
                           value={o.id}
-                          checked={courseId === o.id}
+                          checked={course.id === o.id}
                           onChange={() => setCourseId(o.id)}
                           className="mt-1 accent-[var(--rouge)]"
                         />
@@ -370,7 +403,8 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                   <input
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    inputMode="tel"
+                    type="tel"
+                    inputMode="numeric"
                     autoComplete="tel"
                     placeholder="01XXXXXXXXX"
                     className={field(errors.phone)}
@@ -404,7 +438,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                       >
                         <span className="block text-[11px] font-bold tracking-[0.14em] text-muted uppercase">{t(p === 'full' ? copy.full : copy.half)}</span>
                         <span className="font-display mt-1 block text-2xl font-semibold text-fg">
-                          {taka(p === 'full' ? course.fee! : Math.round(course.fee! / 2), t.locale)}
+                          {taka(p === 'full' ? (fee ?? 0) : Math.round((fee ?? 0) / 2), t.locale)}
                         </span>
                       </button>
                     ))}
@@ -453,7 +487,12 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                           <span className="font-display w-6 shrink-0 font-semibold text-rouge tabular-nums">{String(i + 1).padStart(2, '0')}</span>
                           <span>
                             {t(s)}
-                            {i === 2 && <strong className="ml-1 font-semibold text-rouge">{taka(amount, t.locale)}</strong>}
+                            {i === 2 && (
+                              <>
+                                {' '}
+                                <strong className="font-semibold text-rouge">{taka(amount, t.locale)}</strong>
+                              </>
+                            )}
                           </span>
                         </li>
                       ))}
@@ -463,7 +502,9 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                         <input
                           value={senderPhone}
                           onChange={(e) => setSenderPhone(e.target.value)}
-                          inputMode="tel"
+                          type="tel"
+                          inputMode="numeric"
+                          autoComplete="tel"
                           placeholder="01XXXXXXXXX"
                           className={field(errors.senderPhone)}
                         />
@@ -472,6 +513,9 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                         <input
                           value={trxId}
                           onChange={(e) => setTrxId(e.target.value.toUpperCase())}
+                          autoCapitalize="characters"
+                          autoComplete="off"
+                          spellCheck={false}
                           placeholder="9A7B6C5D4E"
                           className={cn(field(errors.trxId), 'font-mono uppercase')}
                         />
@@ -525,7 +569,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
               <>
                 <div className="hairline flex items-baseline justify-between gap-4 py-3">
                   <dt className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">{t(course.combo ? copy.totalCombo : copy.total)}</dt>
-                  <dd className="font-display text-3xl font-semibold text-fg">{taka(course.fee!, t.locale)}</dd>
+                  <dd className="font-display text-3xl font-semibold text-fg">{taka(fee ?? 0, t.locale)}</dd>
                 </div>
                 {plan === 'half' && (
                   <div className="hairline flex justify-between gap-4 py-2.5">

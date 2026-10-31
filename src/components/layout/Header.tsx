@@ -60,8 +60,12 @@ export function Header() {
   }, [pathname]);
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) =>
-      e.key === "Escape" && (setMenu(null), setDrawer(false));
+    // Escape closes the mega menu (resets aria-expanded on its trigger) and the drawer
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setMenu(null);
+      setDrawer(false);
+    };
     // Close the mega menu when tapping/clicking anywhere outside the header
     const onDown = (e: PointerEvent) =>
       !(e.target as Element).closest?.("header") && setMenu(null);
@@ -87,15 +91,16 @@ export function Header() {
 
   const { courses: live, combos } = useCourses();
 
-  // One slim institutional bar: navy with a maple-red hairline on top. Transparent over the hero,
-  // solid once the page scrolls (and always solid on inner pages, which start with a navy band anyway).
+  // One slim institutional bar: navy with a maple-red hairline on top. Transparent over the home hero,
+  // solid once the page scrolls and always solid on inner pages (some start with a light section).
   const pill = "flex h-[64px] items-center text-white";
+  const solid = scrolled || !!menu || pathname !== "/";
 
   return (
     <header
       className={cn(
         "fixed inset-x-0 top-0 z-50 border-t-[3px] border-rouge transition-[background-color,box-shadow,border-color] duration-500",
-        scrolled || menu
+        solid
           ? "bg-ink/95 shadow-[0_12px_32px_-20px_rgba(0,0,0,.7)] backdrop-blur-md border-b border-b-white/10"
           : "bg-transparent",
       )}
@@ -108,7 +113,7 @@ export function Header() {
           className={cn(pill, "shrink-0")}
         >
           <span className="hidden xl:block">
-            <Logo size={46} />
+            <Logo size={46} priority />
           </span>
           <span className="xl:hidden">
             <Logo size={40} showText={false} />
@@ -188,6 +193,7 @@ export function Header() {
       <AnimatePresence>
         {menu && (
           <motion.div
+            id={`mega-${menu}`}
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
@@ -337,9 +343,10 @@ export function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.25 }}
-            data-lenis-prevent
-            className="mx-auto mt-2 max-h-[calc(100dvh-96px)] overflow-y-auto rounded-[28px] border border-white/10 bg-ink/97 p-4 text-white shadow-2xl backdrop-blur-xl lg:hidden"
+            className="mx-auto mt-2 flex max-h-[calc(100dvh-96px)] flex-col overflow-hidden rounded-[28px] border border-white/10 bg-ink/97 text-white shadow-2xl backdrop-blur-xl lg:hidden"
           >
+            {/* Scrolling middle: courses + tools. Primary actions stay pinned in the footer below. */}
+            <div data-lenis-prevent className="min-h-0 flex-1 overflow-y-auto p-4 pb-3">
             <div className="grid grid-cols-2 gap-2">
               {live.map((c) => (
                 <Link
@@ -396,22 +403,27 @@ export function Header() {
                 {t(NAV.blog)}
               </Link>
             </div>
-            <div className="mt-4 flex items-center justify-between gap-2">
-              <LangSwitch />
-              <ThemeToggle />
-            </div>
-            <MobileAccount />
-            <div className="mt-4 grid grid-cols-2 gap-2">
-              <Link href="/enroll" className={btn("rouge", "md")}>
-                {t(ui.enroll)}
-              </Link>
-              <Link href="/free-class" className={btn("ghost-light", "md")}>
-                {t(NAV.freeClass)}
-              </Link>
-            </div>
             <p className="mt-3 text-center text-xs text-white/50">
               {t(ui.whatsapp)}: {BRAND_CONTACT.whatsapp}
             </p>
+            </div>
+
+            {/* Pinned footer: account, Enroll / Free class, language + theme */}
+            <div className="shrink-0 border-t border-white/10 bg-ink/97 p-4 pt-3">
+              <MobileAccount />
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <Link href="/enroll" className={btn("rouge", "md")}>
+                  {t(ui.enroll)}
+                </Link>
+                <Link href="/free-class" className={btn("ghost-light", "md")}>
+                  {t(NAV.freeClass)}
+                </Link>
+              </div>
+              <div className="mt-3 flex items-center justify-between gap-2">
+                <LangSwitch />
+                <ThemeToggle />
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -427,13 +439,13 @@ function MobileAccount() {
     "flex items-center justify-center gap-2 rounded-2xl bg-white/5 py-3 text-sm font-semibold";
   if (!user)
     return (
-      <Link href="/login" className={cn(row, "mt-3")}>
+      <Link href="/login" className={row}>
         <UserRound size={16} /> {t(ui.login)}
       </Link>
     );
   return (
     <div
-      className={cn("mt-3 grid gap-2", isAdmin ? "grid-cols-3" : "grid-cols-2")}
+      className={cn("grid gap-2", isAdmin ? "grid-cols-3" : "grid-cols-2")}
     >
       <Link href="/dashboard" className={row}>
         <LayoutDashboard size={16} /> {t({ en: "Dashboard", bn: "ড্যাশবোর্ড" })}
@@ -466,10 +478,14 @@ function MenuTrigger({
   const active = menu === id;
   return (
     <button
+      type="button"
       onMouseEnter={() => open(id)}
       onFocus={() => open(id)}
-      onClick={() => open(id)}
+      // Click only ever opens (hover usually got there first); Escape / outside pointerdown close
+      onClick={() => !active && open(id)}
       aria-expanded={active}
+      aria-haspopup="true"
+      aria-controls={`mega-${id}`}
       className={cn(
         "relative flex h-10 items-center gap-1.5 px-3 text-[14px] font-medium whitespace-nowrap text-white/80 transition hover:text-white after:absolute after:inset-x-3 after:bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-[#ffb3ab] after:transition-transform hover:after:scale-x-100",
         active && "text-white after:scale-x-100",

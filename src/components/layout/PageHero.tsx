@@ -21,16 +21,19 @@ export function PageHero({ eyebrow, title, intro, crumbs, children, className }:
     <section className={cn('relative bg-ink pt-32 pb-14 text-white md:pt-40 md:pb-20', className)}>
       <div className="container-x relative">
         {crumbs && (
-          <nav aria-label={ui.breadcrumb[locale]} className="mb-8 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-white/15 pt-4 text-[13px] text-white/55">
+          <nav aria-label={ui.breadcrumb[locale]} className="mb-6 flex flex-wrap items-center gap-x-3 border-t border-white/15 pt-2 text-[13px] text-white/60">
             {crumbs.map((c, i) => (
               <span key={c.label} className="flex items-center gap-3">
                 {i > 0 && <span aria-hidden className="h-px w-4 bg-white/25" />}
                 {c.href ? (
-                  <Link href={c.href} className="transition hover:text-white">
+                  // Tap target ≥40px tall without widening the row's visual rhythm
+                  <Link href={c.href} className="-mx-1 inline-flex min-h-10 items-center px-1 py-2.5 transition hover:text-white">
                     {c.label}
                   </Link>
                 ) : (
-                  <span className="text-white/85">{c.label}</span>
+                  <span className="inline-flex min-h-10 items-center py-2.5 text-white/85" aria-current="page">
+                    {c.label}
+                  </span>
                 )}
               </span>
             ))}

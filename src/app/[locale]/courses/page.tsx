@@ -27,7 +27,7 @@ export default async function CoursesPage({ params }: { params: Promise<{ locale
       />
       <section className="bg-bg py-16 md:py-24">
         <div className="container-x">
-          <CourseExplorer />
+          <CourseExplorer layout="grid" />
         </div>
       </section>
     </>

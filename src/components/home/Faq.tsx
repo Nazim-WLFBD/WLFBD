@@ -55,8 +55,8 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
   return (
     <section id="faq" className="relative bg-surface py-20 md:py-28">
       <div className="container-x grid gap-12 lg:grid-cols-[0.9fr_1.3fr] lg:gap-16">
-        {/* Sticky heading column */}
-        <div className="lg:sticky lg:top-28 lg:self-start">
+        {/* Sticky heading column (min-w-0: long Bangla titles must not widen the grid past the phone viewport) */}
+        <div className="min-w-0 lg:sticky lg:top-28 lg:self-start">
           <SectionHeading tag={t(copy.tag)} title={t(copy.title)} intro={t(copy.intro)} num="10" className="mb-8 md:mb-10" />
           <Reveal className="card accent-top p-6 md:p-7">
             <p className="font-display text-xl font-semibold md:text-2xl">{t(copy.customTitle)}</p>
@@ -67,9 +67,9 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
           </Reveal>
         </div>
 
-        <div>
+        <div className="min-w-0">
           <Reveal>
-            <label className="flex items-center gap-3 rounded-lg border border-line bg-bg px-4 focus-within:border-fg/40">
+            <label className="flex w-full min-w-0 items-center gap-3 rounded-lg border border-line bg-bg px-4 focus-within:border-fg/40">
               <Search size={18} className="shrink-0 text-muted" />
               <input
                 value={query}
@@ -81,7 +81,7 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
             </label>
 
             {/* Category tabs: underlined text, scrollable on phones */}
-            <div className="no-scrollbar mt-5 flex gap-1 overflow-x-auto border-b border-line">
+            <div className="no-scrollbar -mx-4 mt-5 flex max-w-[calc(100%+32px)] gap-1 overflow-x-auto border-b border-line px-4 sm:mx-0 sm:max-w-full sm:px-0">
               {copy.categories.map((c) => (
                 <button
                   key={c}

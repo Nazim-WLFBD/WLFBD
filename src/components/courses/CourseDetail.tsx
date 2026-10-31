@@ -38,31 +38,43 @@ export function CourseDetail({ course: c }: { course: Course }) {
           { label: c.code },
         ]}
       >
+        {/* Price line: separators sit between meta items only, so a wrapped line never starts with "·" */}
         <p className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <span className="font-display text-3xl font-semibold text-gold">{fee}</span>
+          <span className={cn('font-display font-semibold text-gold', c.isCustomPricing ? 'text-2xl' : 'text-3xl')}>{fee}</span>
           {!c.isCustomPricing && <span className="text-white/45 line-through">{taka(c.regularPrice, t.locale)}</span>}
-          <span className="text-sm text-white/60">
-            · {x.duration}{!c.whatsappOnly && <> · {num(c.classCount, t.locale)} {t(copy.sessions)}</>}
+          <span className="flex flex-wrap items-baseline gap-x-2 text-sm text-white/60">
+            <span>{x.duration}</span>
+            {!c.whatsappOnly && (
+              <>
+                <span aria-hidden>·</span>
+                <span>
+                  {num(c.classCount, t.locale)} {t(copy.sessions)}
+                </span>
+              </>
+            )}
           </span>
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           {c.whatsappOnly ? (
-          <a href={waLink(t(c.whatsappMessage!))} target="_blank" rel="noopener" className={btn('rouge', 'lg', '')}>
-            <WhatsAppGlyph size={18} /> {t({ en: 'Contact via WhatsApp', bn: 'WhatsApp-এ যোগাযোগ করুন' })}
-          </a>
+            <>
+              {/* One WhatsApp CTA only; the secondary action books a free class instead */}
+              <a href={waLink(t(c.whatsappMessage!))} target="_blank" rel="noopener" className={btn('rouge', 'lg')}>
+                <WhatsAppGlyph size={18} /> {t({ en: 'Contact via WhatsApp', bn: 'WhatsApp-এ যোগাযোগ করুন' })}
+              </a>
+              <Link href="/free-class" className={btn('ghost-light', 'lg')}>
+                {t(copy.freeClass)} <ArrowRight size={17} />
+              </Link>
+            </>
           ) : (
-          <Link href={{ pathname: '/enroll', query: { course: c.id } }} className={btn('rouge', 'lg')}>
-            {t(copy.enroll)} <ArrowRight size={17} />
-          </Link>
+            <>
+              <Link href={{ pathname: '/enroll', query: { course: c.id } }} className={btn('rouge', 'lg')}>
+                {t(copy.enroll)} <ArrowRight size={17} />
+              </Link>
+              <a href={waLink(waText)} target="_blank" rel="noopener" className={btn('ghost-light', 'lg')}>
+                <WhatsAppGlyph size={18} /> {t(copy.ask)}
+              </a>
+            </>
           )}
-          <a
-            href={waLink(waText)}
-            target="_blank"
-            rel="noopener"
-            className={btn('ghost-light', 'lg')}
-          >
-            <WhatsAppGlyph size={18} /> {t(copy.ask)}
-          </a>
         </div>
       </PageHero>
 
@@ -118,10 +130,10 @@ export function CourseDetail({ course: c }: { course: Course }) {
             <Reveal>
               <div className="flex items-center gap-4 border-t border-line pt-5">
                 <span className="section-num">02</span>
-                <h2 className="font-display text-2xl font-semibold">{t(copy.syllabus)}</h2>
+                <h2 className="font-display text-2xl font-semibold">{t(c.whatsappOnly ? copy.oneToOneSyllabus : copy.syllabus)}</h2>
               </div>
               <ol className="mt-4">
-                {copy.modules.map((m, i) => (
+                {(c.whatsappOnly ? copy.oneToOneModules : copy.modules).map((m, i) => (
                   <li key={m.t.en} className="hairline grid grid-cols-[2.75rem_1fr] gap-x-2 py-5 first:border-t-0">
                     <span className="font-display pt-0.5 text-lg font-semibold text-rouge tabular-nums">{String(i + 1).padStart(2, '0')}</span>
                     <div>
@@ -171,17 +183,24 @@ export function CourseDetail({ course: c }: { course: Course }) {
                   </div>
                 </dl>
                 {c.whatsappOnly ? (
-                <a href={waLink(t(c.whatsappMessage!))} target="_blank" rel="noopener" className={btn('rouge', 'md', 'mt-6 w-full')}>
-            <WhatsAppGlyph size={18} /> {t({ en: 'Contact via WhatsApp', bn: 'WhatsApp-এ যোগাযোগ করুন' })}
-          </a>
+                  <>
+                    <a href={waLink(t(c.whatsappMessage!))} target="_blank" rel="noopener" className={btn('rouge', 'md', 'mt-6 w-full')}>
+                      <WhatsAppGlyph size={18} /> {t({ en: 'Contact via WhatsApp', bn: 'WhatsApp-এ যোগাযোগ করুন' })}
+                    </a>
+                    <Link href="/free-class" className={btn('ghost', 'md', 'mt-2 w-full')}>
+                      {t(copy.freeClass)}
+                    </Link>
+                  </>
                 ) : (
-                <Link href={{ pathname: '/enroll', query: { course: c.id } }} className={btn('rouge', 'md', 'mt-6 w-full')}>
-                  {t(copy.enroll)} <ArrowRight size={16} />
-                </Link>
+                  <>
+                    <Link href={{ pathname: '/enroll', query: { course: c.id } }} className={btn('rouge', 'md', 'mt-6 w-full')}>
+                      {t(copy.enroll)} <ArrowRight size={16} />
+                    </Link>
+                    <Link href={{ pathname: '/', hash: 'schedule' }} className={btn('ghost', 'md', 'mt-2 w-full')}>
+                      {t(copy.schedule)}
+                    </Link>
+                  </>
                 )}
-                <Link href={{ pathname: '/', hash: 'schedule' }} className={btn('ghost', 'md', 'mt-2 w-full')}>
-                  {t(copy.schedule)}
-                </Link>
               </div>
             </div>
             <Link

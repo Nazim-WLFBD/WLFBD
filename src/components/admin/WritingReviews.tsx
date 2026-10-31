@@ -22,6 +22,8 @@ interface Attempt {
 }
 
 type Grade = { points: string; comment: string };
+/** Marking aids for one question: word limits from the question plus the staff-only model answer. */
+type Notes = Partial<Question> & { modelAnswer?: string };
 
 const fmtDate = (v?: { seconds?: number }) => (v?.seconds ? new Date(v.seconds * 1000).toLocaleString() : '');
 
@@ -32,7 +34,7 @@ export function WritingReviews() {
   const [err, setErr] = useState<string | null>(null);
   const [grades, setGrades] = useState<Record<string, Record<string, Grade>>>({});
   /** Marking notes per question (min/max words, model answer) looked up from the question itself, not the attempt. */
-  const [notes, setNotes] = useState<Record<string, Partial<Question>>>({});
+  const [notes, setNotes] = useState<Record<string, Notes>>({});
   const [busy, setBusy] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -56,16 +58,20 @@ export function WritingReviews() {
         };
       });
       setRows(list);
-      // Model answers stay out of the attempt document (students can read their own attempts)
+      // Model answers stay out of the attempt document (students can read their own attempts). For admin-added
+      // questions they live in the staff-only quizzes/{quizId}/notes/{id}; the public questions doc gives the word limits.
       const wanted = new Map<string, { quizId: string; id: string }>();
       for (const a of list) for (const p of a.pendingReview) wanted.set(`${a.quizId}/${p.id}`, { quizId: a.quizId, id: p.id });
-      const found: Record<string, Partial<Question>> = {};
+      const found: Record<string, Notes> = {};
       await Promise.all(
         [...wanted.entries()].map(async ([key, { quizId, id }]) => {
           const built = builtInQuestions(quizId).find((q) => q.id === id);
           if (built) return void (found[key] = built);
-          const d = await getDoc(doc(fb.db, 'quizzes', quizId, 'questions', id)).catch(() => null);
-          if (d?.exists()) found[key] = d.data() as Partial<Question>;
+          const [q, n] = await Promise.all([
+            getDoc(doc(fb.db, 'quizzes', quizId, 'questions', id)).catch(() => null),
+            getDoc(doc(fb.db, 'quizzes', quizId, 'notes', id)).catch(() => null),
+          ]);
+          found[key] = { ...(q?.exists() ? (q.data() as Partial<Question>) : {}), ...(n?.exists() ? (n.data() as Notes) : {}) };
         }),
       );
       setNotes(found);

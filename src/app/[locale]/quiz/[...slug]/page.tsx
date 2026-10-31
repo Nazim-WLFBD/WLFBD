@@ -4,10 +4,14 @@ import { setRequestLocale } from 'next-intl/server';
 import { routing, type Locale } from '@/i18n/routing';
 import { QUIZ_CATEGORIES } from '@/data/quizData';
 import { cefrLabel, findQuiz } from '@/lib/quizScoring';
+import { getAdminQuestions } from '@/lib/content';
 import { PageHero } from '@/components/layout/PageHero';
 import { QuizRunner } from '@/components/quiz/QuizRunner';
 
 type P = { params: Promise<{ locale: Locale; slug: string[] }> };
+
+// Admin-added questions are read here on the server, so new ones show up within 5 minutes
+export const revalidate = 300;
 
 export function generateStaticParams() {
   return routing.locales.flatMap((locale) =>
@@ -32,6 +36,8 @@ export default async function QuizRunPage({ params }: P) {
   setRequestLocale(locale);
   const quiz = findQuiz(slug);
   if (!quiz) notFound();
+  // Marking notes (modelAnswer) are stripped server-side; students only ever receive the question itself
+  const extraQuestions = await getAdminQuestions(quiz.id);
   return (
     <>
       <PageHero
@@ -46,7 +52,7 @@ export default async function QuizRunPage({ params }: P) {
       />
       <section className="bg-bg py-10 md:py-14">
         <div className="container-x">
-          <QuizRunner quiz={quiz} />
+          <QuizRunner quiz={quiz} extraQuestions={extraQuestions} />
         </div>
       </section>
     </>

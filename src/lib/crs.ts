@@ -16,7 +16,7 @@ export interface CrsInput {
 
 export const FRENCH_BONUS = 62;
 
-export function agePoints(age: number) {
+function agePoints(age: number) {
   if (age >= 20 && age <= 29) return 110;
   if (age === 30) return 105;
   if (age === 31) return 99;
@@ -27,14 +27,14 @@ export function agePoints(age: number) {
   return 50;
 }
 
-export const EDUCATION_POINTS: Record<Education, number> = {
+const EDUCATION_POINTS: Record<Education, number> = {
   bachelor: 120,
   two_degrees: 128,
   master: 135,
   phd: 150,
 };
 
-export const ENGLISH_POINTS: Record<EnglishLevel, number> = {
+const ENGLISH_POINTS: Record<EnglishLevel, number> = {
   ielts_6: 68,
   ielts_7: 88,
   ielts_8: 110,

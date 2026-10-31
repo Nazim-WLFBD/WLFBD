@@ -1,6 +1,5 @@
 import { QUESTION_BANK, QUIZ_CATEGORIES } from '@/data/quizData';
 import { needsReview, type CEFRLevel, type PendingReview, type Question, type QuizCategory } from '@/types/quiz';
-import { COURSES_DATA } from '@/data/courses';
 import type { Course } from '@/types';
 import type { L } from '@/i18n/t';
 
@@ -110,7 +109,7 @@ export function scoreQuiz(quiz: QuizCategory, questions: Question[], answers: Re
           points: pts,
           ...(q.minWords != null ? { minWords: Number(q.minWords) } : {}),
           ...(q.maxWords != null ? { maxWords: Number(q.maxWords) } : {}),
-          ...(q.modelAnswer ? { modelAnswer: q.modelAnswer } : {}),
+          // modelAnswer deliberately stays out: the attempt document is readable by the student
         });
         pendingMax += pts;
       }
@@ -300,8 +299,8 @@ export function rate(quiz: QuizCategory, s: ScoredQuiz): Rating {
   };
 }
 
-/** Course name for a recommendation in the given locale (falls back to the id). Pass the admin-edited list when available. */
-export const courseTitle = (id: string, locale: 'en' | 'bn' = 'en', courses: Course[] = COURSES_DATA) => {
+/** Course name for a recommendation in the given locale (falls back to the id). Pass the course list from `useCourses()`. */
+export const courseTitle = (id: string, locale: 'en' | 'bn' = 'en', courses: Course[] = []) => {
   const c = courses.find((x) => x.id === id);
   if (!c) return id;
   return locale === 'bn' ? c.banglaTitle || c.title : c.title;

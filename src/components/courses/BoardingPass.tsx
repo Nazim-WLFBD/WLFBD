@@ -90,13 +90,13 @@ export function BoardingPass({ course: c, comparing, onCompare }: Props) {
             <dd className="font-display mt-1 text-[15px] font-semibold text-fg">{x.duration}</dd>
           </div>
           <div className="border-l border-line px-3">
-            <dt className="text-[10px] font-bold tracking-[0.14em] text-muted uppercase">{t(copy.schedule)}</dt>
+            <dt className="text-[10px] font-bold tracking-[0.14em] text-muted uppercase">{t({ en: 'Classes', bn: 'ক্লাস' })}</dt>
             <dd className="font-display mt-1 text-[15px] font-semibold text-fg">
               {c.whatsappOnly ? t({ en: 'Flexible', bn: 'ফ্লেক্সিবল' }) : num(c.classCount, t.locale)}
             </dd>
           </div>
           <div className="border-l border-line pl-3">
-            <dt className="text-[10px] font-bold tracking-[0.14em] text-muted uppercase">{t({ en: '/ wk', bn: 'প্রতি সপ্তাহে' })}</dt>
+            <dt className="text-[10px] font-bold tracking-[0.14em] text-muted uppercase">{t({ en: 'Per week', bn: 'প্রতি সপ্তাহে' })}</dt>
             <dd className="font-display mt-1 text-[15px] font-semibold text-fg">{x.classesPerWeek}</dd>
           </div>
         </dl>
@@ -141,7 +141,7 @@ export function BoardingPass({ course: c, comparing, onCompare }: Props) {
         </div>
         <div className="mt-5 grid grid-cols-2 gap-2">
           {c.whatsappOnly ? (
-            <a href={waLink(t(c.whatsappMessage!))} target="_blank" rel="noopener" className={btn('ink', 'sm', 'w-full bg-[#1f9d55] hover:bg-[#178244] dark:bg-[#1f9d55] dark:text-white dark:hover:bg-[#178244]')}>
+            <a href={waLink(t(c.whatsappMessage!))} target="_blank" rel="noopener" className={btn('ink', 'sm', 'w-full bg-[#128c7e] hover:bg-[#0f7a6e] dark:bg-[#128c7e] dark:text-white dark:hover:bg-[#0f7a6e]')}>
               {t({ en: 'WhatsApp us', bn: 'WhatsApp করুন' })}
             </a>
           ) : (
@@ -161,7 +161,7 @@ export function BoardingPass({ course: c, comparing, onCompare }: Props) {
                 type="checkbox"
                 checked={!!comparing}
                 onChange={() => onCompare(c.id)}
-                className="h-4 w-4 rounded border-line accent-[var(--ink)]"
+                className="h-5 w-5 rounded border-line accent-[var(--ink)]"
               />
               {t(copy.compare)}
             </label>
@@ -169,7 +169,7 @@ export function BoardingPass({ course: c, comparing, onCompare }: Props) {
             <span />
           )}
           {c.isCustomPricing && (
-            <a href={BRAND_CONTACT.whatsappUrl} target="_blank" rel="noopener" className="-my-2 inline-flex min-h-10 items-center px-1 text-xs font-bold text-[#16a34a] hover:underline">
+            <a href={BRAND_CONTACT.whatsappUrl} target="_blank" rel="noopener" className="-my-2 inline-flex min-h-10 items-center px-1 text-xs font-bold text-mint hover:underline">
               WhatsApp →
             </a>
           )}

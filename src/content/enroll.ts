@@ -62,6 +62,12 @@ export const enroll = {
   waConfirm: { en: 'Confirm your slip on WhatsApp (Instant)', bn: 'WhatsApp-এ স্লিপ নিশ্চিত করুন (Instant)' },
   helpline: { en: 'Official Helpline: 01758599797', bn: 'অফিশিয়াল হেল্পলাইন: 01758599797' },
   newOne: { en: 'Submit another enrollment', bn: 'আরেকটি ভর্তি ফর্ম জমা দিন' },
+  noCoursesTitle: { en: 'Enrollment is paused right now', bn: 'এই মুহূর্তে ভর্তি সাময়িকভাবে বন্ধ আছে' },
+  noCourses: {
+    en: 'No courses are open for online enrollment at the moment. Message us on WhatsApp and we will help you pick the next batch.',
+    bn: 'এই মুহূর্তে কোনো কোর্সে অনলাইন ভর্তি চালু নেই। WhatsApp-এ মেসেজ করুন, আমরা পরবর্তী ব্যাচ বেছে নিতে সাহায্য করব।',
+  },
+  noCoursesCta: { en: 'Message us on WhatsApp', bn: 'WhatsApp-এ মেসেজ করুন' },
   errors: {
     required: { en: 'Please fill in this field.', bn: 'এই ঘরটি পূরণ করুন।' },
     phone: { en: 'Enter a valid 11-digit mobile number.', bn: 'সঠিক ১১ সংখ্যার মোবাইল নম্বর দিন।' },

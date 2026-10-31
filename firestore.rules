@@ -74,6 +74,10 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isStaff();
     }
+    // Admin-only marking notes (model answers) for admin-added questions: never readable by students
+    match /quizzes/{quizId}/notes/{qid} {
+      allow read, write: if isStaff();
+    }
 
     match /batches/{id} { allow read: if true; allow write: if isAdmin(); }
     match /courses/{id} { allow read: if true; allow write: if isAdmin(); }

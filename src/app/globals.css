@@ -23,7 +23,7 @@
   --rouge: #d52b1e; /* Canadian flag red */
   --maple: #d52b1e;
   --gold: #c99a3b; /* muted brass accent */
-  --mint: #1a8a5e;
+  --mint: #15754f; /* ≥4.5:1 on white for small text */
   --bkash: #e2136e;
 
   --radius: 14px;
@@ -43,6 +43,9 @@
   --blue-soft: rgba(124, 156, 255, 0.14);
   --bleu: #7c9cff;
   --gold: #d8ab4f;
+  /* Lighter red so small red text (eyebrows, links) passes contrast on navy; --maple keeps the flag red for rules */
+  --rouge: #ef5a4e;
+  --mint: #3dbb86;
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -16px rgba(0, 0, 0, 0.6);
   --shadow-lift: 0 30px 60px -30px rgba(0, 0, 0, 0.8);
   color-scheme: dark;
@@ -107,7 +110,12 @@ html[lang="bn"] body {
 html[lang="bn"] :is(h1, h2, h3, h4, h5, h6, .font-display) {
   font-family: var(--font-bn-digits), var(--font-hind), var(--font-jakarta), sans-serif;
   letter-spacing: 0;
-  line-height: 1.25;
+  line-height: 1.35;
+  font-style: normal; /* Hind Siliguri has no italic; avoid faux-oblique Bangla */
+}
+/* Tracked uppercase labels: Bangla has no case and its matras collide at wide tracking */
+html[lang="bn"] .eyebrow {
+  letter-spacing: 0.04em;
 }
 /* Bangla script needs a little more air between lines than Latin */
 html[lang="bn"] p,
@@ -121,9 +129,13 @@ html[lang="bn"] li {
 }
 
 :focus-visible {
-  outline: 2.5px solid var(--gold);
+  outline: 2.5px solid var(--bleu);
   outline-offset: 3px;
   border-radius: 6px;
+}
+/* Navy surfaces (header, dark panels): the blue ring would vanish, so use white there */
+:is(header, .bg-ink) :focus-visible {
+  outline-color: #fff;
 }
 
 /* ── Utilities ──────────────────────────────────────────── */

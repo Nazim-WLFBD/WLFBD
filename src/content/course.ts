@@ -42,6 +42,39 @@ export const courseDetail = {
       },
     },
   ],
+  /* One-to-one (whatsappOnly) courses: a personalised plan rather than the DELF module list */
+  oneToOneSyllabus: { en: 'How your private programme runs', bn: 'আপনার প্রাইভেট প্রোগ্রাম যেভাবে চলবে' },
+  oneToOneModules: [
+    {
+      t: { en: '1. Needs assessment & plan', bn: '১. চাহিদা মূল্যায়ন ও পরিকল্পনা' },
+      d: {
+        en: 'A short diagnostic call to map your current level, goal (exam, immigration, work or study) and weekly availability into a personal study plan.',
+        bn: 'একটি সংক্ষিপ্ত ডায়াগনস্টিক কলে আপনার বর্তমান লেভেল, লক্ষ্য (পরীক্ষা, ইমিগ্রেশন, কাজ বা পড়াশোনা) ও সাপ্তাহিক সময় দেখে একটি ব্যক্তিগত স্টাডি প্ল্যান তৈরি করা হয়।',
+      },
+    },
+    {
+      t: { en: '2. Focused skill sessions', bn: '২. নির্দিষ্ট দক্ষতার সেশন' },
+      d: {
+        en: 'Live one-to-one classes built around the skills you need most: speaking, listening, grammar repair or writing, at your own pace.',
+        bn: 'আপনার সবচেয়ে প্রয়োজনীয় দক্ষতা ঘিরে লাইভ ওয়ান-টু-ওয়ান ক্লাস: স্পিকিং, লিসেনিং, গ্রামার সংশোধন বা রাইটিং, আপনার নিজের গতিতে।',
+      },
+    },
+    {
+      t: { en: '3. Exam or goal practice', bn: '৩. পরীক্ষা বা লক্ষ্যভিত্তিক অনুশীলন' },
+      d: {
+        en: 'Targeted DELF / TEF / TCF task practice, interview or workplace role-plays, and homework with written feedback between sessions.',
+        bn: 'লক্ষ্যভিত্তিক DELF / TEF / TCF টাস্ক অনুশীলন, ইন্টারভিউ বা কর্মক্ষেত্রের রোল-প্লে এবং সেশনের মাঝে লিখিত ফিডব্যাকসহ হোমওয়ার্ক।',
+      },
+    },
+    {
+      t: { en: '4. Progress reviews', bn: '৪. অগ্রগতি পর্যালোচনা' },
+      d: {
+        en: 'Regular check-ins with a short progress report, so the plan is adjusted as you improve and you always know the next step.',
+        bn: 'নিয়মিত চেক-ইন ও সংক্ষিপ্ত অগ্রগতি রিপোর্ট, যাতে উন্নতির সাথে সাথে প্ল্যান বদলানো যায় এবং পরবর্তী ধাপ সবসময় স্পষ্ট থাকে।',
+      },
+    },
+  ],
+  freeClass: { en: 'Book a free class', bn: 'ফ্রি ক্লাস বুক করুন' },
   kitTitle: { en: 'Free Included Study Kit', bn: 'ফ্রি ফিজিক্যাল ও ডিজিটাল কিট' },
   kit: {
     en: 'Includes printed grammar & vocabulary workbooks sent via courier, official DELF/TEF past papers, MP3 audio archive, and 24/7 WhatsApp teacher support group.',

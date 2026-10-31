@@ -127,11 +127,11 @@ export default async function LocaleLayout({
       suppressHydrationWarning
       className={`${fraunces.variable} ${jakarta.variable} ${hind.variable} ${bnDigits.variable}`}
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      </head>
       <body>
+        {/* Inline scripts live at the top of <body>: React 19 hoists <script> children of <head> and the
+            server/client trees then disagree (hydration mismatch). The theme script still runs before paint. */}
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
         <NextIntlClientProvider>
           <Providers>
             <CoursesProvider courses={courses} combos={combos}>

@@ -94,15 +94,15 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
             </span>
             <input
               type="range"
-              min={20}
-              max={45}
+              min={18}
+              max={47}
               value={age}
               onChange={(e) => setAge(Number(e.target.value))}
               className="w-full accent-[var(--rouge)]"
             />
             <span className="mt-1 flex justify-between text-xs text-muted">
-              <span>{num(20, t.locale)}</span>
-              <span>{num(45, t.locale)}</span>
+              <span>{num(18, t.locale)}</span>
+              <span>{num(47, t.locale)}</span>
             </span>
           </label>
           <label className="block">
@@ -131,6 +131,7 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
               <p className="text-xs text-muted">{t(copy.frenchSub)}</p>
             </div>
             <button
+              type="button"
               role="switch"
               aria-checked={hasFrench}
               onClick={() => setHasFrench(!hasFrench)}

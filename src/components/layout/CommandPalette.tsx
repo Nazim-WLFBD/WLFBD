@@ -8,7 +8,6 @@ import { useRouter } from '@/i18n/navigation';
 import { useT, type L } from '@/i18n/t';
 import { useCourses } from '@/components/CoursesProvider';
 import { RECORDED_COURSES } from '@/data/recordedCourses';
-import { FAQ_DATA } from '@/data/faq';
 import { QUIZ_CATEGORIES } from '@/data/quizData';
 import { SECTIONS, MEGA } from '@/content/nav';
 import { ui } from '@/content/home';
@@ -23,10 +22,9 @@ const GROUPS = {
   courses: { en: 'Courses', bn: 'কোর্স' },
   tools: { en: 'Tools & practice', bn: 'টুলস ও প্র্যাকটিস' },
   quizzes: { en: 'Quizzes & mock tests', bn: 'কুইজ ও মক টেস্ট' },
-  faq: { en: 'Answers', bn: 'উত্তর' },
   placeholder: {
-    en: 'Search courses, quizzes, tools, answers…',
-    bn: 'কোর্স, কুইজ, টুলস, উত্তর খুঁজুন…',
+    en: 'Search courses, quizzes, tools…',
+    bn: 'কোর্স, কুইজ, টুলস খুঁজুন…',
   },
   empty: { en: 'Nothing found. Try “A2”, “CRS” or “recording”.', bn: 'কিছু পাওয়া যায়নি। “A2”, “CRS” বা “রেকর্ডিং” লিখে দেখুন।' },
 } satisfies Record<string, L>;
@@ -129,15 +127,7 @@ export function CommandPalette() {
                   </Command.Item>
                 ))}
               </Command.Group>
-
-              <Command.Group heading={t(GROUPS.faq)} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-[0.14em] [&_[cmdk-group-heading]]:text-muted [&_[cmdk-group-heading]]:uppercase [&:not(:first-child)]:mt-1 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-line [&:not(:first-child)]:pt-1">
-                {FAQ_DATA.map((f) => (
-                  <Command.Item key={f.id} value={`${f.question} ${f.banglaQuestion} ${f.answer}`} onSelect={() => go(`/#faq-${f.id}`)} className={item}>
-                    <Icon name="message" size={16} className="mx-2" />
-                    <span className="flex-1">{t.locale === 'bn' ? f.banglaQuestion : f.question}</span>
-                  </Command.Item>
-                ))}
-              </Command.Group>
+              {/* No FAQ group: the FAQ is admin-editable (Firestore), so the built-in list here would drift from the site */}
             </Command.List>
           </Command>
         </Dialog.Content>
