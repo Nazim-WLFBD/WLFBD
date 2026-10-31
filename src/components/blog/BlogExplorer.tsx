@@ -24,8 +24,8 @@ export function BlogExplorer({ posts, categories, locale, labels }: Props) {
 
   return (
     <div>
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div role="group" aria-label={labels.filter} className="flex flex-wrap gap-2">
+      <div className="flex flex-col gap-2 border-b border-line sm:flex-row sm:items-end sm:justify-between">
+        <div role="group" aria-label={labels.filter} className="no-scrollbar -mx-4 flex gap-1 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0 [&>button]:shrink-0 [&>button]:whitespace-nowrap">
           {options.map((o) => (
             <button
               key={o.key}
@@ -33,15 +33,15 @@ export function BlogExplorer({ posts, categories, locale, labels }: Props) {
               onClick={() => setFilter(o.key)}
               aria-pressed={filter === o.key}
               className={cn(
-                'rounded-full px-4 py-2 text-sm font-semibold transition',
-                filter === o.key ? 'bg-ink text-white dark:bg-white dark:text-ink' : 'border border-line text-fg hover:bg-fg/5',
+                'relative -mb-px min-h-11 px-4 pt-2 pb-3 text-sm font-semibold transition',
+                filter === o.key ? 'text-fg after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:bg-rouge' : 'text-muted hover:text-fg',
               )}
             >
               {o.label}
             </button>
           ))}
         </div>
-        <p className="text-sm text-muted" aria-live="polite">
+        <p className="pb-3 text-[11px] font-bold tracking-[0.14em] text-muted uppercase" aria-live="polite">
           {locale === 'bn' ? `${num(list.length, locale)}টি লেখা` : `${list.length} ${list.length === 1 ? 'article' : 'articles'}`}
         </p>
       </div>
@@ -55,7 +55,7 @@ export function BlogExplorer({ posts, categories, locale, labels }: Props) {
           ))}
         </ul>
       ) : (
-        <p className="mt-8 rounded-2xl border border-dashed border-line p-8 text-center text-muted">{labels.empty}</p>
+        <p className="mt-8 rounded-[var(--radius)] bg-surface-2 p-8 text-center text-muted">{labels.empty}</p>
       )}
     </div>
   );

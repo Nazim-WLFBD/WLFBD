@@ -205,22 +205,24 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
 
   const field = (err?: string) =>
     cn(
-      'w-full rounded-2xl border bg-surface px-4 py-3.5 text-[15px] outline-none transition focus:border-fg/50',
+      'w-full rounded-xl border bg-surface px-4 py-3 text-[15px] outline-none transition focus:border-bleu focus:ring-2 focus:ring-bleu/20',
       err ? 'border-rouge' : 'border-line',
     );
 
   if (done) {
     return (
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-2xl">
-        <div className="overflow-hidden rounded-[28px] border border-line bg-surface">
-          <div className="bg-mint p-7 text-white">
-            <CheckCircle2 size={38} />
-            <h2 className="font-display mt-3 text-3xl font-semibold">{t(copy.doneTitle)}</h2>
-            <p className="mt-2 text-white/90">{t(copy.doneText)}</p>
+        <div className="card accent-top overflow-hidden">
+          <div className="border-b border-line p-7">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-red-soft text-rouge">
+              <CheckCircle2 size={24} />
+            </span>
+            <h2 className="font-display mt-4 text-3xl font-semibold">{t(copy.doneTitle)}</h2>
+            <p className="mt-2 text-muted">{t(copy.doneText)}</p>
           </div>
           <div className="p-7">
-            <p className="text-[11px] font-bold tracking-[0.2em] text-muted uppercase">{t(copy.receipt)}</p>
-            <dl className="mt-4 grid gap-2 text-sm">
+            <p className="eyebrow text-rouge">{t(copy.receipt)}</p>
+            <dl className="mt-4 text-sm">
               {[
                 [t({ en: 'Student Name', bn: 'শিক্ষার্থীর নাম' }), done.name],
                 [t({ en: 'Email Address', bn: 'ইমেইল অ্যাড্রেস' }), done.email],
@@ -243,13 +245,13 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                     ]
                   : []),
               ].map(([k, v]) => (
-                <div key={k} className="flex justify-between gap-4 border-b border-dashed border-line pb-2">
-                  <dt className="text-muted">{k}:</dt>
+                <div key={k} className="hairline flex justify-between gap-4 py-2.5 first:border-t-0">
+                  <dt className="text-muted">{k}</dt>
                   <dd className="text-right font-semibold">{v}</dd>
                 </div>
               ))}
             </dl>
-            <a href={waLink(waText)} target="_blank" rel="noopener" className={btn('ink', 'md', 'mt-6 w-full bg-[#16a34a] hover:bg-[#15803d]')}>
+            <a href={waLink(waText)} target="_blank" rel="noopener" className={btn('ink', 'md', 'mt-6 w-full bg-[#16a34a] hover:bg-[#15803d] dark:bg-[#16a34a] dark:text-white dark:hover:bg-[#15803d]')}>
               <WhatsAppGlyph size={18} /> {t(copy.waConfirm)}
             </a>
             <p className="mt-4 text-center text-xs text-muted">{t(copy.helpline)}</p>
@@ -260,7 +262,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                 setTrxId('');
                 setSenderPhone('');
               }}
-              className="mx-auto mt-3 block text-sm font-semibold text-bleu hover:underline"
+              className="mx-auto mt-3 block min-h-10 text-sm font-semibold text-bleu hover:underline"
             >
               {t(copy.newOne)}
             </button>
@@ -271,22 +273,26 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
-      <div className="rounded-[28px] border border-line bg-surface p-6 md:p-8">
-        {/* Stepper */}
-        <ol className="mb-8 flex items-center gap-2">
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="card p-6 md:p-8">
+        {/* Stepper: numbered circles joined by a hairline */}
+        <ol className="mb-8 flex items-center">
           {steps.map((s, i) => (
-            <li key={s.en} className="flex flex-1 items-center gap-2">
+            <li key={s.en} className={cn('flex items-center gap-3', i < steps.length - 1 && 'flex-1')}>
               <span
                 className={cn(
-                  'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold transition',
-                  i < step ? 'bg-mint text-white' : i === step ? 'bg-ink text-white dark:bg-white dark:text-ink' : 'bg-fg/10 text-muted',
+                  'font-display flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-semibold transition tabular-nums',
+                  i < step
+                    ? 'border-rouge bg-rouge text-white'
+                    : i === step
+                      ? 'border-ink bg-ink text-white dark:border-white dark:bg-white dark:text-ink'
+                      : 'border-line bg-surface text-muted',
                 )}
               >
-                {i < step ? <Check size={15} /> : i + 1}
+                {i < step ? <Check size={15} strokeWidth={2.5} /> : String(i + 1).padStart(2, '0')}
               </span>
-              <span className={cn('hidden text-sm font-semibold sm:block', i === step ? 'text-fg' : 'text-muted')}>{t(s)}</span>
-              {i < steps.length - 1 && <span className="h-px flex-1 bg-line" />}
+              <span className={cn('hidden text-[11px] font-bold tracking-[0.14em] uppercase sm:block', i === step ? 'text-fg' : 'text-muted')}>{t(s)}</span>
+              {i < steps.length - 1 && <span className="mx-3 h-px flex-1 bg-line" />}
             </li>
           ))}
         </ol>
@@ -295,14 +301,14 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
             {step === 0 && (
               <div className="flex flex-col gap-7">
                 <fieldset>
-                  <legend className="mb-3 font-bold">{t(copy.course)}</legend>
+                  <legend className="font-display mb-3 text-lg font-semibold">{t(copy.course)}</legend>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {options.map((o) => (
                       <label
                         key={o.id}
                         className={cn(
-                          'flex cursor-pointer items-start gap-3 rounded-2xl border p-3.5 transition',
-                          courseId === o.id ? 'border-fg bg-fg/[.04] ring-1 ring-fg' : 'border-line hover:border-fg/30',
+                          'flex cursor-pointer items-start gap-3 rounded-xl border bg-surface p-3.5 transition',
+                          courseId === o.id ? 'border-ink ring-1 ring-ink dark:border-white dark:ring-white' : 'border-line hover:border-fg/30',
                         )}
                       >
                         <input
@@ -315,25 +321,25 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                         />
                         <span className="min-w-0 flex-1">
                           <span className="block text-sm leading-tight font-bold">
-                            {o.combo && <span className="mr-1.5 rounded bg-gold px-1.5 py-0.5 text-[10px] text-ink">{t(copy.combo)}</span>}
+                            {o.combo && <span className="mr-1.5 rounded bg-red-soft px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-rouge uppercase">{t(copy.combo)}</span>}
                             {o.title}
                           </span>
                           <span className="mt-0.5 block text-xs text-muted">{o.sub}</span>
                         </span>
-                        <span className="shrink-0 text-sm font-bold text-rouge">{o.fee != null ? taka(o.fee, t.locale) : '—'}</span>
+                        <span className="font-display shrink-0 text-base font-semibold text-fg">{o.fee != null ? taka(o.fee, t.locale) : '—'}</span>
                       </label>
                     ))}
                   </div>
                 </fieldset>
                 <fieldset>
-                  <legend className="mb-3 font-bold">{t(copy.batch)}</legend>
+                  <legend className="font-display mb-3 text-lg font-semibold">{t(copy.batch)}</legend>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {[...batches, { id: 'flexible' } as BatchSchedule].map((b, i) => (
                       <label
                         key={b.id}
                         className={cn(
-                          'flex cursor-pointer items-center gap-3 rounded-2xl border p-3.5 transition',
-                          batchId === b.id ? 'border-fg bg-fg/[.04] ring-1 ring-fg' : 'border-line hover:border-fg/30',
+                          'flex cursor-pointer items-center gap-3 rounded-xl border bg-surface p-3.5 transition',
+                          batchId === b.id ? 'border-ink ring-1 ring-ink dark:border-white dark:ring-white' : 'border-line hover:border-fg/30',
                         )}
                       >
                         <input type="radio" name="batch" checked={batchId === b.id} onChange={() => setBatchId(b.id)} className="accent-[var(--rouge)]" />
@@ -373,8 +379,8 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                   <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" autoComplete="email" className={field(errors.email)} />
                 </Field>
                 {custom && (
-                  <div className="rounded-2xl border border-dashed border-gold/70 bg-gold/10 p-4 text-sm">
-                    <strong>{t(copy.customFeeLabel)}</strong> {t(copy.customFee)}
+                  <div className="rounded-xl bg-surface-2 p-4 text-sm leading-relaxed">
+                    <strong className="font-semibold">{t(copy.customFeeLabel)}</strong> {t(copy.customFee)}
                   </div>
                 )}
               </div>
@@ -383,7 +389,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
             {step === 2 && !custom && (
               <div className="flex flex-col gap-6">
                 <fieldset>
-                  <legend className="mb-3 font-bold">{t(copy.plan)}</legend>
+                  <legend className="font-display mb-3 text-lg font-semibold">{t(copy.plan)}</legend>
                   <div className="grid grid-cols-2 gap-2">
                     {(['full', 'half'] as const).map((p) => (
                       <button
@@ -391,12 +397,12 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                         type="button"
                         onClick={() => setPlan(p)}
                         className={cn(
-                          'rounded-2xl border p-4 text-left transition',
-                          plan === p ? 'border-fg ring-1 ring-fg' : 'border-line hover:border-fg/30',
+                          'rounded-xl border bg-surface p-4 text-left transition',
+                          plan === p ? 'border-ink ring-1 ring-ink dark:border-white dark:ring-white' : 'border-line hover:border-fg/30',
                         )}
                       >
-                        <span className="block text-sm font-bold">{t(p === 'full' ? copy.full : copy.half)}</span>
-                        <span className="font-display text-2xl font-semibold text-rouge">
+                        <span className="block text-[11px] font-bold tracking-[0.14em] text-muted uppercase">{t(p === 'full' ? copy.full : copy.half)}</span>
+                        <span className="font-display mt-1 block text-2xl font-semibold text-fg">
                           {taka(p === 'full' ? course.fee! : Math.round(course.fee! / 2), t.locale)}
                         </span>
                       </button>
@@ -404,22 +410,17 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                   </div>
                 </fieldset>
                 <fieldset>
-                  <legend className="mb-3 font-bold">{t(copy.method)}</legend>
+                  <legend className="font-display mb-3 text-lg font-semibold">{t(copy.method)}</legend>
                   <div className="grid grid-cols-3 gap-2">
-                    {(
-                      [
-                        ['bkash', 'bg-bkash border-bkash'],
-                        ['nagad', 'bg-orange-600 border-orange-600'],
-                        ['bank', 'bg-ink border-ink'],
-                      ] as const
-                    ).map(([m, on]) => (
+                    {(['bkash', 'nagad', 'bank'] as const).map((m) => (
                       <button
                         key={m}
                         type="button"
                         onClick={() => setMethod(m)}
+                        aria-pressed={method === m}
                         className={cn(
-                          'rounded-2xl border px-3 py-3 text-sm font-bold transition',
-                          method === m ? `${on} text-white shadow-md` : 'border-line hover:border-fg/30',
+                          'min-h-12 rounded-xl border bg-surface px-3 py-3 text-sm font-bold transition',
+                          method === m ? 'border-ink ring-1 ring-ink dark:border-white dark:ring-white' : 'border-line text-muted hover:border-fg/30',
                         )}
                       >
                         {t(METHOD_LABEL[m])}
@@ -429,9 +430,9 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                 </fieldset>
 
                 {method === 'bkash' && (
-                  <div className="rounded-2xl border border-bkash/30 bg-bkash/[.06] p-5">
-                    <p className="text-sm font-bold text-bkash">{t(copy.bkashHow)}</p>
-                    <div className="mt-3 flex items-center justify-between gap-3 rounded-xl bg-surface p-3">
+                  <div className="rounded-xl bg-red-soft p-5">
+                    <p className="eyebrow text-rouge">{t(copy.bkashHow)}</p>
+                    <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-line bg-surface p-3">
                       <span className="font-mono text-xl font-bold tracking-wider">{BRAND_CONTACT.bkashPersonal}</span>
                       <button
                         type="button"
@@ -440,16 +441,19 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                           setCopied(true);
                           setTimeout(() => setCopied(false), 2000);
                         }}
-                        className="flex items-center gap-1.5 rounded-lg bg-bkash px-3 py-1.5 text-xs font-bold text-white"
+                        className="flex min-h-10 items-center gap-1.5 rounded-lg bg-ink px-3 py-1.5 text-xs font-bold text-white dark:bg-white dark:text-ink"
                       >
                         {copied ? <Check size={13} /> : <Copy size={13} />} {t(copied ? copy.copied : copy.copy)}
                       </button>
                     </div>
-                    <ol className={cn('mt-3 space-y-1 text-sm text-fg/80', bn && 'font-bangla')}>
+                    <ol className={cn('mt-4 space-y-2 text-sm text-fg/85', bn && 'font-bangla')}>
                       {copy.bkashSteps.map((s, i) => (
-                        <li key={s.en}>
-                          {t(s)}
-                          {i === 2 && <strong className="ml-1 text-bkash">{taka(amount, t.locale)}</strong>}
+                        <li key={s.en} className="flex gap-3">
+                          <span className="font-display w-6 shrink-0 font-semibold text-rouge tabular-nums">{String(i + 1).padStart(2, '0')}</span>
+                          <span>
+                            {t(s)}
+                            {i === 2 && <strong className="ml-1 font-semibold text-rouge">{taka(amount, t.locale)}</strong>}
+                          </span>
                         </li>
                       ))}
                     </ol>
@@ -474,15 +478,15 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                     </div>
                   </div>
                 )}
-                {method === 'nagad' && <p className="rounded-2xl bg-orange-500/10 p-4 text-sm">{t(copy.nagad)}</p>}
-                {method === 'bank' && <p className="rounded-2xl bg-fg/5 p-4 text-sm">{t(copy.bank)}</p>}
+                {method === 'nagad' && <p className="rounded-xl bg-surface-2 p-4 text-sm leading-relaxed">{t(copy.nagad)}</p>}
+                {method === 'bank' && <p className="rounded-xl bg-surface-2 p-4 text-sm leading-relaxed">{t(copy.bank)}</p>}
               </div>
             )}
         </motion.div>
 
-        {failure && <p className="mt-5 rounded-2xl bg-rouge/10 p-4 text-sm text-rouge">{failure}</p>}
+        {failure && <p className="mt-5 rounded-xl border border-rouge/30 bg-red-soft p-4 text-sm font-medium text-rouge">{failure}</p>}
 
-        <div className="mt-8 flex items-center justify-between gap-3">
+        <div className="hairline mt-8 flex items-center justify-between gap-3 pt-6">
           {step > 0 ? (
             <button type="button" onClick={() => setStep((s) => s - 1)} className={btn('ghost', 'md')}>
               <ArrowLeft size={16} /> {t(copy.back)}
@@ -505,32 +509,32 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
 
       {/* Summary */}
       <aside className="lg:sticky lg:top-28 lg:self-start">
-        <div className="overflow-hidden rounded-[26px] bg-ink text-white">
-          <div className="p-6">
-            <p className="text-[10px] font-bold tracking-[0.2em] text-white/50 uppercase">
-              {t({ en: 'Boarding pass · WLF BD', bn: 'বোর্ডিং পাস · WLF BD' })}
-            </p>
-            <p className={cn('font-display mt-4 text-2xl leading-tight font-semibold', bn && 'font-bangla')}>{course.title}</p>
-            <p className="mt-1 text-sm text-white/60">{course.sub}</p>
-            <p className="mt-4 text-sm text-white/70">{batchLabel}</p>
-          </div>
-          <div className="border-t-2 border-dashed border-white/15 p-6">
+        <div className="card accent-top p-6">
+          <p className="eyebrow text-rouge">{t(copy.receipt)}</p>
+          <p className={cn('font-display mt-4 text-2xl leading-tight font-semibold', bn && 'font-bangla')}>{course.title}</p>
+          <p className="mt-1 text-sm text-muted">{course.sub}</p>
+          <dl className="hairline mt-5 text-sm">
+            <div className="flex justify-between gap-4 py-2.5">
+              <dt className="text-muted">{t(copy.batch)}</dt>
+              <dd className="text-right font-semibold">{batchLabel}</dd>
+            </div>
             {custom ? (
-              <p className="text-sm text-white/75">{t(copy.customFee)}</p>
+              <div className="hairline py-3 text-sm leading-relaxed text-muted">{t(copy.customFee)}</div>
             ) : (
               <>
-                <p className="text-[10px] font-bold tracking-widest text-white/50 uppercase">
-                  {t(course.combo ? copy.totalCombo : copy.total)}
-                </p>
-                <p className="font-display text-4xl font-semibold text-gold">{taka(course.fee!, t.locale)}</p>
+                <div className="hairline flex items-baseline justify-between gap-4 py-3">
+                  <dt className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">{t(course.combo ? copy.totalCombo : copy.total)}</dt>
+                  <dd className="font-display text-3xl font-semibold text-fg">{taka(course.fee!, t.locale)}</dd>
+                </div>
                 {plan === 'half' && (
-                  <p className="mt-1 text-sm text-white/65">
-                    {t(copy.payNow)}: <strong className="text-white">{taka(amount, t.locale)}</strong>
-                  </p>
+                  <div className="hairline flex justify-between gap-4 py-2.5">
+                    <dt className="text-muted">{t(copy.payNow)}</dt>
+                    <dd className="font-semibold text-rouge">{taka(amount, t.locale)}</dd>
+                  </div>
                 )}
               </>
             )}
-          </div>
+          </dl>
         </div>
         <p className="mt-4 text-center text-xs text-muted">{t(copy.helpline)}</p>
       </aside>
@@ -541,7 +545,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-bold">{label}</span>
+      <span className="mb-2 block text-[11px] font-bold tracking-[0.14em] text-muted uppercase">{label}</span>
       {children}
       {error && <span className="mt-1.5 block text-xs font-semibold text-rouge">{error}</span>}
     </label>

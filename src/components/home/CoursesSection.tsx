@@ -8,9 +8,9 @@ import { courses } from '@/content/home';
 export function CoursesSection() {
   const t = useT();
   return (
-    <section id="courses" className="relative bg-bg py-24 md:py-32">
+    <section id="courses" className="relative bg-bg py-20 md:py-28">
       <div className="container-x">
-        <SectionHeading tag={t(courses.tag)} title={t(courses.title)} intro={t(courses.intro)} />
+        <SectionHeading tag={t(courses.tag)} title={t(courses.title)} intro={t(courses.intro)} num="06" />
         <CourseExplorer />
       </div>
     </section>

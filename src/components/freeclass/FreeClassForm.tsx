@@ -94,7 +94,9 @@ export function FreeClassForm({ source = 'page', compact = false }: { source?: '
   if (done)
     return (
       <div className="flex flex-col items-center gap-3 py-6 text-center" role="status">
-        <CheckCircle2 size={44} className="text-mint" />
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-red-soft text-rouge">
+          <CheckCircle2 size={26} />
+        </span>
         <p className="font-display text-2xl font-semibold">{t(COPY.doneTitle)}</p>
         <p className="max-w-md text-sm leading-relaxed text-muted">{t(COPY.doneText)}</p>
         <button
@@ -103,7 +105,7 @@ export function FreeClassForm({ source = 'page', compact = false }: { source?: '
             setF({ name: '', phone: '', whatsapp: '', email: '', interest: '' });
             setDone(false);
           }}
-          className="mt-2 text-sm font-semibold text-rouge hover:underline"
+          className="mt-2 min-h-10 text-sm font-semibold text-rouge hover:underline"
         >
           {t(COPY.another)}
         </button>
@@ -112,7 +114,7 @@ export function FreeClassForm({ source = 'page', compact = false }: { source?: '
 
   const field = (err?: string) =>
     cn('w-full rounded-xl border bg-surface px-4 py-3 text-[15px] outline-none transition focus:border-bleu focus:ring-2 focus:ring-bleu/20', err ? 'border-rouge' : 'border-line');
-  const label = 'mb-1.5 block text-sm font-semibold';
+  const label = 'mb-2 block text-[11px] font-bold tracking-[0.14em] text-muted uppercase';
   const errText = (k: Field) => errors[k] && <p className="mt-1 text-xs font-semibold text-rouge">{errors[k]}</p>;
 
   return (
@@ -161,7 +163,7 @@ export function FreeClassForm({ source = 'page', compact = false }: { source?: '
       </div>
       <div className={cn(!compact && 'sm:col-span-2')}>
         {failure && (
-          <p role="alert" className="mb-3 rounded-xl bg-rouge/10 px-4 py-2.5 text-sm font-semibold text-rouge">
+          <p role="alert" className="mb-3 rounded-xl border border-rouge/30 bg-red-soft px-4 py-2.5 text-sm font-semibold text-rouge">
             {failure}
           </p>
         )}

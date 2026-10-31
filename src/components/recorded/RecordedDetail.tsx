@@ -93,16 +93,20 @@ export function RecordedDetail({ course: c }: { course: RecordedCourse }) {
       </PageHero>
 
       <section className="bg-bg py-12 md:py-16">
-        <div className="container-x grid gap-8 lg:grid-cols-[1fr_360px]">
+        <div className="container-x grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-12">
           <div>
-            <div className="mb-6 grid grid-cols-3 gap-1.5 rounded-full border border-line bg-surface p-1 sm:inline-grid" role="tablist">
+            {/* Underlined text tabs */}
+            <div className="mb-6 flex gap-1 border-b border-line" role="tablist">
               {(['curriculum', 'overview', 'outcomes'] as const).map((k) => (
                 <button
                   key={k}
                   role="tab"
                   aria-selected={tab === k}
                   onClick={() => setTab(k)}
-                  className={cn('rounded-full px-3 py-2.5 text-sm font-semibold transition sm:px-5', tab === k ? 'bg-ink text-white dark:bg-bleu' : 'text-muted hover:text-fg')}
+                  className={cn(
+                    'relative -mb-px min-h-11 px-3 pt-2 pb-3 text-sm font-semibold transition sm:px-5',
+                    tab === k ? 'text-fg after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:bg-rouge' : 'text-muted hover:text-fg',
+                  )}
                 >
                   {t(TABS[k])}
                 </button>
@@ -111,15 +115,18 @@ export function RecordedDetail({ course: c }: { course: RecordedCourse }) {
 
             {tab === 'curriculum' && (
               <div className="flex flex-col gap-4">
-                {c.modules?.map((m) => (
-                  <details key={m.id} open={m.order === 1} className="group overflow-hidden rounded-[22px] border border-line bg-surface">
+                {c.modules?.map((m, mi) => (
+                  <details key={m.id} open={m.order === 1} className="group card overflow-hidden">
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-5">
-                      <span>
-                        <span className={cn('block font-bold', bn && m.banglaTitle && 'font-bangla')}>{bn && m.banglaTitle ? m.banglaTitle : m.title}</span>
+                      <span className="flex gap-4">
+                        <span className="font-display pt-0.5 text-lg font-semibold text-rouge tabular-nums">{String(mi + 1).padStart(2, '0')}</span>
+                        <span>
+                        <span className={cn('font-display block text-lg font-semibold', bn && m.banglaTitle && 'font-bangla')}>{bn && m.banglaTitle ? m.banglaTitle : m.title}</span>
                         {!bn && m.banglaTitle && <span className="font-bangla text-sm text-muted">{m.banglaTitle}</span>}
                         {bn && m.banglaTitle && <span className="text-sm text-muted">{m.title}</span>}
+                        </span>
                       </span>
-                      <span className="text-xs text-muted">
+                      <span className="shrink-0 text-[11px] font-bold tracking-[0.14em] text-muted uppercase">
                         {num(m.lessons.length, t.locale)}
                         {t({ en: ' lessons', bn: 'টি লেসন' })}
                       </span>
@@ -129,7 +136,7 @@ export function RecordedDetail({ course: c }: { course: RecordedCourse }) {
                         <li
                           key={l.id}
                           onClick={l.isPreview ? () => setPreview(l) : undefined}
-                          className={cn('flex items-start gap-3 border-b border-line px-4 py-3.5 text-sm last:border-0 sm:px-5', l.isPreview && 'cursor-pointer hover:bg-rouge/[.04]')}
+                          className={cn('hairline flex items-start gap-3 px-4 py-3.5 text-sm first:border-t-0 sm:px-5', l.isPreview && 'cursor-pointer hover:bg-surface-2/60')}
                         >
                           {l.isPreview ? <PlayCircle size={17} className="mt-0.5 shrink-0 text-rouge" /> : <Lock size={15} className="mt-0.5 shrink-0 text-muted" />}
                           {/* Title on its own line on phones; duration + preview wrap underneath */}
@@ -140,7 +147,7 @@ export function RecordedDetail({ course: c }: { course: RecordedCourse }) {
                               {l.isPreview && (
                                 <button
                                   onClick={(e) => (e.stopPropagation(), setPreview(l))}
-                                  className="rounded-full bg-rouge/10 px-3 py-1.5 text-xs font-bold text-rouge"
+                                  className="-my-1 min-h-10 rounded-md bg-red-soft px-3 py-1.5 text-xs font-bold text-rouge"
                                 >
                                   {t({ en: 'Free preview', bn: 'ফ্রি প্রিভিউ' })}
                                 </button>
@@ -155,45 +162,46 @@ export function RecordedDetail({ course: c }: { course: RecordedCourse }) {
               </div>
             )}
             {tab === 'overview' && (
-              <div className="rounded-[22px] border border-line bg-surface p-6">
-                <p className="leading-relaxed">{bn ? c.banglaDescription : c.description}</p>
-                <p className="mt-4 text-sm text-muted">
-                  <strong className="text-fg">{t({ en: 'Who it’s for:', bn: 'কাদের জন্য:' })}</strong> {audience}
+              <div className="card p-6 md:p-8">
+                <p className="max-w-[68ch] text-[16px] leading-relaxed">{bn ? c.banglaDescription : c.description}</p>
+                <p className="hairline mt-5 pt-5 text-sm leading-relaxed text-muted">
+                  <strong className="eyebrow mr-2 text-rouge">{t({ en: 'Who it’s for:', bn: 'কাদের জন্য:' })}</strong> {audience}
                 </p>
                 <ul className="mt-5 grid gap-2.5 md:grid-cols-2">
                   {features.map((f) => (
-                    <li key={f} className="flex gap-2 text-sm">
-                      <Check size={16} className="mt-0.5 shrink-0 text-mint" /> {f}
+                    <li key={f} className="flex gap-2.5 text-sm leading-relaxed">
+                      <Check size={15} strokeWidth={2.5} className="mt-1 shrink-0 text-rouge" /> {f}
                     </li>
                   ))}
                 </ul>
               </div>
             )}
             {tab === 'outcomes' && (
-              <ul className="flex flex-col gap-3 rounded-[22px] border border-line bg-surface p-6">
-                {outcomes.map((o) => (
-                  <li key={o} className="flex gap-3">
-                    <Check size={18} className="mt-0.5 shrink-0 text-mint" /> {o}
+              <ol className="card p-6 md:p-8">
+                {outcomes.map((o, oi) => (
+                  <li key={o} className="hairline flex gap-4 py-4 first:border-t-0 first:pt-0 last:pb-0">
+                    <span className="font-display shrink-0 text-lg font-semibold text-rouge tabular-nums">{String(oi + 1).padStart(2, '0')}</span>
+                    <span className="leading-relaxed">{o}</span>
                   </li>
                 ))}
-              </ul>
+              </ol>
             )}
           </div>
 
           <aside className="lg:sticky lg:top-28 lg:self-start">
-            <div className="overflow-hidden rounded-[26px] border border-line bg-surface">
+            <div className="card accent-top overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={c.thumbnail} alt="" className="aspect-video w-full object-cover" />
+              <img src={c.thumbnail} alt="" className="aspect-video w-full border-b border-line object-cover" />
               <div className="p-6">
-                <p className="text-[11px] font-bold tracking-wider text-muted uppercase">{t({ en: 'One-time Fee', bn: 'এককালীন ফি' })}</p>
-                <p className="flex items-baseline gap-2">
-                  <span className="font-display text-4xl font-semibold text-rouge">{taka(c.offerPrice, t.locale)}</span>
+                <p className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">{t({ en: 'One-time Fee', bn: 'এককালীন ফি' })}</p>
+                <p className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                  <span className="font-display text-4xl font-semibold text-fg">{taka(c.offerPrice, t.locale)}</span>
                   <span className="text-muted line-through">{taka(c.regularPrice, t.locale)}</span>
-                  <span className="rounded-full bg-rouge px-2 py-0.5 text-xs font-bold text-white">
+                  <span className="rounded-md bg-red-soft px-2 py-0.5 text-[11px] font-bold tracking-wider text-rouge uppercase">
                     {num(off, t.locale)}% {t({ en: 'OFF', bn: 'ছাড়' })}
                   </span>
                 </p>
-                <div className="mt-5">{cta}</div>
+                <div className="hairline mt-5 pt-5">{cta}</div>
                 <p className="mt-3 text-center text-xs text-muted">
                   {t({ en: 'Lifetime access · PDF notes · Certificate', bn: 'লাইফটাইম অ্যাক্সেস · PDF নোট · সার্টিফিকেট' })}
                 </p>
@@ -205,11 +213,11 @@ export function RecordedDetail({ course: c }: { course: RecordedCourse }) {
 
       <Dialog.Root open={!!preview} onOpenChange={(o) => !o && setPreview(null)}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 z-[90] bg-ink/80 backdrop-blur-sm" />
-          <Dialog.Content className="fixed top-1/2 left-1/2 z-[91] w-[min(900px,calc(100vw-24px))] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-3xl bg-ink text-white" aria-describedby={undefined}>
-            <div className="flex items-center justify-between gap-3 p-4">
-              <Dialog.Title className="font-semibold">{bn && preview?.banglaTitle ? preview.banglaTitle : preview?.title}</Dialog.Title>
-              <Dialog.Close aria-label={t({ en: 'Close', bn: 'বন্ধ করুন' })} className="rounded-full p-2 hover:bg-white/10">
+          <Dialog.Overlay className="fixed inset-0 z-[90] bg-ink/80" />
+          <Dialog.Content className="fixed top-1/2 left-1/2 z-[91] w-[min(900px,calc(100vw-24px))] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[var(--radius)] bg-ink text-white" aria-describedby={undefined}>
+            <div className="flex items-center justify-between gap-3 border-b border-white/10 p-4">
+              <Dialog.Title className="font-display text-lg font-semibold">{bn && preview?.banglaTitle ? preview.banglaTitle : preview?.title}</Dialog.Title>
+              <Dialog.Close aria-label={t({ en: 'Close', bn: 'বন্ধ করুন' })} className="flex h-10 w-10 items-center justify-center rounded-lg hover:bg-white/10">
                 <X size={18} />
               </Dialog.Close>
             </div>

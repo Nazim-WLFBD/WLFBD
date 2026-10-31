@@ -33,32 +33,39 @@ export function QuizHub() {
 
   return (
     <>
-      <div className="mb-8 flex flex-wrap gap-2">
+      {/* Underlined text tabs */}
+      <div className="no-scrollbar -mx-4 mb-10 flex gap-1 overflow-x-auto border-b border-line px-4 sm:mx-0 sm:px-0 [&>button]:shrink-0 [&>button]:whitespace-nowrap">
         {(Object.keys(FILTERS) as Filter[]).map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
             aria-pressed={filter === f}
-            className={cn('rounded-full px-5 py-2.5 text-sm font-semibold transition', filter === f ? 'bg-ink text-white dark:bg-bleu' : 'border border-line hover:bg-fg/5')}
+            className={cn(
+              'relative -mb-px min-h-11 px-4 pt-2 pb-3 text-sm font-semibold transition',
+              filter === f ? 'text-fg after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:bg-rouge' : 'text-muted hover:text-fg',
+            )}
           >
             {t(FILTERS[f])}
           </button>
         ))}
       </div>
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {list.map(({ q, count }) => {
+        {list.map(({ q, count }, idx) => {
           const ready = count > 0;
           const body = (
             <>
               <div className="flex items-center justify-between">
-                <span className={cn('flex h-11 w-11 items-center justify-center rounded-xl', q.isPlacementTest ? 'bg-gold text-ink' : 'bg-ink text-gold')}>
-                  <Icon name={ICON[q.iconName] ?? 'clipboard'} size={20} />
+                <span className="flex items-center gap-3">
+                  <span className={cn('flex h-10 w-10 items-center justify-center rounded-lg', q.isPlacementTest ? 'bg-rouge text-white' : 'bg-ink text-white')}>
+                    <Icon name={ICON[q.iconName] ?? 'clipboard'} size={18} />
+                  </span>
+                  <span className="section-num">{String(idx + 1).padStart(2, '0')}</span>
                 </span>
-                <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[10px] font-bold tracking-wider">{t.locale === 'bn' && q.banglaBadgeTag ? q.banglaBadgeTag : q.badgeTag}</span>
+                <span className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">{t.locale === 'bn' && q.banglaBadgeTag ? q.banglaBadgeTag : q.badgeTag}</span>
               </div>
               <h3 className="font-display mt-5 text-xl leading-tight font-semibold">{t.locale === 'bn' ? q.banglaTitle : q.title}</h3>
               <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-muted">{t.locale === 'bn' ? q.banglaDescription : q.description}</p>
-              <div className="mt-5 flex items-center justify-between text-sm">
+              <div className="hairline mt-5 flex items-center justify-between pt-4 text-sm">
                 <span className="flex gap-4 text-muted">
                   <span className="flex items-center gap-1.5">
                     <ListChecks size={15} /> {num(ready ? count : q.questionCount, t.locale)}
@@ -72,14 +79,14 @@ export function QuizHub() {
                     {t({ en: 'Start', bn: 'শুরু করুন' })} <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
                   </span>
                 ) : (
-                  <span className="rounded-full bg-fg/10 px-2.5 py-1 text-xs font-bold text-muted">{t({ en: 'Coming soon', bn: 'শীঘ্রই আসছে' })}</span>
+                  <span className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">{t({ en: 'Coming soon', bn: 'শীঘ্রই আসছে' })}</span>
                 )}
               </div>
             </>
           );
-          const cls = 'group flex h-full flex-col rounded-[24px] border border-line bg-surface p-6 transition';
+          const cls = 'group card flex h-full flex-col p-6 transition';
           return ready ? (
-            <Link key={q.id} href={quizHref(q.slug)} className={cn(cls, 'hover:-translate-y-1 hover:shadow-[var(--shadow-lift)]', q.isPlacementTest && 'ring-2 ring-gold')}>
+            <Link key={q.id} href={quizHref(q.slug)} className={cn(cls, 'hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)]', q.isPlacementTest && 'accent-top')}>
               {body}
             </Link>
           ) : (

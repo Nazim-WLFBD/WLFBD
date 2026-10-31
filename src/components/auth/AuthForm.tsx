@@ -119,16 +119,21 @@ export function AuthForm({ initial = 'login' }: { initial?: Tab }) {
     );
   };
 
-  const input = 'w-full rounded-2xl border border-line bg-surface px-4 py-3.5 text-[15px] outline-none focus:border-fg/50';
+  const input = 'w-full rounded-xl border border-line bg-surface px-4 py-3 text-[15px] outline-none transition focus:border-bleu focus:ring-2 focus:ring-bleu/20';
 
   return (
-    <div className="mx-auto max-w-md rounded-[28px] border border-line bg-surface p-6 md:p-8">
-      <div className="mb-6 grid grid-cols-2 rounded-full bg-fg/5 p-1 text-sm font-bold">
+    <div className="card accent-top mx-auto max-w-md p-6 md:p-8">
+      <div className="mb-6 flex border-b border-line text-sm font-semibold" role="tablist">
         {(['login', 'signup'] as const).map((k) => (
           <button
             key={k}
+            role="tab"
+            aria-selected={tab === k}
             onClick={() => setTab(k)}
-            className={cn('rounded-full py-2.5 transition', tab === k ? 'bg-ink text-white dark:bg-white dark:text-ink' : 'text-muted')}
+            className={cn(
+              'relative -mb-px min-h-11 flex-1 px-2 pt-2 pb-3 transition',
+              tab === k ? 'text-fg after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:bg-rouge' : 'text-muted hover:text-fg',
+            )}
           >
             {t(copy[k])}
           </button>
@@ -154,9 +159,9 @@ export function AuthForm({ initial = 'login' }: { initial?: Tab }) {
             <input required type="password" minLength={6} placeholder={t(copy.confirm)} value={f.confirm} onChange={set('confirm')} autoComplete="new-password" className={input} />
             <input placeholder={t(copy.phone)} value={f.phone} onChange={set('phone')} inputMode="tel" className={input} />
             <div className="grid grid-cols-2 gap-2">
-              <label className="text-xs font-bold text-muted">
+              <label className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">
                 {t(copy.goal)}
-                <select value={f.goal} onChange={set('goal')} className={cn(input, 'mt-1 px-3')}>
+                <select value={f.goal} onChange={set('goal')} className={cn(input, 'mt-1.5 px-3 text-sm tracking-normal normal-case')}>
                   {GOAL_OPTIONS.map((g) => (
                     <option key={g.v} value={g.v}>
                       {t(g.l)}
@@ -164,9 +169,9 @@ export function AuthForm({ initial = 'login' }: { initial?: Tab }) {
                   ))}
                 </select>
               </label>
-              <label className="text-xs font-bold text-muted">
+              <label className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">
                 {t(copy.level)}
-                <select value={f.level} onChange={set('level')} className={cn(input, 'mt-1 px-3')}>
+                <select value={f.level} onChange={set('level')} className={cn(input, 'mt-1.5 px-3 text-sm tracking-normal normal-case')}>
                   {LEVELS.map((g) => (
                     <option key={g}>{g}</option>
                   ))}
@@ -175,8 +180,8 @@ export function AuthForm({ initial = 'login' }: { initial?: Tab }) {
             </div>
           </>
         )}
-        {err && <p className="rounded-xl bg-rouge/10 p-3 text-sm text-rouge">{err}</p>}
-        {msg && <p className="rounded-xl bg-mint/10 p-3 text-sm text-mint">{msg}</p>}
+        {err && <p className="rounded-xl border border-rouge/30 bg-red-soft p-3 text-sm font-medium text-rouge">{err}</p>}
+        {msg && <p className="rounded-xl bg-surface-2 p-3 text-sm font-medium text-mint">{msg}</p>}
         <button disabled={busy} className={btn('rouge', 'md', 'mt-1 w-full')}>
           {busy && <Loader2 size={16} className="animate-spin" />}
           {t(copy[tab])}
@@ -184,7 +189,7 @@ export function AuthForm({ initial = 'login' }: { initial?: Tab }) {
       </form>
       {tab !== 'reset' && (
         <>
-          <div className="my-5 flex items-center gap-3 text-xs text-muted">
+          <div className="my-5 flex items-center gap-3 text-[11px] font-bold tracking-[0.14em] text-muted uppercase">
             <span className="h-px flex-1 bg-line" />
             {t(copy.or)}
             <span className="h-px flex-1 bg-line" />
@@ -200,7 +205,7 @@ export function AuthForm({ initial = 'login' }: { initial?: Tab }) {
           </button>
         </>
       )}
-      <button onClick={() => setTab(tab === 'reset' ? 'login' : 'reset')} className="mx-auto mt-5 block text-sm font-semibold text-bleu hover:underline">
+      <button onClick={() => setTab(tab === 'reset' ? 'login' : 'reset')} className="mx-auto mt-5 block min-h-10 text-sm font-semibold text-bleu hover:underline">
         {tab === 'reset' ? t(copy.login) : t(copy.forgot)}
       </button>
     </div>

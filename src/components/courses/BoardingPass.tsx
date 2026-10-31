@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, Check, Plane, Star } from 'lucide-react';
+import { ArrowRight, Check, Star } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { useT } from '@/i18n/t';
 import { btn } from '@/components/ui/Button';
@@ -38,25 +38,20 @@ export function courseText(c: Course, locale: string) {
   };
 }
 
+/** Kept for existing imports; now a tiny decorative strip rather than an airline barcode. */
 export function Barcode({ className }: { className?: string }) {
-  const bars = [3, 1, 2, 1, 1, 3, 1, 2, 2, 1, 3, 1, 1, 2, 1, 3, 2, 1, 1, 2, 3, 1, 2, 1, 1, 3, 1, 2];
-  return (
-    <span className={cn('flex h-8 items-stretch gap-[2px]', className)} aria-hidden>
-      {bars.map((w, i) => (
-        <i key={i} className="bg-current" style={{ width: w }} />
-      ))}
-    </span>
-  );
+  return <span className={cn('block h-px w-10 bg-current opacity-40', className)} aria-hidden />;
 }
 
 interface Props {
   course: Course;
   comparing?: boolean;
   onCompare?: (id: string) => void;
+  /** Accepted for backwards compatibility; the card no longer has notches. */
   notchClass?: string;
 }
 
-export function BoardingPass({ course: c, comparing, onCompare, notchClass = 'bg-bg' }: Props) {
+export function BoardingPass({ course: c, comparing, onCompare }: Props) {
   const t = useT();
   const bn = t.locale === 'bn';
   const x = courseText(c, t.locale);
@@ -65,105 +60,88 @@ export function BoardingPass({ course: c, comparing, onCompare, notchClass = 'bg
   return (
     <article
       className={cn(
-        'group relative flex h-full flex-col rounded-[24px] border bg-surface transition duration-500 hover:-translate-y-1 hover:shadow-[var(--shadow-lift)]',
-        c.popular ? 'border-rouge/60 ring-1 ring-rouge/30' : 'border-line',
+        'group relative flex h-full flex-col rounded-[var(--radius)] border bg-surface shadow-[var(--shadow-card)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)]',
+        c.popular ? 'border-rouge/50' : 'border-line',
       )}
     >
-      {c.popular && (
-        <span className="absolute -top-3 left-6 z-10 inline-flex items-center gap-1 rounded-full bg-rouge px-3 py-1 text-[10px] font-extrabold tracking-wider text-white shadow-lg">
-          <Star size={11} fill="currentColor" /> {t(copy.popular)}
-        </span>
-      )}
-
       {/* Main */}
       <div className="flex flex-1 flex-col p-6">
-        <div className="flex items-center justify-between text-[10px] font-bold tracking-[0.2em] text-muted uppercase">
-          <span>{t({ en: 'Boarding pass · WLF BD', bn: 'বোর্ডিং পাস · WLF BD' })}</span>
-          <span className={cn('rounded-md border px-2 py-0.5 text-[10px] tracking-normal normal-case', c.tagColor)}>{x.tag}</span>
+        <div className="flex items-start justify-between gap-3">
+          <span className="inline-flex items-center gap-2 rounded-md bg-red-soft px-2.5 py-1 text-[11px] font-bold tracking-[0.14em] text-rouge uppercase">
+            {FROM_LEVEL[c.id] ?? 'A0'}
+            <span aria-hidden className="text-rouge/50">→</span>
+            {to}
+          </span>
+          {c.popular ? (
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold tracking-[0.14em] text-rouge uppercase">
+              <Star size={11} fill="currentColor" /> {t(copy.popular)}
+            </span>
+          ) : (
+            <span className="text-[11px] font-semibold tracking-[0.14em] text-muted uppercase">{x.tag}</span>
+          )}
         </div>
 
-        <div className="mt-5 flex items-end justify-between gap-3">
-          <div>
-            <p className="text-[10px] font-bold tracking-widest text-muted uppercase">{t({ en: 'From', bn: 'শুরু' })}</p>
-            <p className="font-display text-4xl leading-none font-semibold text-muted/70">{FROM_LEVEL[c.id] ?? 'A0'}</p>
-          </div>
-          <div className="relative mb-3 flex flex-1 items-center">
-            <span className="h-px flex-1 border-t border-dashed border-fg/25" />
-            <Plane size={18} className="mx-1.5 text-rouge transition-transform duration-700 group-hover:translate-x-2" />
-            <span className="h-px flex-1 border-t border-dashed border-fg/25" />
-          </div>
-          <div className="text-right">
-            <p className="text-[10px] font-bold tracking-widest text-muted uppercase">{t({ en: 'To', bn: 'গন্তব্য' })}</p>
-            <p className="font-display text-4xl leading-none font-semibold text-fg">{to}</p>
-          </div>
-        </div>
-
-        <h3 className={cn('font-display mt-5 text-[22px] leading-tight font-semibold', bn && 'font-bangla')}>{x.title}</h3>
+        <h3 className={cn('font-display mt-5 text-[22px] leading-tight font-semibold text-fg', bn && 'font-bangla')}>{x.title}</h3>
         <p className={cn('mt-1 text-sm text-muted', !bn && 'font-bangla')}>{x.altTitle}</p>
 
-        <dl className="mt-5 grid grid-cols-3 gap-2 rounded-2xl bg-surface-2/60 p-3 text-center">
-          <div>
-            <dt className="text-[9px] font-bold tracking-widest text-muted uppercase">{t(copy.duration)}</dt>
-            <dd className="mt-0.5 text-[13px] font-bold">{x.duration}</dd>
+        <dl className="hairline mt-5 grid grid-cols-3 border-b border-line py-4">
+          <div className="pr-3">
+            <dt className="text-[10px] font-bold tracking-[0.14em] text-muted uppercase">{t(copy.duration)}</dt>
+            <dd className="font-display mt-1 text-[15px] font-semibold text-fg">{x.duration}</dd>
           </div>
-          <div className="border-x border-line">
-            <dt className="text-[9px] font-bold tracking-widest text-muted uppercase">{t(copy.schedule)}</dt>
-            <dd className="mt-0.5 text-[13px] font-bold">{c.whatsappOnly ? t({ en: 'Flexible', bn: 'ফ্লেক্সিবল' }) : num(c.classCount, t.locale)}</dd>
+          <div className="border-l border-line px-3">
+            <dt className="text-[10px] font-bold tracking-[0.14em] text-muted uppercase">{t(copy.schedule)}</dt>
+            <dd className="font-display mt-1 text-[15px] font-semibold text-fg">
+              {c.whatsappOnly ? t({ en: 'Flexible', bn: 'ফ্লেক্সিবল' }) : num(c.classCount, t.locale)}
+            </dd>
           </div>
-          <div>
-            <dt className="text-[9px] font-bold tracking-widest text-muted uppercase">{t({ en: '/ wk', bn: 'প্রতি সপ্তাহে' })}</dt>
-            <dd className="mt-0.5 text-[13px] font-bold">{x.classesPerWeek}</dd>
+          <div className="border-l border-line pl-3">
+            <dt className="text-[10px] font-bold tracking-[0.14em] text-muted uppercase">{t({ en: '/ wk', bn: 'প্রতি সপ্তাহে' })}</dt>
+            <dd className="font-display mt-1 text-[15px] font-semibold text-fg">{x.classesPerWeek}</dd>
           </div>
         </dl>
         {x.targetClb && (
-          <p className="mt-3 text-sm">
-            <span className="text-muted">{t(copy.target)}:</span> <strong>{x.targetClb}</strong>
+          <p className="mt-4 text-sm">
+            <span className="text-muted">{t(copy.target)}:</span> <strong className="font-semibold">{x.targetClb}</strong>
           </p>
         )}
 
-        <p className="mt-4 text-sm leading-relaxed">
-          <strong>{t(copy.outcome)}:</strong> <span className="text-muted">{x.outcome}</span>
+        <p className="mt-3 text-sm leading-relaxed">
+          <strong className="font-semibold">{t(copy.outcome)}:</strong> <span className="text-muted">{x.outcome}</span>
         </p>
         <ul className="mt-4 space-y-2">
           {x.features.slice(0, 4).map((f) => (
-            <li key={f} className="flex items-start gap-2 text-[13.5px] leading-snug">
-              <Check size={15} className="mt-0.5 shrink-0 text-mint" />
+            <li key={f} className="flex items-start gap-2.5 text-[13.5px] leading-snug">
+              <Check size={14} strokeWidth={2.5} className="mt-[3px] shrink-0 text-rouge" />
               {f}
             </li>
           ))}
         </ul>
       </div>
 
-      {/* Tear line */}
-      <div className="relative mx-5 border-t-2 border-dashed border-line">
-        <span className={cn('absolute -top-[13px] -left-[33px] h-6 w-6 rounded-full border-r border-line', notchClass)} />
-        <span className={cn('absolute -top-[13px] -right-[33px] h-6 w-6 rounded-full border-l border-line', notchClass)} />
-      </div>
-
-      {/* Stub */}
-      <div className="p-6 pt-5">
-        <div className="flex items-end justify-between gap-3">
+      {/* Price + actions */}
+      <div className="px-6 pb-6">
+        <div className="hairline flex items-end justify-between gap-3 pt-5">
           <div>
-            <p className="text-[10px] font-bold tracking-widest text-muted uppercase">{t(copy.fee)}</p>
+            <p className="text-[10px] font-bold tracking-[0.14em] text-muted uppercase">{t(copy.fee)}</p>
             {c.isCustomPricing ? (
-              <p className="mt-1 font-bold text-rouge">{t(copy.feeCustom)}</p>
+              <p className="font-display mt-1 text-xl font-semibold text-rouge">{t(copy.feeCustom)}</p>
             ) : (
-              <>
-                <p className="flex items-baseline gap-2">
-                  <span className="font-display text-3xl font-semibold text-rouge">{taka(c.offerPrice, t.locale)}</span>
-                  <span className="text-sm text-muted line-through">{taka(c.regularPrice, t.locale)}</span>
-                </p>
-                <p className="text-[11px] font-bold text-mint">
-                  {t(copy.save)} {taka(c.regularPrice - c.offerPrice, t.locale)}
-                </p>
-              </>
+              <p className="mt-1 flex items-baseline gap-2">
+                <span className="font-display text-3xl font-semibold text-fg">{taka(c.offerPrice, t.locale)}</span>
+                <span className="text-sm text-muted line-through">{taka(c.regularPrice, t.locale)}</span>
+              </p>
             )}
           </div>
-          <Barcode className="text-fg/70" />
+          {!c.isCustomPricing && (
+            <p className="pb-1 text-right text-[11px] font-semibold text-mint">
+              {t(copy.save)} {taka(c.regularPrice - c.offerPrice, t.locale)}
+            </p>
+          )}
         </div>
         <div className="mt-5 grid grid-cols-2 gap-2">
           {c.whatsappOnly ? (
-            <a href={waLink(t(c.whatsappMessage!))} target="_blank" rel="noopener" className={btn('ink', 'sm', 'w-full bg-[#1f9d55] hover:bg-[#178244]')}>
+            <a href={waLink(t(c.whatsappMessage!))} target="_blank" rel="noopener" className={btn('ink', 'sm', 'w-full bg-[#1f9d55] hover:bg-[#178244] dark:bg-[#1f9d55] dark:text-white dark:hover:bg-[#178244]')}>
               {t({ en: 'WhatsApp us', bn: 'WhatsApp করুন' })}
             </a>
           ) : (
@@ -183,7 +161,7 @@ export function BoardingPass({ course: c, comparing, onCompare, notchClass = 'bg
                 type="checkbox"
                 checked={!!comparing}
                 onChange={() => onCompare(c.id)}
-                className="h-4 w-4 rounded accent-[var(--ink)]"
+                className="h-4 w-4 rounded border-line accent-[var(--ink)]"
               />
               {t(copy.compare)}
             </label>

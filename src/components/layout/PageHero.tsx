@@ -1,4 +1,3 @@
-import { ChevronRight } from 'lucide-react';
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
@@ -14,24 +13,20 @@ interface Props {
   className?: string;
 }
 
-/** Dark header band for inner pages (sits under the fixed site header). */
+/** Navy header band for inner pages (sits under the fixed site header). */
 export function PageHero({ eyebrow, title, intro, crumbs, children, className }: Props) {
   // useLocale works in both server and client components, which this band is used from
   const locale = useLocale() as Locale;
   return (
-    <section className={cn('relative overflow-hidden bg-ink pt-32 pb-16 text-white md:pt-40 md:pb-20', className)}>
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-40 left-1/3 h-[520px] w-[900px] rounded-full bg-[radial-gradient(closest-side,rgba(39,71,216,.35),transparent)]" />
-        <div className="dots absolute inset-0 opacity-25 [mask-image:linear-gradient(to_bottom,#000,transparent)]" />
-      </div>
+    <section className={cn('relative bg-ink pt-32 pb-14 text-white md:pt-40 md:pb-20', className)}>
       <div className="container-x relative">
         {crumbs && (
-          <nav aria-label={ui.breadcrumb[locale]} className="mb-6 flex flex-wrap items-center gap-1.5 text-sm text-white/55">
+          <nav aria-label={ui.breadcrumb[locale]} className="mb-8 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-white/15 pt-4 text-[13px] text-white/55">
             {crumbs.map((c, i) => (
-              <span key={c.label} className="flex items-center gap-1.5">
-                {i > 0 && <ChevronRight size={14} />}
+              <span key={c.label} className="flex items-center gap-3">
+                {i > 0 && <span aria-hidden className="h-px w-4 bg-white/25" />}
                 {c.href ? (
-                  <Link href={c.href} className="hover:text-white">
+                  <Link href={c.href} className="transition hover:text-white">
                     {c.label}
                   </Link>
                 ) : (
@@ -41,11 +36,13 @@ export function PageHero({ eyebrow, title, intro, crumbs, children, className }:
             ))}
           </nav>
         )}
-        {eyebrow && <p className="mb-4 text-[11px] font-bold tracking-[0.2em] text-gold uppercase">{eyebrow}</p>}
+        {eyebrow && <p className="eyebrow mb-5 text-[#ffb3ab]">{eyebrow}</p>}
         <h1 className="font-display max-w-4xl text-[clamp(2.3rem,5.6vw,4.4rem)] leading-[1.02] font-semibold text-balance">{title}</h1>
         {intro && <div className="mt-5 max-w-2xl text-lg leading-relaxed text-white/70">{intro}</div>}
         {children}
       </div>
+      {/* Maple red rule along the band's bottom edge */}
+      <span aria-hidden className="absolute inset-x-0 bottom-0 h-[3px] bg-rouge" />
     </section>
   );
 }

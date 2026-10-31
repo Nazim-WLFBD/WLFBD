@@ -75,27 +75,20 @@ export function Header() {
 
   const live = COURSES_DATA;
 
-  // Three independent glass pills: each sizes to its own content, so nothing spills over a border
-  const pill = cn(
-    'flex h-[60px] items-center rounded-full border text-white backdrop-blur-xl transition-all duration-500',
-    scrolled
-      ? 'border-white/10 bg-ink/90 shadow-[0_18px_40px_-18px_rgba(0,0,0,.6)]'
-      : 'border-white/12 bg-ink/55 shadow-none',
-  );
+  // One slim institutional bar: navy with a maple-red hairline on top. Transparent over the hero,
+  // solid once the page scrolls (and always solid on inner pages, which start with a navy band anyway).
+  const pill = 'flex h-[64px] items-center text-white';
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5">
-      {/* Soft blur behind the pills once scrolled, so page content doesn't clutter the gaps between them */}
-      <div
-        aria-hidden
-        className={cn(
-          'pointer-events-none absolute inset-x-0 top-0 -z-10 h-[92px] backdrop-blur-md transition-opacity duration-500 [mask-image:linear-gradient(to_bottom,#000_50%,transparent)]',
-          scrolled ? 'opacity-100' : 'opacity-0',
-        )}
-      />
-      <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-3">
+    <header
+      className={cn(
+        'fixed inset-x-0 top-0 z-50 border-t-[3px] border-rouge transition-[background-color,box-shadow,border-color] duration-500',
+        scrolled ? 'bg-ink/95 shadow-[0_12px_32px_-20px_rgba(0,0,0,.7)] backdrop-blur-md border-b border-b-white/10' : 'bg-transparent',
+      )}
+    >
+      <div className="container-x flex max-w-[1280px] items-center justify-between gap-3">
         {/* Brand */}
-        <Link href="/" aria-label={t(ui.homepage)} className={cn(pill, 'shrink-0 pr-2 pl-2 xl:pr-5')}>
+        <Link href="/" aria-label={t(ui.homepage)} className={cn(pill, 'shrink-0')}>
           <span className="hidden xl:block">
             <Logo size={44} light />
           </span>
@@ -105,7 +98,7 @@ export function Header() {
         </Link>
 
         {/* Centre navigation */}
-        <nav className={cn(pill, 'hidden gap-0.5 px-1.5 lg:flex')} aria-label={t(ui.mainNav)} onMouseLeave={scheduleClose}>
+        <nav className={cn(pill, 'hidden gap-1 lg:flex')} aria-label={t(ui.mainNav)} onMouseLeave={scheduleClose}>
           <MenuTrigger id="courses" label={t(NAV.courses)} menu={menu} open={open} />
           <MenuTrigger id="practice" label={t(NAV.practice)} menu={menu} open={open} badge={t(ui.free)} />
           <NavLink href={{ pathname: '/', hash: 'schedule' }}>{t(NAV.schedule)}</NavLink>
@@ -114,7 +107,7 @@ export function Header() {
         </nav>
 
         {/* Actions */}
-        <div className={cn(pill, 'shrink-0 gap-0.5 px-1.5')}>
+        <div className={cn(pill, 'shrink-0 gap-0.5')}>
           <button
             onClick={openPalette}
             className="flex h-10 w-10 items-center justify-center rounded-full text-white/75 transition hover:bg-white/10 hover:text-white"
@@ -155,7 +148,7 @@ export function Header() {
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             onMouseEnter={() => open(menu)}
             onMouseLeave={scheduleClose}
-            className="mx-auto mt-2 hidden max-w-[1080px] overflow-hidden rounded-[28px] border border-white/10 bg-ink/95 text-white shadow-2xl backdrop-blur-xl lg:block"
+            className="mx-auto hidden max-w-[1080px] overflow-hidden rounded-b-[var(--radius)] border border-t-0 border-white/10 bg-ink/97 text-white shadow-2xl backdrop-blur-xl lg:block"
           >
             {menu === 'courses' ? (
               <div className="grid grid-cols-[1.6fr_1fr]">
@@ -361,8 +354,8 @@ function MenuTrigger({
       onClick={() => open(id)}
       aria-expanded={active}
       className={cn(
-        'flex h-10 items-center gap-1.5 rounded-full px-3.5 text-[14px] font-medium whitespace-nowrap text-white/80 transition hover:text-white',
-        active && 'bg-white/10 text-white',
+        'relative flex h-10 items-center gap-1.5 px-3 text-[14px] font-medium whitespace-nowrap text-white/80 transition hover:text-white after:absolute after:inset-x-3 after:bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-[#ffb3ab] after:transition-transform hover:after:scale-x-100',
+        active && 'text-white after:scale-x-100',
       )}
     >
       {label}
@@ -387,7 +380,7 @@ function NavLink({
     <Link
       href={href}
       className={cn(
-        'flex h-10 items-center rounded-full px-3.5 text-[14px] font-medium whitespace-nowrap text-white/80 transition hover:bg-white/10 hover:text-white',
+        'relative flex h-10 items-center px-3 text-[14px] font-medium whitespace-nowrap text-white/80 transition hover:text-white after:absolute after:inset-x-3 after:bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-[#ffb3ab] after:transition-transform hover:after:scale-x-100',
         className,
       )}
     >

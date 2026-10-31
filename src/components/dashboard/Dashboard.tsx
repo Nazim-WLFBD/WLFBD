@@ -83,19 +83,19 @@ export function Dashboard() {
   const recorded = RECORDED_COURSES.filter((r) => profile?.enrolledCourses?.includes(r.id));
   const avg = attempts.length ? Math.round(attempts.reduce((a, x) => a + Number(x.percentage ?? 0), 0) / attempts.length) : null;
   const best = attempts.length ? Math.max(...attempts.map((x) => Number(x.percentage ?? 0))) : null;
-  const input = 'w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm outline-none focus:border-fg/50';
+  const input = 'w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm outline-none transition focus:border-bleu focus:ring-2 focus:ring-bleu/20';
   const name = profile?.displayName || user?.email?.split('@')[0] || '';
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
       <div className="flex flex-col gap-6">
         {isAdmin && (
           <Link
             href="/admin"
-            className="group flex flex-wrap items-center gap-4 rounded-[26px] border-2 border-gold bg-gold/10 p-5 transition hover:bg-gold/20"
+            className="group card accent-top flex flex-wrap items-center gap-4 p-5 transition hover:border-fg/30"
           >
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold text-ink">
-              <ShieldCheck size={24} />
+            <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-ink text-white">
+              <ShieldCheck size={22} />
             </span>
             <span className="min-w-0 flex-1">
               <span className="font-display block text-xl font-semibold">{t({ en: 'Admin Portal', bn: 'অ্যাডমিন পোর্টাল' })}</span>
@@ -113,15 +113,14 @@ export function Dashboard() {
         )}
 
         {/* Header card */}
-        <div className="flex flex-wrap items-center gap-4 rounded-[26px] bg-ink p-6 text-white">
-          <span className="font-display flex h-16 w-16 items-center justify-center rounded-full bg-gold text-2xl font-semibold text-ink">
+        <div className="flex flex-wrap items-center gap-4 rounded-[var(--radius)] bg-ink p-6 text-white">
+          <span className="font-display flex h-14 w-14 items-center justify-center rounded-lg bg-white text-2xl font-semibold text-ink">
             {name.charAt(0).toUpperCase()}
           </span>
           <div className="min-w-0 flex-1">
-            <p className="font-display truncate text-2xl font-semibold">{name}</p>
-            <p className="truncate text-sm text-white/60">
-              {user?.email} · <span>{t(ROLE_LABEL[profile?.role ?? 'student'] ?? ROLE_LABEL.student)}</span>
-            </p>
+            <p className="text-[11px] font-bold tracking-[0.14em] text-white/55 uppercase">{t(ROLE_LABEL[profile?.role ?? 'student'] ?? ROLE_LABEL.student)}</p>
+            <p className="font-display mt-0.5 truncate text-2xl font-semibold">{name}</p>
+            <p className="truncate text-sm text-white/60">{user?.email}</p>
           </div>
           <button onClick={logOut} className={btn('ghost-light', 'sm')}>
             <LogOut size={15} /> {t({ en: 'Log out', bn: 'লগআউট' })}
@@ -136,29 +135,29 @@ export function Dashboard() {
             [t({ en: 'Average score', bn: 'গড় স্কোর' }), avg != null ? `${num(avg, t.locale)}%` : '—'],
             [t({ en: 'Saved CRS', bn: 'সেভ করা CRS' }), profile?.crsScore != null ? num(profile.crsScore, t.locale) : '—'],
           ].map(([k, v]) => (
-            <div key={String(k)} className="rounded-2xl border border-line bg-surface p-4">
-              <p className="text-[10px] font-bold tracking-widest text-muted uppercase">{k}</p>
-              <p className="font-display mt-1 text-2xl font-semibold">{v}</p>
+            <div key={String(k)} className="card p-4">
+              <p className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">{k}</p>
+              <p className="font-display mt-2 text-3xl font-semibold tabular-nums">{v}</p>
             </div>
           ))}
         </div>
 
         {/* Courses */}
-        <section className="rounded-[24px] border border-line bg-surface p-6">
+        <section className="card p-6">
           <h2 className="font-display flex items-center gap-2 text-xl font-semibold">
             <BookOpen size={18} className="text-rouge" /> {t({ en: 'My courses', bn: 'আমার কোর্স' })}
           </h2>
           {enrollments.length + recorded.length === 0 ? (
-            <div className="mt-4 rounded-2xl border border-dashed border-line p-6 text-center text-sm text-muted">
+            <div className="mt-4 rounded-xl bg-surface-2 p-6 text-center text-sm text-muted">
               {t({ en: 'No enrollments yet.', bn: 'এখনো কোনো ভর্তি নেই।' })}{' '}
               <Link href="/courses" className="font-semibold text-bleu hover:underline">
                 {t({ en: 'Browse courses', bn: 'কোর্স দেখুন' })}
               </Link>
             </div>
           ) : (
-            <ul className="mt-4 flex flex-col gap-2">
+            <ul className="mt-2 flex flex-col">
               {recorded.map((r) => (
-                <li key={r.id} className="flex items-center gap-3 rounded-2xl bg-surface-2/60 p-4">
+                <li key={r.id} className="hairline flex flex-wrap items-center gap-3 py-4 first:border-t-0">
                   <PlayCircle size={20} className="text-rouge" />
                   <span className="flex-1 font-semibold">{t.locale === 'bn' ? r.banglaTitle : r.title}</span>
                   <Link href={`/learn/${r.slug}`} className={btn('rouge', 'sm')}>
@@ -167,12 +166,12 @@ export function Dashboard() {
                 </li>
               ))}
               {enrollments.map((e) => (
-                <li key={e.id} className="flex flex-wrap items-center gap-3 rounded-2xl bg-surface-2/60 p-4">
+                <li key={e.id} className="hairline flex flex-wrap items-center gap-3 py-4 first:border-t-0">
                   <span className="min-w-0 flex-1">
                     <span className="block font-semibold">{String(e.courseTitle)}</span>
                     <span className="text-xs text-muted">{String(e.batchSchedule ?? '')}</span>
                   </span>
-                  <span className={cn('rounded-full px-2.5 py-1 text-xs font-bold', STATUS[String(e.paymentStatus)] ?? 'bg-fg/10')}>
+                  <span className={cn('rounded-md px-2.5 py-1 text-[11px] font-bold tracking-wider uppercase', STATUS[String(e.paymentStatus)] ?? 'bg-surface-2')}>
                     {STATUS_LABEL[String(e.paymentStatus)] ? t(STATUS_LABEL[String(e.paymentStatus)]) : String(e.paymentStatus ?? '')}
                   </span>
                 </li>
@@ -182,19 +181,19 @@ export function Dashboard() {
         </section>
 
         {/* Quiz history */}
-        <section className="rounded-[24px] border border-line bg-surface p-6">
+        <section className="card p-6">
           <div className="flex items-center justify-between">
             <h2 className="font-display flex items-center gap-2 text-xl font-semibold">
               <ClipboardCheck size={18} className="text-rouge" /> {t({ en: 'Quiz history', bn: 'কুইজ হিস্ট্রি' })}
             </h2>
             {best != null && (
-              <span className="text-sm text-muted">
-                {t({ en: 'Best', bn: 'সেরা' })}: {num(best, t.locale)}%
+              <span className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">
+                {t({ en: 'Best', bn: 'সেরা' })}: <span className="font-display text-base tracking-normal text-fg">{num(best, t.locale)}%</span>
               </span>
             )}
           </div>
           {attempts.length === 0 ? (
-            <div className="mt-4 rounded-2xl border border-dashed border-line p-6 text-center text-sm text-muted">
+            <div className="mt-4 rounded-xl bg-surface-2 p-6 text-center text-sm text-muted">
               <Link href="/quiz/placement-test" className="font-semibold text-bleu hover:underline">
                 {t({ en: 'Take the free level test', bn: 'ফ্রি লেভেল টেস্ট দিন' })}
               </Link>
@@ -215,7 +214,7 @@ export function Dashboard() {
 
       <aside className="flex flex-col gap-6">
         {/* Profile edit */}
-        <section className="rounded-[24px] border border-line bg-surface p-6">
+        <section className="card accent-top p-6">
           <h2 className="font-display text-xl font-semibold">{t({ en: 'My profile', bn: 'আমার প্রোফাইল' })}</h2>
           <form
             className="mt-4 flex flex-col gap-3"
@@ -278,10 +277,10 @@ export function Dashboard() {
           </form>
         </section>
 
-        <Link href="/crs-calculator" className="flex items-center gap-3 rounded-[24px] bg-maple p-5 text-white">
-          <Sparkles size={20} />
+        <Link href="/crs-calculator" className="flex items-center gap-4 rounded-[var(--radius)] bg-ink p-5 text-white transition hover:bg-ink-2">
+          <Sparkles size={20} className="text-rouge" />
           <span className="flex-1">
-            <span className="block text-sm text-white/80">CRS</span>
+            <span className="block text-[11px] font-bold tracking-[0.14em] text-white/60 uppercase">CRS</span>
             <span className="font-display text-2xl font-semibold">
               {profile?.crsScore != null ? num(profile.crsScore, t.locale) : t({ en: 'Calculate', bn: 'হিসাব করুন' })}
             </span>
@@ -289,13 +288,13 @@ export function Dashboard() {
         </Link>
 
         {news.length > 0 && (
-          <section className="rounded-[24px] border border-line bg-surface p-6">
+          <section className="card p-6">
             <h2 className="font-display flex items-center gap-2 text-xl font-semibold">
               <Megaphone size={18} className="text-rouge" /> {t({ en: 'Announcements', bn: 'ঘোষণা' })}
             </h2>
-            <ul className="mt-3 flex flex-col gap-3">
+            <ul className="mt-2 flex flex-col">
               {news.map((n) => (
-                <li key={n.id} className="rounded-xl bg-surface-2/60 p-3">
+                <li key={n.id} className="hairline py-3 first:border-t-0">
                   <p className="text-sm font-bold">{String((t.locale === 'bn' && n.banglaTitle) || n.title)}</p>
                   <p className="mt-1 text-sm text-muted">{String((t.locale === 'bn' && n.banglaContent) || n.content || '')}</p>
                 </li>

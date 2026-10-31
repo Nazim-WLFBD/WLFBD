@@ -18,21 +18,25 @@ export default async function NotFound() {
   // not-found has no route params, so the locale comes from the request context
   const locale = (await getLocale()) as Locale;
   return (
-    <section className="relative flex min-h-[80svh] items-center overflow-hidden bg-ink pt-24 text-white">
-      <div className="dots pointer-events-none absolute inset-0 opacity-25" />
-      <div className="container-x relative">
-        <p className="font-mono text-sm tracking-[0.3em] text-gold">GATE 404 · VOL ANNULÉ</p>
-        <h1 className="font-display mt-4 text-[clamp(3rem,9vw,7rem)] leading-none font-semibold">
-          {copy.oops[locale]} <span className="text-rouge italic">{copy.notFound[locale]}</span>
-        </h1>
-        <p className="mt-5 max-w-lg text-lg text-white/65">{copy.body[locale]}</p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/" className={btn('rouge', 'lg')}>
-            {copy.home[locale]}
-          </Link>
-          <Link href="/courses" className={btn('ghost-light', 'lg')}>
-            {copy.courses[locale]}
-          </Link>
+    <section className="relative flex min-h-[80svh] items-center bg-bg pt-28 pb-16 text-fg">
+      <div className="container-x">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="eyebrow justify-center text-rouge">GATE 404 · VOL ANNULÉ</p>
+          <p className="font-display mt-6 text-[clamp(6rem,22vw,13rem)] leading-[0.85] font-semibold text-fg tabular-nums">
+            4<span className="text-rouge">0</span>4
+          </p>
+          <h1 className="font-display mt-6 text-[clamp(1.75rem,4.5vw,2.75rem)] leading-tight font-semibold text-balance">
+            {copy.oops[locale]} <span className="text-muted italic">{copy.notFound[locale]}</span>
+          </h1>
+          <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-muted">{copy.body[locale]}</p>
+          <div className="hairline mx-auto mt-8 flex max-w-md flex-wrap justify-center gap-3 pt-8">
+            <Link href="/" className={btn('rouge', 'lg')}>
+              {copy.home[locale]}
+            </Link>
+            <Link href="/courses" className={btn('ghost', 'lg')}>
+              {copy.courses[locale]}
+            </Link>
+          </div>
         </div>
       </div>
     </section>

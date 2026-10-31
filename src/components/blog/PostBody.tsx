@@ -6,9 +6,9 @@ import { cn } from '@/lib/utils';
 import { Inline, isInternalPath } from './Inline';
 
 const TONES = {
-  info: { box: 'border-bleu bg-bleu/[0.07]', icon: Info, iconCls: 'text-bleu' },
-  tip: { box: 'border-mint bg-mint/[0.08]', icon: Lightbulb, iconCls: 'text-mint' },
-  warn: { box: 'border-gold bg-gold/[0.12]', icon: TriangleAlert, iconCls: 'text-[#9a6a00] dark:text-gold' },
+  info: { box: 'border-bleu bg-blue-soft', icon: Info, iconCls: 'text-bleu' },
+  tip: { box: 'border-mint bg-surface-2', icon: Lightbulb, iconCls: 'text-mint' },
+  warn: { box: 'border-rouge bg-red-soft', icon: TriangleAlert, iconCls: 'text-rouge' },
 } as const;
 
 /** Renders a post body (typed blocks) with readable article typography. No raw HTML is ever injected. */
@@ -19,13 +19,15 @@ export function PostBody({ blocks, locale }: { blocks: BlogBlock[]; locale: stri
   let h2 = 0;
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex max-w-[68ch] flex-col gap-5">
       {blocks.map((b, i) => {
         switch (b.type) {
           case 'h2': {
             const id = headingId(h2++);
+            const n = String(h2).padStart(2, '0');
             return (
-              <h2 key={i} id={id} className={cn('mt-8 scroll-mt-28 text-[1.75rem] leading-tight text-balance text-fg md:text-[2rem]', heading)}>
+              <h2 key={i} id={id} className={cn('hairline mt-8 scroll-mt-28 pt-6 text-[1.75rem] leading-tight text-balance text-fg md:text-[2rem]', heading)}>
+                <span aria-hidden className="section-num mr-3 align-middle text-rouge">{n}</span>
                 <Inline text={b.text} />
               </h2>
             );
@@ -51,7 +53,7 @@ export function PostBody({ blocks, locale }: { blocks: BlogBlock[]; locale: stri
                 className={cn(
                   copy,
                   'flex flex-col gap-2 pl-6 marker:font-semibold',
-                  b.type === 'ul' ? 'list-disc marker:text-rouge' : 'list-decimal marker:text-bleu',
+                  b.type === 'ul' ? 'list-disc marker:text-rouge' : 'list-decimal marker:font-display marker:text-rouge',
                 )}
               >
                 {b.items.map((item, j) => (
@@ -66,10 +68,10 @@ export function PostBody({ blocks, locale }: { blocks: BlogBlock[]; locale: stri
             const tone = TONES[b.tone ?? 'info'];
             const Icon = tone.icon;
             return (
-              <aside key={i} role="note" className={cn('my-2 flex gap-4 rounded-2xl border-l-4 p-5 md:p-6', tone.box)}>
-                <Icon size={22} aria-hidden className={cn('mt-0.5 shrink-0', tone.iconCls)} />
+              <aside key={i} role="note" className={cn('my-2 flex gap-4 rounded-r-xl border-l-2 p-5 md:p-6', tone.box)}>
+                <Icon size={20} aria-hidden className={cn('mt-0.5 shrink-0', tone.iconCls)} />
                 <div className="min-w-0">
-                  {b.title && <p className={cn('mb-1.5 text-[1.05rem] text-fg', bn ? 'font-bangla font-bold' : 'font-bold')}>{b.title}</p>}
+                  {b.title && <p className={cn('mb-1.5 text-[1.1rem] text-fg', bn ? 'font-bangla font-bold' : 'font-display font-semibold')}>{b.title}</p>}
                   <p className={cn(copy, 'text-base')}>
                     <Inline text={b.text} />
                   </p>
@@ -80,8 +82,7 @@ export function PostBody({ blocks, locale }: { blocks: BlogBlock[]; locale: stri
           case 'cta':
             return (
               <div key={i} className="relative mt-8 overflow-hidden rounded-[var(--radius)] bg-ink p-7 text-white md:p-9 dark:ring-1 dark:ring-white/10">
-                <div aria-hidden className="dots pointer-events-none absolute inset-0 opacity-20" />
-                <div aria-hidden className="tricolor absolute inset-x-0 top-0 h-1" />
+                <div aria-hidden className="absolute inset-x-0 top-0 h-[3px] bg-rouge" />
                 <div className="relative">
                   <p className={cn('text-2xl leading-tight text-balance md:text-[1.75rem]', bn ? 'font-bangla font-bold' : 'font-display font-semibold')}>
                     {b.title}
@@ -91,7 +92,7 @@ export function PostBody({ blocks, locale }: { blocks: BlogBlock[]; locale: stri
                   </p>
                   <div className="mt-6 flex flex-wrap gap-3">
                     {isInternalPath(b.href) && (
-                      <Link href={b.href} className={btn('gold', 'md')}>
+                      <Link href={b.href} className={btn('rouge', 'md')}>
                         {b.label}
                         <ArrowRight size={16} aria-hidden className="transition group-hover:translate-x-0.5" />
                       </Link>

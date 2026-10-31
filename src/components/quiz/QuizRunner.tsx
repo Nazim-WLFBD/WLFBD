@@ -136,7 +136,7 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
 
   if (!questions.length) {
     return (
-      <div className="mx-auto max-w-lg rounded-[28px] border border-dashed border-line bg-surface p-10 text-center">
+      <div className="card mx-auto max-w-lg p-10 text-center">
         <p className="font-display text-2xl font-semibold">{t({ en: 'This test is coming soon', bn: 'এই টেস্টটি শীঘ্রই আসছে' })}</p>
         <Link href="/quiz" className={btn('ink', 'md', 'mt-6')}>
           {t({ en: 'See available tests', bn: 'চলমান টেস্টগুলো দেখুন' })}
@@ -149,24 +149,24 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
   if (phase === 'intro') {
     const resuming = Object.keys(answers).length > 0;
     return (
-      <div className="mx-auto max-w-2xl rounded-[28px] border border-line bg-surface p-7 md:p-10">
-        <span className="rounded-full bg-surface-2 px-3 py-1 text-[11px] font-bold tracking-wider">{t.locale === 'bn' && quiz.banglaBadgeTag ? quiz.banglaBadgeTag : quiz.badgeTag}</span>
+      <div className="card accent-top mx-auto max-w-2xl p-7 md:p-10">
+        <span className="eyebrow text-rouge">{t.locale === 'bn' && quiz.banglaBadgeTag ? quiz.banglaBadgeTag : quiz.badgeTag}</span>
         <h2 className="font-display mt-4 text-3xl font-semibold">{t.locale === 'bn' ? quiz.banglaTitle : quiz.title}</h2>
         <p className="mt-3 leading-relaxed text-muted">{t.locale === 'bn' ? quiz.banglaDescription : quiz.description}</p>
-        <div className="mt-6 grid grid-cols-2 gap-3">
-          <div className="rounded-2xl bg-surface-2/60 p-4">
-            <p className="text-[10px] font-bold tracking-widest text-muted uppercase">{t({ en: 'Questions', bn: 'প্রশ্ন' })}</p>
-            <p className="font-display text-3xl font-semibold">{num(questions.length, t.locale)}</p>
+        <dl className="mt-6 grid grid-cols-2 border-y border-line py-5">
+          <div className="pr-4">
+            <dt className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">{t({ en: 'Questions', bn: 'প্রশ্ন' })}</dt>
+            <dd className="font-display mt-1 text-3xl font-semibold">{num(questions.length, t.locale)}</dd>
           </div>
-          <div className="rounded-2xl bg-surface-2/60 p-4">
-            <p className="text-[10px] font-bold tracking-widest text-muted uppercase">{t({ en: 'Time', bn: 'সময়' })}</p>
-            <p className="font-display text-3xl font-semibold">
-              {num(quiz.durationMinutes, t.locale)} {t({ en: 'min', bn: 'মিনিট' })}
-            </p>
+          <div className="border-l border-line pl-4">
+            <dt className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">{t({ en: 'Time', bn: 'সময়' })}</dt>
+            <dd className="font-display mt-1 text-3xl font-semibold">
+              {num(quiz.durationMinutes, t.locale)} <span className="text-lg text-muted">{t({ en: 'min', bn: 'মিনিট' })}</span>
+            </dd>
           </div>
-        </div>
+        </dl>
         {!user && (
-          <p className="mt-5 rounded-2xl bg-bleu/10 p-4 text-sm">
+          <p className="mt-5 rounded-xl bg-blue-soft p-4 text-sm leading-relaxed">
             {t({ en: 'Tip: ', bn: 'টিপস: ' })}
             <Link href={`/login?next=${encodeURIComponent(pathname)}`} className="font-bold text-bleu underline">
               {t({ en: 'log in', bn: 'লগইন করুন' })}
@@ -208,31 +208,44 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
     const r = rate(quiz, result);
     return (
       <div className="flex flex-col gap-6">
-        <div className="overflow-hidden rounded-[28px] bg-ink text-white">
-          <div className="grid gap-6 p-7 md:grid-cols-[auto_1fr] md:p-10">
-            <div className="flex h-36 w-36 flex-col items-center justify-center rounded-full border-4 border-gold">
-              <span className="font-display text-5xl font-semibold">{num(result.percentage, t.locale)}%</span>
-              <span className="text-xs text-white/60">
-                {num(result.totalScore, t.locale)}/{num(result.maxScore, t.locale)}
-              </span>
+        {/* Report card */}
+        <div className="card accent-top overflow-hidden">
+          <div className="grid gap-8 p-7 md:grid-cols-[auto_1fr] md:gap-12 md:p-10">
+            <div className="md:border-r md:border-line md:pr-12">
+              <p className="eyebrow text-rouge">{t({ en: 'Score', bn: 'স্কোর' })}</p>
+              <p className="font-display mt-3 text-[clamp(3.5rem,8vw,5.5rem)] leading-none font-semibold text-fg tabular-nums">
+                {num(result.percentage, t.locale)}<span className="text-3xl text-muted">%</span>
+              </p>
+              <p className="mt-2 text-sm text-muted">
+                {num(result.totalScore, t.locale)} / {num(result.maxScore, t.locale)}
+              </p>
             </div>
             <div>
-              <div className="flex gap-1 text-gold">
+              <div className="flex gap-1 text-rouge">
                 {Array.from({ length: 5 }).map((_, k) => (
-                  <Star key={k} size={20} fill={k < r.stars ? 'currentColor' : 'none'} className={k < r.stars ? '' : 'text-white/25'} />
+                  <Star key={k} size={18} fill={k < r.stars ? 'currentColor' : 'none'} className={k < r.stars ? '' : 'text-line'} />
                 ))}
               </div>
-              <p className="font-display mt-2 text-3xl font-semibold">{t(r.label)}</p>
-              {r.nclc && <p className="text-sm text-gold">{t(r.nclc)}</p>}
-              <p className="mt-3 max-w-2xl text-white/75">{t.locale === 'bn' ? r.banglaFeedback : r.feedback}</p>
-              <div className="mt-5 flex flex-wrap gap-2 text-sm">
-                <span className="rounded-full bg-mint/20 px-3 py-1 text-mint">✓ {num(result.correct, t.locale)}</span>
-                <span className="rounded-full bg-rouge/20 px-3 py-1 text-[#ff8a98]">✗ {num(result.wrong, t.locale)}</span>
-                <span className="rounded-full bg-white/10 px-3 py-1">CEFR ≈ {t(cefrLabel(result.estimatedCEFR))}</span>
-              </div>
+              <p className="font-display mt-3 text-3xl font-semibold">{t(r.label)}</p>
+              {r.nclc && <p className="mt-1 text-sm font-semibold text-rouge">{t(r.nclc)}</p>}
+              <p className="mt-3 max-w-2xl leading-relaxed text-muted">{t.locale === 'bn' ? r.banglaFeedback : r.feedback}</p>
+              <dl className="hairline mt-6 grid grid-cols-3 pt-4 text-sm">
+                <div>
+                  <dt className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">{t({ en: 'Correct', bn: 'সঠিক' })}</dt>
+                  <dd className="font-display mt-1 text-xl font-semibold text-mint">{num(result.correct, t.locale)}</dd>
+                </div>
+                <div className="border-l border-line pl-4">
+                  <dt className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">{t({ en: 'Wrong', bn: 'ভুল' })}</dt>
+                  <dd className="font-display mt-1 text-xl font-semibold text-rouge">{num(result.wrong, t.locale)}</dd>
+                </div>
+                <div className="border-l border-line pl-4">
+                  <dt className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">CEFR</dt>
+                  <dd className="font-display mt-1 text-xl font-semibold">≈ {t(cefrLabel(result.estimatedCEFR))}</dd>
+                </div>
+              </dl>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2 border-t border-white/10 p-6">
+          <div className="flex flex-wrap gap-2 border-t border-line bg-surface-2/60 p-6">
             <Link href={{ pathname: '/enroll', query: { course: result.recommendedCourseId } }} className={btn('rouge', 'md')}>
               {t({ en: 'Join', bn: 'ভর্তি হোন:' })} {courseTitle(result.recommendedCourseId, t.locale).split(' - ')[0]} <ArrowRight size={16} />
             </Link>
@@ -244,20 +257,20 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
               )}
               target="_blank"
               rel="noopener"
-              className={btn('ghost-light', 'md')}
+              className={btn('ghost', 'md')}
             >
               <WhatsAppGlyph size={17} /> {t({ en: 'Free consultation', bn: 'ফ্রি পরামর্শ' })}
             </a>
-            <Link href="/quiz" className={btn('ghost-light', 'md')}>
+            <Link href="/quiz" className={btn('ghost', 'md')}>
               {t({ en: 'More tests', bn: 'আরও টেস্ট' })}
             </Link>
           </div>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[1fr_1.4fr]">
-          <section className="rounded-[24px] border border-line bg-surface p-6">
+          <section className="card p-6">
             <h3 className="font-display text-xl font-semibold">{t({ en: 'By skill', bn: 'দক্ষতা অনুযায়ী' })}</h3>
-            <div className="mt-4 flex flex-col gap-4">
+            <div className="mt-5 flex flex-col gap-4">
               {Object.entries(result.breakdown)
                 .filter(([, b]) => b.max > 0)
                 .map(([k, b]) => {
@@ -270,8 +283,8 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
                           {num(b.score, t.locale)}/{num(b.max, t.locale)}
                         </span>
                       </div>
-                      <div className="mt-1.5 h-2.5 overflow-hidden rounded-full bg-fg/10">
-                        <div className={cn('h-full rounded-full', pct >= 70 ? 'bg-mint' : pct >= 40 ? 'bg-gold' : 'bg-rouge')} style={{ width: `${pct}%` }} />
+                      <div className="mt-1.5 h-1.5 overflow-hidden rounded-sm bg-surface-2">
+                        <div className={cn('h-full', pct >= 70 ? 'bg-mint' : pct >= 40 ? 'bg-gold' : 'bg-rouge')} style={{ width: `${pct}%` }} />
                       </div>
                     </div>
                   );
@@ -293,11 +306,11 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
               })}
             </p>
           </section>
-          <section className="rounded-[24px] border border-line bg-surface p-6">
+          <section className="card p-6">
             <h3 className="font-display text-xl font-semibold">{t({ en: 'Answer review', bn: 'উত্তর পর্যালোচনা' })}</h3>
-            <ol className="mt-4 flex max-h-[560px] flex-col gap-3 overflow-y-auto pr-1">
+            <ol className="mt-4 flex max-h-[560px] flex-col overflow-y-auto pr-1">
               {result.review.map((rv, k) => (
-                <li key={rv.id} className="rounded-2xl bg-surface-2/50 p-4 text-sm">
+                <li key={rv.id} className="hairline py-4 text-sm first:border-t-0">
                   <p className="flex gap-2 font-semibold">
                     {rv.ok ? <CheckCircle2 size={17} className="shrink-0 text-mint" /> : <XCircle size={17} className="shrink-0 text-rouge" />}
                     {num(k + 1, t.locale)}. {rv.prompt}
@@ -327,15 +340,15 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
   if (phase === 'review') {
     const missing = questions.length - answered;
     return (
-      <div className="mx-auto max-w-2xl rounded-[28px] border border-line bg-surface p-7">
+      <div className="card accent-top mx-auto max-w-2xl p-7">
         <h2 className="font-display text-2xl font-semibold">{t({ en: 'Ready to submit?', bn: 'জমা দিতে প্রস্তুত?' })}</h2>
         {missing > 0 && (
-          <p className="mt-3 rounded-2xl bg-gold/15 p-4 text-sm">
+          <p className="mt-3 rounded-xl bg-red-soft p-4 text-sm font-medium text-rouge">
             {t({ en: `${missing} question(s) unanswered.`, bn: `${num(missing, 'bn')}টি প্রশ্নের উত্তর দেওয়া হয়নি।` })}
           </p>
         )}
         <Navigator questions={questions} answers={answers} flags={flags} current={-1} onGo={(k) => (setI(k), setPhase('running'))} locale={t.locale} />
-        <div className="mt-6 flex gap-3">
+        <div className="hairline mt-6 flex flex-wrap gap-3 pt-6">
           <button onClick={() => setPhase('running')} className={btn('ghost', 'md')}>
             <ArrowLeft size={16} /> {t({ en: 'Back to questions', bn: 'প্রশ্নে ফিরে যান' })}
           </button>
@@ -355,7 +368,7 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
       {/* Phones/tablets: compact timer that stays visible while scrolling (the sidebar sits below there) */}
       <div
         className={cn(
-          'sticky top-[84px] z-20 flex items-center justify-between rounded-2xl px-4 py-2.5 text-white shadow-lg lg:hidden',
+          'sticky top-[84px] z-20 flex items-center justify-between rounded-xl px-4 py-2.5 text-white shadow-[var(--shadow-card)] lg:hidden',
           left < 60 ? 'bg-rouge' : 'bg-ink',
         )}
       >
@@ -364,19 +377,19 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
         </span>
         <span className="font-display text-xl font-semibold tabular-nums">{fmt(left)}</span>
       </div>
-      <div className="rounded-[28px] border border-line bg-surface p-5 md:p-8">
-        <div className="flex items-center justify-between gap-3 text-sm">
-          <span className="font-bold text-muted">
-            {t({ en: 'Question', bn: 'প্রশ্ন' })} {num(i + 1, t.locale)} / {num(questions.length, t.locale)}
+      <div className="card p-5 md:p-8">
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">
+            {t({ en: 'Question', bn: 'প্রশ্ন' })} <span className="font-display text-base tracking-normal text-fg tabular-nums">{num(i + 1, t.locale)}</span> / {num(questions.length, t.locale)}
           </span>
-          <span className="rounded-full bg-surface-2 px-2.5 py-1 text-xs font-semibold">{t(categoryLabel(q.category))}</span>
+          <span className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">{t(categoryLabel(q.category))}</span>
         </div>
-        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-fg/10">
+        <div className="mt-3 h-[3px] overflow-hidden bg-surface-2">
           <div className="h-full bg-rouge transition-all" style={{ width: `${((i + 1) / questions.length) * 100}%` }} />
         </div>
 
         {q.passage && (
-          <div className="mt-6 max-h-72 overflow-y-auto rounded-2xl bg-surface-2/60 p-5 text-[15px] leading-relaxed whitespace-pre-line">{q.passage}</div>
+          <div className="mt-6 max-h-72 overflow-y-auto rounded-xl bg-surface-2 p-5 text-[15px] leading-relaxed whitespace-pre-line">{q.passage}</div>
         )}
         {q.type === 'audio-listening' && q.audioText && (
           <button onClick={() => speak(q.audioText!)} className={btn('ink', 'sm', 'mt-6')}>
@@ -385,7 +398,7 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
         )}
         <h2 className="font-display mt-6 text-2xl leading-snug font-semibold">{q.prompt}</h2>
         {t.locale === 'bn' && q.banglaPrompt && <p className="font-bangla mt-1 text-muted">{q.banglaPrompt}</p>}
-        {q.frenchContext && <p className="mt-2 text-muted italic">{q.frenchContext}</p>}
+        {q.frenchContext && <p className="font-display mt-2 text-lg text-muted italic">{q.frenchContext}</p>}
 
         <div className="mt-6">
           {q.type === 'fill-blank' ? (
@@ -393,19 +406,19 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
               value={String(given ?? '')}
               onChange={(e) => setAnswer(e.target.value)}
               placeholder={t({ en: 'Type your answer…', bn: 'উত্তর লিখুন…' })}
-              className="w-full rounded-2xl border border-line bg-surface px-4 py-3.5 outline-none focus:border-fg/50"
+              className="w-full rounded-xl border border-line bg-surface px-4 py-3 outline-none transition focus:border-bleu focus:ring-2 focus:ring-bleu/20"
             />
           ) : q.type === 'matching' && q.matchPairs ? (
             <div className="flex flex-col gap-2">
               {q.matchPairs.map((p) => {
                 const g = (given as Record<string, string>) ?? {};
                 return (
-                  <label key={p.id} className="flex items-center gap-3 rounded-2xl border border-line p-3">
+                  <label key={p.id} className="flex items-center gap-3 rounded-xl border border-line bg-surface p-3">
                     <span className="flex-1 font-semibold">{p.french}</span>
                     <select
                       value={g[p.id] ?? ''}
                       onChange={(e) => setAnswer({ ...g, [p.id]: e.target.value })}
-                      className="rounded-xl border border-line bg-surface px-3 py-2"
+                      className="min-h-10 rounded-xl border border-line bg-surface px-3 py-2 outline-none focus:border-bleu focus:ring-2 focus:ring-bleu/20"
                     >
                       <option value="">—</option>
                       {q.matchPairs!.map((x) => (
@@ -422,22 +435,30 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
                 <button
                   key={o}
                   onClick={() => setAnswer(o)}
+                  aria-pressed={given === o}
                   className={cn(
-                    'flex items-center gap-3 rounded-2xl border p-4 text-left transition',
-                    given === o ? 'border-fg bg-fg/[.05] ring-1 ring-fg' : 'border-line hover:border-fg/30',
+                    'flex min-h-12 items-center gap-3 rounded-xl border bg-surface p-4 text-left transition',
+                    given === o ? 'border-ink ring-1 ring-ink dark:border-white dark:ring-white' : 'border-line hover:border-fg/30',
                   )}
                 >
-                  <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold', given === o ? 'bg-ink text-white dark:bg-white dark:text-ink' : 'bg-fg/10')}>
-                    {String.fromCharCode(65 + k)}
+                  {/* Radio-style marker */}
+                  <span
+                    className={cn(
+                      'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition',
+                      given === o ? 'border-rouge' : 'border-line',
+                    )}
+                  >
+                    {given === o && <span className="h-2.5 w-2.5 rounded-full bg-rouge" />}
                   </span>
-                  {o}
+                  <span className="section-num w-4 shrink-0 text-xs">{String.fromCharCode(65 + k)}</span>
+                  <span className="flex-1">{o}</span>
                 </button>
               ))}
             </div>
           )}
         </div>
 
-        <div className="mt-8 flex items-center justify-between gap-2">
+        <div className="hairline mt-8 flex items-center justify-between gap-2 pt-6">
           <button
             onClick={() => setI((k) => Math.max(0, k - 1))}
             disabled={i === 0}
@@ -449,7 +470,7 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
           <button
             onClick={() => setFlags((f) => (f.includes(q.id) ? f.filter((x) => x !== q.id) : [...f, q.id]))}
             aria-pressed={flags.includes(q.id)}
-            className={cn('flex h-11 items-center gap-1.5 rounded-full px-3 text-sm font-semibold', flags.includes(q.id) ? 'text-gold' : 'text-muted')}
+            className={cn('flex h-11 items-center gap-1.5 rounded-xl px-3 text-sm font-semibold', flags.includes(q.id) ? 'text-rouge' : 'text-muted')}
           >
             <Flag size={15} fill={flags.includes(q.id) ? 'currentColor' : 'none'} /> {t({ en: 'Flag', bn: 'চিহ্নিত' })}
           </button>
@@ -466,15 +487,15 @@ export function QuizRunner({ quiz }: { quiz: QuizCategory }) {
       </div>
 
       <aside className="flex flex-col gap-4 lg:sticky lg:top-28 lg:self-start">
-        <div className={cn('hidden items-center justify-between rounded-[22px] p-5 text-white lg:flex', left < 60 ? 'bg-rouge' : 'bg-ink')}>
-          <span className="flex items-center gap-2 text-sm font-semibold">
-            <Clock size={17} /> {t({ en: 'Time left', bn: 'বাকি সময়' })}
+        <div className={cn('hidden items-center justify-between rounded-[var(--radius)] p-5 text-white lg:flex', left < 60 ? 'bg-rouge' : 'bg-ink')}>
+          <span className="flex items-center gap-2 text-[11px] font-bold tracking-[0.14em] uppercase">
+            <Clock size={15} /> {t({ en: 'Time left', bn: 'বাকি সময়' })}
           </span>
           <span className="font-display text-3xl font-semibold tabular-nums">{fmt(left)}</span>
         </div>
-        <div className="rounded-[22px] border border-line bg-surface p-5">
-          <p className="text-sm font-bold">
-            {num(answered, t.locale)} / {num(questions.length, t.locale)} {t({ en: 'answered', bn: 'উত্তর দেওয়া হয়েছে' })}
+        <div className="card p-5">
+          <p className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">
+            <span className="font-display text-base tracking-normal text-fg tabular-nums">{num(answered, t.locale)}</span> / {num(questions.length, t.locale)} {t({ en: 'answered', bn: 'উত্তর দেওয়া হয়েছে' })}
           </p>
           <Navigator questions={questions} answers={answers} flags={flags} current={i} onGo={setI} locale={t.locale} />
           <button onClick={() => setPhase('review')} className={btn('rouge', 'sm', 'mt-4 w-full')}>
@@ -512,12 +533,16 @@ function Navigator({
             onClick={() => onGo(k)}
             aria-label={locale === 'bn' ? `প্রশ্ন ${num(k + 1, 'bn')}` : `Question ${k + 1}`}
             className={cn(
-              'relative h-8 rounded-lg text-xs font-bold transition',
-              k === current ? 'bg-rouge text-white' : done ? 'bg-ink text-white dark:bg-white/80 dark:text-ink' : 'bg-fg/8 text-muted hover:bg-fg/15',
+              'relative h-10 rounded-md border text-xs font-bold transition tabular-nums',
+              k === current
+                ? 'border-rouge bg-rouge text-white'
+                : done
+                  ? 'border-ink bg-ink text-white dark:border-white/80 dark:bg-white/80 dark:text-ink'
+                  : 'border-line bg-surface text-muted hover:border-fg/40',
             )}
           >
             {k + 1}
-            {flags.includes(q.id) && <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-gold" />}
+            {flags.includes(q.id) && <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full border-2 border-surface bg-rouge" />}
           </button>
         );
       })}

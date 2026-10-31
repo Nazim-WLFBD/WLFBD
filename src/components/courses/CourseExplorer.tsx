@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { AnimatePresence, LayoutGroup, motion } from 'motion/react';
-import { ArrowRight, Plane, ShieldCheck, X } from 'lucide-react';
+import { ArrowRight, ShieldCheck, X } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { useT } from '@/i18n/t';
 import { btn } from '@/components/ui/Button';
@@ -30,8 +30,9 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
 
   return (
     <>
+      {/* Underlined text tabs */}
       <div
-        className="no-scrollbar -mx-4 mb-10 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0 [&>button]:shrink-0 [&>button]:whitespace-nowrap"
+        className="no-scrollbar -mx-4 mb-10 flex gap-1 overflow-x-auto border-b border-line px-4 sm:mx-0 sm:px-0 [&>button]:shrink-0 [&>button]:whitespace-nowrap"
         role="tablist"
         aria-label={t({ en: 'Filter courses', bn: 'কোর্স ফিল্টার করুন' })}
       >
@@ -42,14 +43,14 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
             aria-selected={filter === f}
             onClick={() => setFilter(f)}
             className={cn(
-              'relative rounded-full px-5 py-2.5 text-sm font-semibold transition',
-              filter === f ? 'text-white' : 'border border-line text-fg hover:bg-fg/5',
+              'relative -mb-px min-h-11 px-4 pt-2 pb-3 text-sm font-semibold transition',
+              filter === f ? 'text-fg' : 'text-muted hover:text-fg',
             )}
           >
-            {filter === f && (
-              <motion.span layoutId="course-filter" className="absolute inset-0 rounded-full bg-ink dark:bg-bleu" transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }} />
-            )}
             <span className="relative">{t(copy.filters[f])}</span>
+            {filter === f && (
+              <motion.span layoutId="course-filter" className="absolute inset-x-0 bottom-0 h-[2px] bg-rouge" transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }} />
+            )}
           </button>
         ))}
       </div>
@@ -83,57 +84,53 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
 
       {/* Combos */}
       <div id="combos" className="mt-24 scroll-mt-28">
-        <Reveal className="mb-8 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+        <Reveal className="mb-8 flex flex-col justify-between gap-6 border-t border-line pt-5 lg:flex-row lg:items-end">
           <div>
-            <p className="text-[11px] font-bold tracking-[0.2em] text-rouge uppercase">
-              {t(copy.comboTag)} <span className="text-muted normal-case">{t(copy.comboTagSub)}</span>
+            <p className="eyebrow text-rouge">
+              {t(copy.comboTag)} <span className="font-medium tracking-normal text-muted normal-case">{t(copy.comboTagSub)}</span>
             </p>
-            <h3 className="font-display mt-3 text-[clamp(1.8rem,3.4vw,2.6rem)] font-semibold">{t(copy.comboTitle)}</h3>
+            <h3 className="font-display mt-4 text-[clamp(1.8rem,3.4vw,2.6rem)] leading-[1.05] font-semibold">{t(copy.comboTitle)}</h3>
           </div>
-          <p className="flex max-w-md items-start gap-3 rounded-2xl border border-line bg-surface px-4 py-3 text-sm">
-            <ShieldCheck size={18} className="mt-0.5 shrink-0 text-mint" />
+          <p className="flex max-w-md items-start gap-3 rounded-[var(--radius)] border border-line bg-surface px-4 py-3 text-sm">
+            <ShieldCheck size={18} className="mt-0.5 shrink-0 text-rouge" />
             <span>
-              <strong>{t(copy.eligibilityLabel)}</strong> <span className="text-muted">{t(copy.eligibility)}</span>
+              <strong className="font-semibold">{t(copy.eligibilityLabel)}</strong> <span className="text-muted">{t(copy.eligibility)}</span>
             </span>
           </p>
         </Reveal>
         <div className="grid gap-6 lg:grid-cols-2">
           {COMBO_OFFERS.map((combo, i) => (
             <Reveal key={combo.id} delay={i * 0.1}>
-              <article className="relative flex h-full flex-col overflow-hidden rounded-[28px] bg-ink p-7 text-white md:p-8">
-                <div className="dots pointer-events-none absolute inset-0 opacity-20" />
-                <div className="relative flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-gold px-3 py-1 text-[10px] font-extrabold tracking-wider text-ink uppercase">
+              <article className="relative flex h-full flex-col rounded-[var(--radius)] bg-ink p-7 text-white md:p-8">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="rounded-md bg-rouge px-2.5 py-1 text-[10px] font-extrabold tracking-[0.14em] text-white uppercase">
                     {(bn && combo.banglaBadge) || combo.badge || t({ en: 'COMBO', bn: 'কম্বো' })}
                   </span>
                   <span className="text-xs text-white/60">{bn ? combo.eligibilityBangla : combo.eligibility}</span>
                 </div>
-                {/* Connecting flight */}
-                <div className="relative mt-6 flex items-center gap-3">
+                {/* Course sequence */}
+                <ol className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
                   {combo.courses.map((name, idx) => (
-                    <div key={name} className="contents">
-                      {idx > 0 && (
-                        <span className="flex flex-1 items-center">
-                          <span className="h-px flex-1 border-t border-dashed border-white/30" />
-                          <Plane size={16} className="mx-1 text-gold" />
-                          <span className="h-px flex-1 border-t border-dashed border-white/30" />
-                        </span>
-                      )}
-                      <span className="font-display rounded-xl bg-white/8 px-3 py-2 text-lg font-semibold">{name}</span>
-                    </div>
+                    <li key={name} className="flex items-center gap-3">
+                      {idx > 0 && <span aria-hidden className="h-px w-6 bg-white/30" />}
+                      <span className="font-display text-xl font-semibold">
+                        <span className="section-num mr-2 text-white/45">{String(idx + 1).padStart(2, '0')}</span>
+                        {name}
+                      </span>
+                    </li>
                   ))}
-                </div>
-                <h4 className={cn('font-display relative mt-6 text-2xl font-semibold', bn && 'font-bangla')}>
+                </ol>
+                <h4 className={cn('font-display mt-6 text-2xl font-semibold', bn && 'font-bangla')}>
                   {bn ? combo.banglaTitle : combo.title}
                 </h4>
-                <p className={cn('relative text-sm text-white/55', !bn && 'font-bangla')}>{bn ? combo.title : combo.banglaTitle}</p>
-                <p className="relative mt-3 text-sm leading-relaxed text-white/70">
+                <p className={cn('text-sm text-white/55', !bn && 'font-bangla')}>{bn ? combo.title : combo.banglaTitle}</p>
+                <p className="mt-3 text-sm leading-relaxed text-white/70">
                   {(bn && combo.banglaDescription) || combo.description}
                 </p>
-                <div className="relative mt-auto flex flex-wrap items-end justify-between gap-4 pt-7">
+                <div className="mt-auto flex flex-wrap items-end justify-between gap-4 border-t border-white/15 pt-6">
                   <div>
-                    <p className="text-[11px] font-bold tracking-wider text-white/55 uppercase">{t(copy.combinedFee)}</p>
-                    <p className="font-display text-4xl font-semibold text-gold">{taka(combo.combinedFee, t.locale)}</p>
+                    <p className="text-[11px] font-bold tracking-[0.14em] text-white/55 uppercase">{t(copy.combinedFee)}</p>
+                    <p className="font-display mt-1 text-4xl font-semibold text-gold">{taka(combo.combinedFee, t.locale)}</p>
                     {combo.regularValue && (
                       <p className="text-xs text-white/50">
                         {t(copy.regularValue)} <span className="line-through">{taka(combo.regularValue, t.locale)}</span>
@@ -158,7 +155,7 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
             initial={{ y: 120, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 120, opacity: 0 }}
-            className="fixed inset-x-3 bottom-[84px] z-[45] mx-auto max-w-3xl rounded-3xl border border-white/10 bg-ink p-3 text-white shadow-2xl lg:bottom-6"
+            className="fixed inset-x-3 bottom-[84px] z-[45] mx-auto max-w-3xl rounded-[var(--radius)] border border-line bg-surface p-3 text-fg shadow-[var(--shadow-lift)] lg:bottom-6"
           >
             <div className="flex items-center gap-2">
               <div className="flex flex-1 flex-wrap gap-1.5">
@@ -166,16 +163,16 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
                   <button
                     key={c.id}
                     onClick={() => toggleCompare(c.id)}
-                    className="flex items-center gap-1.5 rounded-full bg-white/10 py-1.5 pr-2 pl-3 text-xs font-bold"
+                    className="flex min-h-10 items-center gap-1.5 rounded-lg border border-line bg-surface-2 py-1.5 pr-2 pl-3 text-xs font-bold"
                   >
                     {c.code} <X size={12} />
                   </button>
                 ))}
               </div>
-              <button onClick={() => setCompare([])} className="px-2 text-xs text-white/60 hover:text-white">
+              <button onClick={() => setCompare([])} className="min-h-10 px-2 text-xs font-semibold text-muted hover:text-fg">
                 {t(copy.clear)}
               </button>
-              <button onClick={() => setShowTable((s) => !s)} className={btn('gold', 'sm')} disabled={compare.length < 2}>
+              <button onClick={() => setShowTable((s) => !s)} className={btn('rouge', 'sm')} disabled={compare.length < 2}>
                 {t(copy.compareN)} ({compare.length})
               </button>
             </div>
@@ -187,19 +184,19 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
                   exit={{ height: 0, opacity: 0 }}
                   className="overflow-hidden"
                 >
-                  <div className="mt-3 max-h-[50vh] overflow-auto rounded-2xl bg-white/5">
+                  <div className="mt-3 max-h-[50vh] overflow-auto border-t border-line">
                     <table className="w-full text-left text-sm">
                       <thead>
-                        <tr className="text-[10px] tracking-widest text-white/50 uppercase">
+                        <tr className="text-[10px] tracking-widest text-muted uppercase">
                           <th className="p-3" />
                           {compared.map((c) => (
-                            <th key={c.id} className="font-display p-3 text-base font-semibold tracking-normal text-white normal-case">
+                            <th key={c.id} className="font-display p-3 text-base font-semibold tracking-normal text-fg normal-case">
                               {courseText(c, t.locale).shortTitle}
                             </th>
                           ))}
                         </tr>
                       </thead>
-                      <tbody className="[&_td]:border-t [&_td]:border-white/10 [&_td]:p-3 [&_th]:border-t [&_th]:border-white/10 [&_th]:p-3">
+                      <tbody className="[&_td]:border-t [&_td]:border-line [&_td]:p-3 [&_th]:border-t [&_th]:border-line [&_th]:p-3">
                         {(
                           [
                             [t(copy.target), (c) => courseText(c, t.locale).targetClb ?? c.cefrLevel],
@@ -210,9 +207,9 @@ export function CourseExplorer({ notchClass = 'bg-bg' }: { notchClass?: string }
                           ] as [string, (c: (typeof compared)[number]) => string][]
                         ).map(([label, get]) => (
                           <tr key={label}>
-                            <th className="text-[11px] font-bold tracking-wider whitespace-nowrap text-white/50 uppercase">{label}</th>
+                            <th className="text-[11px] font-bold tracking-wider whitespace-nowrap text-muted uppercase">{label}</th>
                             {compared.map((c) => (
-                              <td key={c.id} className="align-top text-white/85">
+                              <td key={c.id} className="align-top text-fg/85">
                                 {get(c)}
                               </td>
                             ))}

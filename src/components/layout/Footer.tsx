@@ -39,19 +39,17 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden bg-ink pb-28 text-white lg:pb-0">
-      <span className="tricolor absolute inset-x-0 top-0 h-1" />
-
+    <footer className="relative overflow-hidden border-t-[3px] border-rouge bg-ink pb-28 text-white lg:pb-0">
       {/* Closing CTA */}
       <div className="container-x relative pt-20 pb-16">
-        <div className="dots pointer-events-none absolute inset-0 opacity-40 [mask-image:radial-gradient(ellipse_at_top,#000,transparent_70%)]" />
         <div className="relative flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
           <div>
-            <p className="font-bangla mb-4 text-gold">{BRAND_TAGLINE_BANGLA}</p>
+            <p className="eyebrow mb-5 text-[#ffb3ab]">{t({ en: 'Admissions open', bn: 'ভর্তি চলছে' })}</p>
             <h2 className="font-display max-w-2xl text-[clamp(2.2rem,5.5vw,4.4rem)] leading-[1] font-semibold text-balance">
               {t(footer.ctaTitle)}
             </h2>
             <p className="font-display mt-4 text-xl text-white/60 italic">{t(footer.ctaSub)}</p>
+            <p className="font-bangla mt-3 text-sm text-white/50">{BRAND_TAGLINE_BANGLA}</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href="/enroll" className={btn('rouge', 'lg')}>
@@ -78,7 +76,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener"
                 aria-label={s.label}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/7 text-white/80 transition hover:bg-gold hover:text-ink"
+                className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/15 text-white/80 transition hover:border-rouge hover:bg-rouge hover:text-white"
               >
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden>
                   <path d={s.path} />
@@ -128,7 +126,7 @@ export function Footer() {
 function FooterCol({ title, children, className }: { title: string; children: React.ReactNode; className?: string }) {
   return (
     <div className={className}>
-      <h3 className="mb-5 text-[11px] font-bold tracking-[0.2em] text-gold uppercase">{title}</h3>
+      <h3 className="eyebrow mb-5 text-[#ffb3ab]">{title}</h3>
       <div className="flex flex-col gap-1 text-sm [&_.footer-link]:py-1.5 [&_.footer-link]:text-white/65 [&_.footer-link]:transition [&_.footer-link:hover]:text-white">
         {children}
       </div>

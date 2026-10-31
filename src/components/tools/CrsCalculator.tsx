@@ -6,7 +6,6 @@ import { AlertCircle, ArrowRight, Calculator } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { useT } from '@/i18n/t';
 import { btn } from '@/components/ui/Button';
-import { MapleLeaf } from '@/components/ui/MapleLeaf';
 import { calculateCrs, FRENCH_BONUS, type Education, type EnglishLevel } from '@/lib/crs';
 import { cn, num } from '@/lib/utils';
 import type { L } from '@/i18n/t';
@@ -76,21 +75,22 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
     { l: t(copy.frL), v: r.french, c: 'bg-maple' },
   ];
 
-  const field = 'w-full rounded-2xl border border-line bg-surface px-4 py-3.5 text-[15px] outline-none focus:border-fg/40';
+  const field = 'w-full rounded-xl border border-line bg-surface px-4 py-3 text-[15px] outline-none transition focus:border-bleu focus:ring-2 focus:ring-bleu/20';
+  const label = 'mb-2 block text-[11px] font-bold tracking-[0.14em] text-muted uppercase';
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1.05fr]">
       {/* Inputs */}
-      <div className="rounded-[28px] border border-line bg-surface p-6 md:p-8">
-        <p className="flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] text-rouge">
-          <Calculator size={15} /> {t(copy.tool)}
+      <div className="card accent-top p-6 md:p-8">
+        <p className="eyebrow text-rouge">
+          <Calculator size={14} /> {t(copy.tool)}
         </p>
-        <h2 className="font-display mt-3 text-3xl font-semibold">{t(copy.title)}</h2>
+        <h2 className="font-display mt-4 text-3xl font-semibold">{t(copy.title)}</h2>
 
         <div className="mt-7 flex flex-col gap-6">
           <label className="block">
-            <span className="mb-3 flex justify-between font-bold">
-              {t(copy.age)} <span className="font-display text-2xl text-rouge">{num(age, t.locale)}</span>
+            <span className="mb-3 flex items-end justify-between">
+              <span className={cn(label, 'mb-0')}>{t(copy.age)}</span> <span className="font-display text-3xl font-semibold text-fg tabular-nums">{num(age, t.locale)}</span>
             </span>
             <input
               type="range"
@@ -106,7 +106,7 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
             </span>
           </label>
           <label className="block">
-            <span className="mb-2 block font-bold">{t(copy.education)}</span>
+            <span className={label}>{t(copy.education)}</span>
             <select value={education} onChange={(e) => setEducation(e.target.value as Education)} className={field}>
               {EDUCATION.map((o) => (
                 <option key={o.v} value={o.v}>
@@ -116,7 +116,7 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
             </select>
           </label>
           <label className="block">
-            <span className="mb-2 block font-bold">{t(copy.english)}</span>
+            <span className={label}>{t(copy.english)}</span>
             <select value={english} onChange={(e) => setEnglish(e.target.value as EnglishLevel)} className={field}>
               {ENGLISH.map((o) => (
                 <option key={o.v} value={o.v}>
@@ -125,9 +125,9 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
               ))}
             </select>
           </label>
-          <div className="flex items-center justify-between gap-4 rounded-2xl border border-line bg-surface-2/60 p-4">
+          <div className="flex items-center justify-between gap-4 rounded-xl bg-surface-2 p-4">
             <div>
-              <p className="font-bold">{t(copy.french)}</p>
+              <p className="font-semibold">{t(copy.french)}</p>
               <p className="text-xs text-muted">{t(copy.frenchSub)}</p>
             </div>
             <button
@@ -135,8 +135,8 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
               aria-checked={hasFrench}
               onClick={() => setHasFrench(!hasFrench)}
               className={cn(
-                'shrink-0 rounded-full px-4 py-2 text-xs font-extrabold transition',
-                hasFrench ? 'bg-maple text-white shadow-md' : 'bg-fg/10 text-fg',
+                'min-h-10 shrink-0 rounded-lg border px-4 py-2 text-[11px] font-extrabold tracking-wider transition',
+                hasFrench ? 'border-rouge bg-rouge text-white' : 'border-line bg-surface text-muted',
               )}
             >
               {t(hasFrench ? copy.active : copy.disabled)}
@@ -146,17 +146,17 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
       </div>
 
       {/* Result */}
-      <div className="relative flex flex-col overflow-hidden rounded-[28px] bg-ink p-6 text-white md:p-8">
-        <MapleLeaf size={320} className="pointer-events-none absolute -right-16 -bottom-16 text-white/[.04]" />
+      <div className="relative flex flex-col overflow-hidden rounded-[var(--radius)] bg-ink p-6 text-white md:p-8">
+        <span aria-hidden className="absolute inset-x-0 top-0 h-[3px] bg-rouge" />
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-[11px] font-bold tracking-[0.2em] text-white/55">{t(copy.total)}</p>
+          <p className="eyebrow text-white/60">{t(copy.total)}</p>
           <AnimatePresence>
             {hasFrench && (
               <motion.span
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                className="rounded-full bg-maple px-3 py-1 text-[11px] font-extrabold"
+                className="rounded-md bg-rouge px-2.5 py-1 text-[11px] font-extrabold tracking-wider"
               >
                 {t(copy.bonus)}
               </motion.span>
@@ -167,23 +167,24 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
           key={r.total}
           initial={{ opacity: 0.4, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="font-display mt-3 text-[clamp(4.5rem,12vw,7.5rem)] leading-none font-semibold"
+          className="font-display mt-4 flex items-baseline gap-3 text-[clamp(4.5rem,12vw,7.5rem)] leading-none font-semibold tabular-nums"
         >
           {num(r.total, t.locale)}
+          {hasFrench && <span className="font-display text-2xl font-semibold text-[#ffb3ab] italic md:text-3xl">+{num(FRENCH_BONUS, t.locale)}</span>}
         </motion.p>
-        <p className={cn('mt-3 font-semibold', hasFrench ? 'text-mint' : 'text-gold')}>
+        <p className={cn('mt-4 border-t border-white/15 pt-4 font-semibold', hasFrench ? 'text-mint' : 'text-gold')}>
           {hasFrench ? t(copy.good) : t(copy.hard)}
         </p>
         {!hasFrench && (
-          <p className="mt-4 flex items-start gap-2 rounded-2xl bg-rouge/15 p-4 text-sm text-[#ffb3bd]">
+          <p className="mt-4 flex items-start gap-2 rounded-xl border border-white/15 bg-white/5 p-4 text-sm text-[#ffb3ab]">
             <AlertCircle size={16} className="mt-0.5 shrink-0" />
             {copy.boost[t.locale](num(r.total + FRENCH_BONUS, t.locale))}
           </p>
         )}
 
         <div className="mt-7">
-          <p className="mb-3 text-[11px] font-bold tracking-[0.2em] text-white/50 uppercase">{t(copy.breakdown)}</p>
-          <div className="flex h-4 overflow-hidden rounded-full bg-white/10">
+          <p className="mb-3 text-[11px] font-bold tracking-[0.14em] text-white/50 uppercase">{t(copy.breakdown)}</p>
+          <div className="flex h-2 overflow-hidden rounded-sm bg-white/10">
             {bars.map((b) => (
               <span
                 key={b.l}
@@ -192,14 +193,14 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
               />
             ))}
           </div>
-          <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+          <dl className="mt-4 grid grid-cols-2 gap-x-6 text-sm">
             {bars.map((b) => (
-              <div key={b.l} className="flex items-center justify-between gap-2">
+              <div key={b.l} className="flex items-center justify-between gap-2 border-t border-white/10 py-2">
                 <dt className="flex items-center gap-2 text-white/65">
-                  <i className={cn('h-2.5 w-2.5 rounded-full', b.c)} />
+                  <i className={cn('h-2.5 w-2.5 rounded-sm', b.c)} />
                   {b.l}
                 </dt>
-                <dd className="font-bold">{num(b.v, t.locale)}</dd>
+                <dd className="font-display text-base font-semibold tabular-nums">{num(b.v, t.locale)}</dd>
               </div>
             ))}
           </dl>

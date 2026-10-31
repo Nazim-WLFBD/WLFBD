@@ -53,13 +53,14 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
   }, [items, query, cat]);
 
   return (
-    <section id="faq" className="relative bg-bg py-24 md:py-32">
-      <div className="container-x grid gap-12 lg:grid-cols-[0.9fr_1.3fr]">
+    <section id="faq" className="relative bg-surface py-20 md:py-28">
+      <div className="container-x grid gap-12 lg:grid-cols-[0.9fr_1.3fr] lg:gap-16">
+        {/* Sticky heading column */}
         <div className="lg:sticky lg:top-28 lg:self-start">
-          <SectionHeading tag={t(copy.tag)} title={t(copy.title)} intro={t(copy.intro)} className="mb-8 md:mb-8" />
-          <Reveal className="rounded-[var(--radius)] bg-ink p-6 text-white">
-            <p className="font-display text-xl font-semibold">{t(copy.customTitle)}</p>
-            <a href={waLink(waMessage('question', t.locale))} target="_blank" rel="noopener" className={btn('gold', 'md', 'mt-4')}>
+          <SectionHeading tag={t(copy.tag)} title={t(copy.title)} intro={t(copy.intro)} num="11" className="mb-8 md:mb-10" />
+          <Reveal className="card accent-top p-6 md:p-7">
+            <p className="font-display text-xl font-semibold md:text-2xl">{t(copy.customTitle)}</p>
+            <a href={waLink(waMessage('question', t.locale))} target="_blank" rel="noopener" className={btn('rouge', 'md', 'mt-5 w-full sm:w-auto')}>
               <WhatsAppGlyph size={18} />
               {t(copy.customCta)}
             </a>
@@ -68,25 +69,27 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
 
         <div>
           <Reveal>
-            <label className="flex items-center gap-3 rounded-full border border-line bg-surface px-5 focus-within:border-fg/40">
-              <Search size={18} className="text-muted" />
+            <label className="flex items-center gap-3 rounded-lg border border-line bg-bg px-4 focus-within:border-fg/40">
+              <Search size={18} className="shrink-0 text-muted" />
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t(copy.search)}
-                className="h-14 w-full bg-transparent text-[15px] outline-none placeholder:text-muted"
+                className="h-12 w-full min-w-0 bg-transparent text-[15px] outline-none placeholder:text-muted"
                 aria-label={t(copy.search)}
               />
             </label>
-            <div className="mt-4 flex flex-wrap gap-2">
+
+            {/* Category tabs: underlined text, scrollable on phones */}
+            <div className="no-scrollbar mt-5 flex gap-1 overflow-x-auto border-b border-line">
               {copy.categories.map((c) => (
                 <button
                   key={c}
                   onClick={() => setCat(c)}
                   aria-pressed={cat === c}
                   className={cn(
-                    'rounded-full px-4 py-1.5 text-sm font-semibold transition',
-                    cat === c ? 'bg-rouge text-white' : 'border border-line hover:bg-fg/5',
+                    'relative -mb-px shrink-0 border-b-2 px-3 py-3 text-sm font-semibold whitespace-nowrap transition-colors',
+                    cat === c ? 'border-rouge text-fg' : 'border-transparent text-muted hover:text-fg',
                   )}
                 >
                   {t(copy.categoryLabels[c])}
@@ -95,33 +98,31 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
             </div>
           </Reveal>
 
-          <Accordion.Root type="single" collapsible value={open} onValueChange={setOpen} className="mt-8 flex flex-col gap-3">
+          {/* Accordion rows separated by hairlines */}
+          <Accordion.Root type="single" collapsible value={open} onValueChange={setOpen} className="mt-4 border-b border-line">
             {list.map((f) => (
-              <Accordion.Item
-                key={f.id}
-                value={f.id}
-                id={`faq-${f.id}`}
-                className="scroll-mt-28 overflow-hidden rounded-[20px] border border-line bg-surface data-[state=open]:border-fg/25 data-[state=open]:shadow-[var(--shadow-lift)]"
-              >
+              <Accordion.Item key={f.id} value={f.id} id={`faq-${f.id}`} className="hairline scroll-mt-28">
                 <Accordion.Header>
-                  <Accordion.Trigger className="group flex w-full items-center gap-4 p-5 text-left md:p-6">
-                    <span aria-hidden className="hidden rounded-md bg-surface-2 px-2 py-1 text-[10px] font-bold tracking-wider text-muted uppercase sm:inline">
+                  <Accordion.Trigger className="group flex w-full items-center gap-4 py-5 text-left md:gap-6">
+                    <span aria-hidden className="hidden w-24 shrink-0 text-[10px] font-bold tracking-[0.16em] text-muted uppercase sm:inline">
                       {t(copy.categoryLabels[f.category])}
                     </span>
-                    <span className="flex-1 text-[16px] font-bold md:text-[17px]">{t.locale === 'bn' ? f.banglaQuestion : f.question}</span>
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line transition group-data-[state=open]:rotate-45 group-data-[state=open]:bg-ink group-data-[state=open]:text-white">
+                    <span className="font-display flex-1 text-lg leading-snug font-semibold transition-colors group-hover:text-rouge md:text-xl">
+                      {t.locale === 'bn' ? f.banglaQuestion : f.question}
+                    </span>
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-line transition group-data-[state=open]:rotate-45 group-data-[state=open]:border-rouge group-data-[state=open]:bg-rouge group-data-[state=open]:text-white">
                       <Plus size={16} />
                     </span>
                   </Accordion.Trigger>
                 </Accordion.Header>
                 <Accordion.Content className="overflow-hidden data-[state=closed]:animate-[collapse_.25s_ease] data-[state=open]:animate-[expand_.3s_ease]">
-                  <p className="px-5 pb-6 leading-relaxed whitespace-pre-line text-muted md:px-6">
+                  <p className="pb-6 text-[15px] leading-relaxed whitespace-pre-line text-muted sm:pl-28 md:pl-30 md:text-base">
                     {t.locale === 'bn' ? f.banglaAnswer : f.answer}
                   </p>
                 </Accordion.Content>
               </Accordion.Item>
             ))}
-            {list.length === 0 && <p className="rounded-2xl border border-dashed border-line p-8 text-center text-muted">{t(copy.none)}</p>}
+            {list.length === 0 && <p className="hairline py-10 text-center text-muted">{t(copy.none)}</p>}
           </Accordion.Root>
         </div>
       </div>

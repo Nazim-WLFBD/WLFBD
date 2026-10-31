@@ -9,8 +9,10 @@ import { WA_MESSAGES, waLink } from '@/lib/brand';
 export function NotConfigured() {
   const t = useT();
   return (
-    <div className="mx-auto flex max-w-md flex-col items-center rounded-[28px] border border-dashed border-line bg-surface p-8 text-center">
-      <Settings size={28} className="text-gold" />
+    <div className="card accent-top mx-auto flex max-w-md flex-col items-center p-8 text-center">
+      <span className="flex h-11 w-11 items-center justify-center rounded-full bg-red-soft text-rouge">
+        <Settings size={22} />
+      </span>
       <p className="font-display mt-3 text-xl font-semibold">
         {t({ en: 'Student accounts are coming soon', bn: 'স্টুডেন্ট অ্যাকাউন্ট শীঘ্রই আসছে' })}
       </p>

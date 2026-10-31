@@ -59,8 +59,10 @@ function ApprovalNotice({ status }: { status: 'pending' | 'rejected' }) {
       };
   const Icon = pending ? Clock : XCircle;
   return (
-    <div className="mx-auto max-w-lg rounded-[var(--radius)] border border-line bg-surface p-8 text-center" role="status">
-      <Icon size={42} className={pending ? 'mx-auto text-gold' : 'mx-auto text-rouge'} />
+    <div className="card accent-top mx-auto max-w-lg p-8 text-center" role="status">
+      <span className={pending ? 'mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-surface-2 text-muted' : 'mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-soft text-rouge'}>
+        <Icon size={26} />
+      </span>
       <h2 className="font-display mt-4 text-2xl font-semibold">{t(msg.title)}</h2>
       <p className="mt-3 leading-relaxed text-muted">{t(msg.text)}</p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">

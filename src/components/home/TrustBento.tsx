@@ -3,63 +3,63 @@
 import { useT } from '@/i18n/t';
 import { Icon } from '@/components/ui/Icon';
 import { Reveal } from '@/components/ui/Reveal';
+import { SectionHeading } from '@/components/ui/SectionHeading';
 import { trust } from '@/content/home';
 import { cn } from '@/lib/utils';
+
+/* Icon tiles alternate between the two brand tints; red stays the accent, not the default */
+const TILE = ['bg-blue-soft text-bleu', 'bg-red-soft text-rouge', 'bg-blue-soft text-bleu', 'bg-red-soft text-rouge'];
 
 export function TrustBento() {
   const t = useT();
   const [zoom, bangla, standard, recording, batch] = trust.items;
+  const rest = [zoom, standard, recording, batch];
 
   return (
     <section className="relative bg-bg py-20 md:py-28">
       <div className="container-x">
-        <Reveal className="mb-10 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-          <div>
-            <p className="mb-3 text-[11px] font-bold tracking-[0.2em] text-rouge uppercase">{t(trust.eyebrow)}</p>
-            <h2 className="font-display max-w-xl text-[clamp(1.9rem,4vw,3rem)] leading-[1.05] font-semibold">{t(trust.title)}</h2>
-          </div>
-        </Reveal>
+        <SectionHeading tag={t(trust.eyebrow)} title={t(trust.title)} num="01" />
 
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:auto-rows-[minmax(170px,auto)] md:grid-cols-3">
-          {/* Feature tile */}
-          <Reveal className="col-span-2 md:col-span-1 md:row-span-2">
-            <div className="relative flex h-full min-h-[240px] flex-col md:min-h-[300px] justify-between overflow-hidden rounded-[var(--radius)] bg-ink p-7 text-white">
+        {/* 3 × 2 grid: the Bangla card takes the first column on both rows */}
+        <div className="grid gap-4 md:grid-cols-3 md:grid-rows-2">
+          <Reveal className="md:row-span-2">
+            <article className="relative flex h-full min-h-[300px] flex-col justify-between overflow-hidden rounded-[var(--radius)] bg-ink p-7 text-white md:p-8">
               <span
                 aria-hidden
-                className="font-bangla pointer-events-none absolute -right-6 -bottom-10 text-[180px] leading-none font-bold text-white/[.05]"
+                className="font-bangla pointer-events-none absolute -right-5 -bottom-12 text-[200px] leading-none font-bold text-white/[.04] select-none"
               >
                 অ আ
               </span>
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold text-ink">
-                <Icon name={bangla.icon} size={22} />
-              </span>
-              <div className="relative">
-                <p className="font-display text-3xl leading-tight font-semibold">{t(bangla.title)}</p>
-                <p className="mt-2 text-white/65">{t(bangla.desc)}</p>
-                <p className="font-bangla mt-6 text-2xl text-gold">“Bonjour” = “শুভ দিন / হ্যালো”</p>
-              </div>
-            </div>
-          </Reveal>
-          {[zoom, standard, recording, batch].map((item, i) => (
-            <Reveal key={item.title.en} delay={0.06 * (i + 1)}>
-              <div
-                className={cn(
-                  'group flex h-full flex-col justify-between gap-5 rounded-[var(--radius)] border border-line bg-surface p-4 transition sm:p-6 duration-500 hover:-translate-y-1 hover:shadow-[var(--shadow-lift)]',
-                )}
-              >
-                <span
-                  className={cn(
-                    'flex h-11 w-11 items-center justify-center rounded-xl text-white transition group-hover:scale-110',
-                    ['bg-bleu', 'bg-gold !text-ink', 'bg-ink-3', 'bg-rouge'][i],
-                  )}
-                >
-                  <Icon name={item.icon} size={20} />
+              <div className="relative flex items-start justify-between">
+                <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-white/10 text-gold">
+                  <Icon name={bangla.icon} size={22} />
                 </span>
-                <div>
-                  <p className="text-[15px] leading-snug font-bold sm:text-lg">{t(item.title)}</p>
-                  <p className="mt-1 text-sm text-muted">{t(item.desc)}</p>
-                </div>
+                <span className="section-num text-white/40">02</span>
               </div>
+              <div className="relative mt-12">
+                <h3 className="font-display text-2xl leading-tight font-semibold md:text-3xl">{t(bangla.title)}</h3>
+                <p className="mt-3 max-w-xs text-[15px] leading-relaxed text-white/65">{t(bangla.desc)}</p>
+                <p className="font-display mt-8 border-t border-white/15 pt-6 text-xl leading-snug text-gold italic">
+                  “Bonjour” = <span className="font-bangla not-italic">“শুভ দিন / হ্যালো”</span>
+                </p>
+              </div>
+            </article>
+          </Reveal>
+
+          {rest.map((item, i) => (
+            <Reveal key={item.title.en} delay={0.06 * (i + 1)}>
+              <article className="card flex h-full flex-col justify-between gap-8 p-6 transition-shadow duration-300 hover:shadow-[var(--shadow-lift)] md:p-7">
+                <div className="flex items-start justify-between">
+                  <span className={cn('flex h-12 w-12 items-center justify-center rounded-lg', TILE[i])}>
+                    <Icon name={item.icon} size={22} />
+                  </span>
+                  <span className="section-num">{String([1, 3, 4, 5][i]).padStart(2, '0')}</span>
+                </div>
+                <div>
+                  <h3 className="font-display text-xl leading-snug font-semibold">{t(item.title)}</h3>
+                  <p className="mt-2 text-[15px] leading-relaxed text-muted">{t(item.desc)}</p>
+                </div>
+              </article>
             </Reveal>
           ))}
         </div>

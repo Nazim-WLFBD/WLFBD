@@ -41,26 +41,28 @@ export default async function FreeClassPage({ params }: { params: Promise<{ loca
     <>
       <PageHero eyebrow={COPY.eyebrow[locale]} title={COPY.title[locale]} intro={COPY.intro[locale]} crumbs={[{ href: '/', label: locale === 'bn' ? 'হোম' : 'Home' }, { label: COPY.title[locale] }]} />
       <section className="bg-bg py-14 md:py-20">
-        <div className="container-x grid gap-10 lg:grid-cols-[1.25fr_1fr] lg:items-start">
-          <div className="rounded-[var(--radius)] border border-line bg-surface p-6 shadow-[var(--shadow-lift)] md:p-9">
+        <div className="container-x grid gap-10 lg:grid-cols-[1.25fr_1fr] lg:items-start lg:gap-14">
+          <div className="card accent-top p-6 md:p-9">
             <h2 className="font-display mb-6 text-2xl font-semibold md:text-3xl">{COPY.formTitle[locale]}</h2>
             <FreeClassForm source="page" />
           </div>
-          <div>
-            <h2 className="font-display text-2xl font-semibold">{COPY.whatTitle[locale]}</h2>
-            <ul className="mt-6 space-y-5">
-              {COPY.points.map(({ icon: Icon, t, d }) => (
-                <li key={t.en} className="flex gap-4">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-rouge/10 text-rouge">
-                    <Icon size={20} />
-                  </span>
-                  <div>
-                    <p className="font-semibold">{t[locale]}</p>
-                    <p className="mt-0.5 text-sm leading-relaxed text-muted">{d[locale]}</p>
+          <div className="lg:pt-2">
+            <p className="eyebrow text-rouge">{locale === 'bn' ? 'কী আশা করবেন' : 'What to expect'}</p>
+            <h2 className="font-display mt-4 text-2xl font-semibold">{COPY.whatTitle[locale]}</h2>
+            <ol className="mt-6">
+              {COPY.points.map(({ icon: Icon, t, d }, i) => (
+                <li key={t.en} className="hairline flex gap-4 py-5">
+                  <span className="font-display w-8 shrink-0 pt-0.5 text-lg font-semibold text-rouge tabular-nums">{String(i + 1).padStart(2, '0')}</span>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-display flex items-center gap-2 text-lg font-semibold">
+                      <Icon size={16} className="shrink-0 text-muted" aria-hidden />
+                      {t[locale]}
+                    </p>
+                    <p className="mt-1 text-[15px] leading-relaxed text-muted">{d[locale]}</p>
                   </div>
                 </li>
               ))}
-            </ul>
+            </ol>
           </div>
         </div>
       </section>

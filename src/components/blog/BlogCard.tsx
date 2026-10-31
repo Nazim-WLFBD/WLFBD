@@ -59,8 +59,8 @@ export function BlogCard({
   return (
     <article
       className={cn(
-        'group relative flex h-full flex-col overflow-hidden rounded-[var(--radius)] border border-line bg-surface p-3 transition duration-300',
-        'hover:-translate-y-1 hover:border-fg/20 hover:shadow-[var(--shadow-lift)]',
+        'group relative flex h-full flex-col overflow-hidden rounded-[var(--radius)] border border-line bg-surface p-3 shadow-[var(--shadow-card)] transition duration-300',
+        'hover:-translate-y-0.5 hover:border-fg/20 hover:shadow-[var(--shadow-lift)]',
         'has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-gold has-[a:focus-visible]:ring-offset-2 has-[a:focus-visible]:ring-offset-bg',
         className,
       )}
@@ -70,11 +70,11 @@ export function BlogCard({
         icon={post.cover.icon}
         label={post.cover.text}
         alt={post.cover.alt}
-        className="transition duration-500 group-hover:brightness-[1.03]"
+        className="transition duration-500 group-hover:brightness-[1.02]"
       />
       <div className="flex flex-1 flex-col px-2 pt-5 pb-3">
-        <p className="text-[11px] font-bold tracking-[0.16em] text-rouge uppercase">{post.category}</p>
-        <Heading className={cn('mt-2 text-xl leading-snug font-semibold text-balance text-fg', locale === 'bn' ? 'font-bangla' : 'font-display')}>
+        <p className="eyebrow text-rouge">{post.category}</p>
+        <Heading className={cn('mt-3 text-xl leading-snug font-semibold text-balance text-fg', locale === 'bn' ? 'font-bangla' : 'font-display')}>
           {/* stretched link: the whole card is clickable, the title stays the accessible name */}
           <Link
             href={`/blog/${post.slug}`}
@@ -83,8 +83,8 @@ export function BlogCard({
             {post.title}
           </Link>
         </Heading>
-        <p className={cn('mt-3 line-clamp-3 text-[15px] leading-relaxed text-muted', locale === 'bn' && 'font-bangla')}>{post.excerpt}</p>
-        <p className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-5 text-[13px] text-muted">
+        <p className={cn('mt-3 mb-5 line-clamp-3 text-[15px] leading-relaxed text-muted', locale === 'bn' && 'font-bangla')}>{post.excerpt}</p>
+        <p className="hairline mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-4 text-[13px] text-muted">
           <span className="inline-flex items-center gap-1.5">
             <CalendarDays size={14} aria-hidden />
             <time dateTime={post.date}>{formatPostDate(post.date, locale)}</time>

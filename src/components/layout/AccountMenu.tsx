@@ -10,7 +10,7 @@ import { ui } from '@/content/home';
 import { THEME_KEY } from './ThemeToggle';
 
 const item =
-  'flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/85 outline-none data-[highlighted]:bg-white/10 data-[highlighted]:text-white';
+  'flex min-h-10 cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-fg outline-none data-[highlighted]:bg-surface-2 data-[highlighted]:text-fg';
 
 /** Signed in: avatar that opens Dashboard / Admin / theme / Log out. Signed out: a Login link. */
 export function AccountMenu() {
@@ -32,7 +32,7 @@ export function AccountMenu() {
     return (
       <Link
         href="/login"
-        className="flex h-10 items-center gap-2 rounded-full px-3.5 text-sm font-medium whitespace-nowrap text-white/80 transition hover:bg-white/10 hover:text-white"
+        className="flex h-10 items-center gap-2 rounded-lg px-3.5 text-sm font-medium whitespace-nowrap text-white/80 transition hover:bg-white/10 hover:text-white"
       >
         <UserRound size={16} />
         {t(ui.login)}
@@ -44,14 +44,14 @@ export function AccountMenu() {
   return (
     <Menu.Root modal={false}>
       <Menu.Trigger
-        className="flex h-10 items-center gap-1.5 rounded-full pr-2 pl-1 text-white/80 transition outline-none hover:bg-white/10 hover:text-white data-[state=open]:bg-white/10"
+        className="flex h-10 items-center gap-1.5 rounded-lg pr-2 pl-1 text-white/80 transition outline-none hover:bg-white/10 hover:text-white data-[state=open]:bg-white/10"
         aria-label={t(ui.accountMenu)}
       >
-        <span className="relative flex h-8 w-8 items-center justify-center rounded-full bg-gold text-sm font-bold text-ink">
+        <span className="font-display relative flex h-8 w-8 items-center justify-center rounded-md bg-white text-sm font-semibold text-ink">
           {name.charAt(0).toUpperCase()}
           {isAdmin && (
-            <span className="absolute -right-0.5 -bottom-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-ink ring-2 ring-ink">
-              <ShieldCheck size={10} className="text-gold" />
+            <span className="absolute -right-1 -bottom-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-rouge ring-2 ring-ink">
+              <ShieldCheck size={9} className="text-white" />
             </span>
           )}
         </span>
@@ -61,13 +61,13 @@ export function AccountMenu() {
         <Menu.Content
           align="end"
           sideOffset={12}
-          className="z-[60] w-64 rounded-2xl border border-white/10 bg-ink/97 p-1.5 text-white shadow-2xl backdrop-blur-xl"
+          className="accent-top z-[60] w-64 overflow-hidden rounded-[var(--radius)] border border-line bg-surface p-1.5 text-fg shadow-[var(--shadow-lift)]"
         >
-          <div className="px-3 pt-2 pb-3">
-            <p className="truncate font-semibold">{name}</p>
-            <p className="truncate text-xs text-white/50">{user.email}</p>
+          <div className="px-3 pt-3 pb-3">
+            <p className="font-display truncate text-base font-semibold">{name}</p>
+            <p className="truncate text-xs text-muted">{user.email}</p>
           </div>
-          <Menu.Separator className="my-1 h-px bg-white/10" />
+          <Menu.Separator className="my-1 h-px bg-line" />
           <Menu.Item asChild>
             <Link href="/dashboard" className={item}>
               <LayoutDashboard size={16} /> {t({ en: 'My dashboard', bn: 'আমার ড্যাশবোর্ড' })}
@@ -75,7 +75,7 @@ export function AccountMenu() {
           </Menu.Item>
           {isAdmin && (
             <Menu.Item asChild>
-              <Link href="/admin" className={`${item} text-gold data-[highlighted]:text-gold`}>
+              <Link href="/admin" className={`${item} text-rouge data-[highlighted]:text-rouge`}>
                 <ShieldCheck size={16} /> {t({ en: 'Admin portal', bn: 'অ্যাডমিন পোর্টাল' })}
               </Link>
             </Menu.Item>
@@ -84,7 +84,7 @@ export function AccountMenu() {
             {dark ? <Sun size={16} /> : <Moon size={16} />}
             {dark ? t({ en: 'Light mode', bn: 'লাইট মোড' }) : t({ en: 'Dark mode', bn: 'ডার্ক মোড' })}
           </Menu.Item>
-          <Menu.Separator className="my-1 h-px bg-white/10" />
+          <Menu.Separator className="my-1 h-px bg-line" />
           <Menu.Item onSelect={() => logOut()} className={item}>
             <LogOut size={16} /> {t({ en: 'Log out', bn: 'লগআউট' })}
           </Menu.Item>

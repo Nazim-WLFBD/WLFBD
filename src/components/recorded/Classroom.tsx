@@ -78,7 +78,7 @@ export function Classroom({ slug }: { slug: string }) {
 
   if (failed || (course && lessons.length === 0))
     return (
-      <div className="mx-auto max-w-md rounded-[24px] border border-line bg-surface p-8 text-center">
+      <div className="card mx-auto max-w-md p-8 text-center">
         <p className="font-display text-xl font-semibold">{t({ en: 'This course is not available.', bn: 'এই কোর্সটি পাওয়া যায়নি।' })}</p>
         <Link href="/recorded" className={btn('ink', 'md', 'mt-5')}>
           {t({ en: 'Browse recorded courses', bn: 'রেকর্ডেড কোর্স দেখুন' })}
@@ -146,12 +146,12 @@ export function Classroom({ slug }: { slug: string }) {
   const lessonTitle = bn && lesson.banglaTitle ? lesson.banglaTitle : lesson.title;
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
       <div>
-        <Link href={`/recorded/${course.slug}`} className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-fg">
+        <Link href={`/recorded/${course.slug}`} className="mb-4 inline-flex min-h-10 items-center gap-1 text-[11px] font-bold tracking-[0.14em] text-muted uppercase hover:text-fg">
           <ChevronLeft size={15} /> {bn && course.banglaTitle ? course.banglaTitle : course.title}
         </Link>
-        <div className="overflow-hidden rounded-[24px] bg-ink">
+        <div className="overflow-hidden rounded-[var(--radius)] border border-line bg-ink">
           {videoSrc ? (
             <iframe
               key={lesson.id}
@@ -165,7 +165,7 @@ export function Classroom({ slug }: { slug: string }) {
             />
           ) : (
             <div className="flex aspect-video flex-col items-center justify-center gap-3 text-white">
-              <Lock size={32} className="text-gold" />
+              <Lock size={28} className="text-gold" />
               <p>{t({ en: 'Enroll to unlock this lesson', bn: 'এই লেসন দেখতে ভর্তি হোন' })}</p>
               <Link href={`/recorded/${course.slug}?enroll=1`} className={btn('rouge', 'sm')}>
                 {t({ en: 'Enroll', bn: 'ভর্তি হোন' })}
@@ -173,8 +173,9 @@ export function Classroom({ slug }: { slug: string }) {
             </div>
           )}
         </div>
-        <div className="mt-5 flex flex-wrap items-start justify-between gap-4">
+        <div className="hairline mt-6 flex flex-wrap items-start justify-between gap-4 pt-5">
           <div>
+            <p className="section-num mb-2">{String(idx + 1).padStart(2, '0')} / {String(lessons.length).padStart(2, '0')}</p>
             <h1 className={cn('font-display text-2xl font-semibold', bn && lesson.banglaTitle && 'font-bangla')}>{lessonTitle}</h1>
             {bn && lesson.banglaTitle ? (
               <p className="text-muted">{lesson.title}</p>
@@ -201,7 +202,7 @@ export function Classroom({ slug }: { slug: string }) {
             </button>
           </div>
         </div>
-        <p className="mt-3 leading-relaxed text-muted">{bn ? lesson.banglaSummary || lesson.summary : lesson.summary}</p>
+        <p className="mt-3 max-w-[68ch] leading-relaxed text-muted">{bn ? lesson.banglaSummary || lesson.summary : lesson.summary}</p>
         <div className="mt-5 flex flex-wrap gap-2">
           {access && (
             <button onClick={markDone} className={btn(done.includes(lesson.id) ? 'ghost' : 'ink', 'md')}>
@@ -219,13 +220,13 @@ export function Classroom({ slug }: { slug: string }) {
 
       <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
         {access && (
-          <div className="rounded-[22px] bg-ink p-5 text-white">
-            <div className="flex justify-between text-sm">
-              <span>{t({ en: 'Progress', bn: 'অগ্রগতি' })}</span>
-              <span className="font-bold">{num(pct, t.locale)}%</span>
+          <div className="rounded-[var(--radius)] bg-ink p-5 text-white">
+            <div className="flex items-baseline justify-between">
+              <span className="text-[11px] font-bold tracking-[0.14em] text-white/60 uppercase">{t({ en: 'Progress', bn: 'অগ্রগতি' })}</span>
+              <span className="font-display text-2xl font-semibold tabular-nums">{num(pct, t.locale)}%</span>
             </div>
-            <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
-              <div className="h-full bg-gold transition-all" style={{ width: `${pct}%` }} />
+            <div className="mt-3 h-[3px] overflow-hidden bg-white/15">
+              <div className="h-full bg-rouge transition-all" style={{ width: `${pct}%` }} />
             </div>
             {course.hasCertificate &&
               (cert ? (
@@ -240,17 +241,22 @@ export function Classroom({ slug }: { slug: string }) {
             {certErr && <p className="mt-2 text-xs text-[#ff8a98]">{certErr}</p>}
           </div>
         )}
-        <div className="max-h-[70vh] overflow-y-auto rounded-[22px] border border-line bg-surface">
-          {course.modules?.map((m) => (
+        <div className="card max-h-[70vh] overflow-y-auto">
+          {course.modules?.map((m, mi) => (
             <div key={m.id}>
-              <p className={cn('sticky top-0 border-b border-line bg-surface-2 px-4 py-2.5 text-xs font-bold', bn && m.banglaTitle && 'font-bangla')}>
+              <p className={cn('sticky top-0 z-10 flex items-center gap-3 border-b border-line bg-surface-2 px-4 py-2.5 text-[11px] font-bold tracking-[0.14em] uppercase', bn && m.banglaTitle && 'font-bangla tracking-normal')}>
+                <span className="font-display text-sm tracking-normal text-rouge tabular-nums">{String(mi + 1).padStart(2, '0')}</span>
                 {bn && m.banglaTitle ? m.banglaTitle : m.title}
               </p>
               {m.lessons.map((l) => (
                 <button
                   key={l.id}
                   onClick={() => go(l.id)}
-                  className={cn('flex w-full items-center gap-3 border-b border-line px-4 py-3 text-left text-sm last:border-0', l.id === lesson.id && 'bg-rouge/10')}
+                  aria-current={l.id === lesson.id ? 'true' : undefined}
+                  className={cn(
+                    'flex min-h-11 w-full items-center gap-3 border-b border-line border-l-2 border-l-transparent px-4 py-3 text-left text-sm transition last:border-b-0 hover:bg-surface-2/60',
+                    l.id === lesson.id && 'border-l-rouge bg-red-soft/60 font-semibold',
+                  )}
                 >
                   {done.includes(l.id) ? (
                     <CheckCircle2 size={16} className="shrink-0 text-mint" />

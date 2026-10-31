@@ -13,17 +13,19 @@ export function Toc({ items, title, bn, className }: Props) {
   if (items.length < 2) return null;
   return (
     <nav aria-label={title} className={className}>
-      <p className="mb-3 flex items-center gap-2 text-[11px] font-bold tracking-[0.16em] text-muted uppercase">
-        <ListTree size={14} aria-hidden />
+      <p className="eyebrow mb-3 text-rouge">
+        <ListTree size={13} aria-hidden />
         {title}
       </p>
-      <ol className={cn('flex flex-col gap-0.5 border-l border-line text-[14px]', bn && 'font-bangla')}>
-        {items.map((h) => (
-          <li key={h.id}>
+      <ol className={cn('flex flex-col border-t border-line text-[14px]', bn && 'font-bangla')}>
+        {items.map((h, i) => (
+          <li key={h.id} className="border-b border-line">
             <a
               href={`#${h.id}`}
-              className="-ml-px block border-l-2 border-transparent py-1.5 pr-2 pl-4 leading-snug text-muted transition hover:border-rouge hover:text-fg"
+              className="group flex min-h-10 items-center gap-3 py-2 pr-2 leading-snug text-muted transition hover:text-fg"
             >
+              <span aria-hidden className="h-[2px] w-0 shrink-0 bg-rouge transition-all group-hover:w-3" />
+              <span className="section-num shrink-0">{String(i + 1).padStart(2, '0')}</span>
               {h.text}
             </a>
           </li>

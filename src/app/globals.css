@@ -6,12 +6,14 @@
 :root {
   /* Direction: ~70% Canadian (clean, bright, institutional, maple red) + ~30% French (editorial serif, navy, refined detail) */
   /* Surfaces: cool, clean whites */
-  --bg: #f6f7f9;
+  --bg: #f8f7f4; /* warm institutional white */
   --surface: #ffffff;
-  --surface-2: #edf0f4;
-  --text: #101828;
-  --muted: #5a6474;
-  --line: rgba(16, 24, 40, 0.1);
+  --surface-2: #efede8;
+  --text: #0f172a;
+  --muted: #5b6475;
+  --line: rgba(15, 23, 42, 0.11);
+  --red-soft: #fbeaea;
+  --blue-soft: #e8edf8;
 
   /* Brand — constant across themes */
   --ink: #0e1a2f; /* deep institutional navy */
@@ -24,8 +26,9 @@
   --mint: #1a8a5e;
   --bkash: #e2136e;
 
-  --radius: 18px;
-  --shadow-lift: 0 24px 48px -28px rgba(16, 24, 40, 0.28);
+  --radius: 14px;
+  --shadow-lift: 0 22px 44px -26px rgba(15, 23, 42, 0.3);
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.05), 0 8px 24px -16px rgba(15, 23, 42, 0.18);
   color-scheme: light;
 }
 
@@ -36,8 +39,11 @@
   --text: #eef1f6;
   --muted: #9aa5b8;
   --line: rgba(238, 241, 246, 0.1);
+  --red-soft: rgba(213, 43, 30, 0.14);
+  --blue-soft: rgba(124, 156, 255, 0.14);
   --bleu: #7c9cff;
   --gold: #d8ab4f;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -16px rgba(0, 0, 0, 0.6);
   --shadow-lift: 0 30px 60px -30px rgba(0, 0, 0, 0.8);
   color-scheme: dark;
 }
@@ -58,6 +64,8 @@
   --color-gold: var(--gold);
   --color-mint: var(--mint);
   --color-bkash: var(--bkash);
+  --color-red-soft: var(--red-soft);
+  --color-blue-soft: var(--blue-soft);
 
   /* Bangla glyphs in headings fall through to Hind Siliguri; Bangla digits always use the bold digit face */
   --font-display: var(--font-bn-digits), var(--font-fraunces), var(--font-hind), ui-serif, Georgia, serif;
@@ -177,6 +185,94 @@ html[lang="bn"] li {
   scrollbar-width: none;
   &::-webkit-scrollbar {
     display: none;
+  }
+}
+
+/* Editorial label: small caps tracking with a short rule (the French 30%) */
+@utility eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  &::before {
+    content: "";
+    width: 22px;
+    height: 2px;
+    background: currentColor;
+  }
+}
+
+/* Hairline rule used between editorial rows */
+@utility hairline {
+  border-top: 1px solid var(--line);
+}
+
+/* Standard content card (the Canadian 70%: flat, crisp, generous) */
+@utility card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+
+/* Maple red top accent on a card or section */
+@utility accent-top {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 56px;
+    height: 3px;
+    background: var(--rouge);
+    border-radius: 0 0 3px 0;
+  }
+}
+
+/* Large numeral for numbered sections, 01 02 03 … */
+@utility section-num {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+/* Maple leaf drift (hero) */
+@keyframes leaf-fall {
+  0% {
+    transform: translate3d(0, -12vh, 0) rotate(0deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: var(--leaf-o, 0.8);
+  }
+  92% {
+    opacity: var(--leaf-o, 0.8);
+  }
+  100% {
+    transform: translate3d(var(--leaf-x, 60px), 112vh, 0) rotate(var(--leaf-r, 300deg));
+    opacity: 0;
+  }
+}
+@keyframes leaf-sway {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  50% {
+    margin-left: var(--leaf-sway, 40px);
+  }
+}
+@keyframes ken-burns {
+  from {
+    transform: scale(1.06) translateX(1.5%);
+  }
+  to {
+    transform: scale(1) translateX(0);
   }
 }
 

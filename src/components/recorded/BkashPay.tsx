@@ -58,22 +58,24 @@ export function BkashPay({ course, open, onClose }: { course: RecordedCourse; op
     }
   };
 
-  const input = 'w-full rounded-2xl border border-line bg-surface px-4 py-3 text-[15px] outline-none focus:border-fg/50';
+  const input = 'w-full rounded-xl border border-line bg-surface px-4 py-3 text-[15px] outline-none transition focus:border-bleu focus:ring-2 focus:ring-bleu/20';
 
   return (
     <Dialog.Root open={open} onOpenChange={(o) => !o && onClose()}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-[90] bg-ink/70 backdrop-blur-sm" />
-        <Dialog.Content className="fixed top-1/2 left-1/2 z-[91] max-h-[92vh] w-[min(520px,calc(100vw-24px))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-3xl bg-surface p-6 text-fg" aria-describedby={undefined}>
+        <Dialog.Overlay className="fixed inset-0 z-[90] bg-ink/70" />
+        <Dialog.Content className="accent-top fixed top-1/2 left-1/2 z-[91] max-h-[92vh] w-[min(520px,calc(100vw-24px))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[var(--radius)] border border-line bg-surface p-6 text-fg shadow-[var(--shadow-lift)]" aria-describedby={undefined}>
           <div className="flex items-start justify-between gap-3">
             <Dialog.Title className="font-display text-2xl font-semibold">{t({ en: 'Pay with bKash', bn: 'বিকাশে পেমেন্ট' })}</Dialog.Title>
-            <Dialog.Close aria-label={t({ en: 'Close', bn: 'বন্ধ করুন' })} className="rounded-full p-2 hover:bg-fg/10">
+            <Dialog.Close aria-label={t({ en: 'Close', bn: 'বন্ধ করুন' })} className="-mt-1 -mr-1 flex h-10 w-10 items-center justify-center rounded-lg hover:bg-fg/10">
               <X size={18} />
             </Dialog.Close>
           </div>
           {done ? (
             <div className="mt-4 text-center">
-              <CheckCircle2 size={44} className="mx-auto text-mint" />
+              <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-soft text-rouge">
+                <CheckCircle2 size={26} />
+              </span>
               <p className="font-display mt-3 text-xl font-semibold">{t({ en: 'Payment submitted!', bn: 'পেমেন্ট জমা হয়েছে!' })}</p>
               <p className="mt-2 text-sm text-muted">
                 {t({
@@ -90,7 +92,7 @@ export function BkashPay({ course, open, onClose }: { course: RecordedCourse; op
                   )}
                   target="_blank"
                   rel="noopener"
-                  className={btn('ink', 'md', 'bg-[#16a34a]')}
+                  className={btn('ink', 'md', 'bg-[#16a34a] hover:bg-[#15803d] dark:bg-[#16a34a] dark:text-white dark:hover:bg-[#15803d]')}
                 >
                   {t({ en: 'Confirm on WhatsApp', bn: 'হোয়াটসঅ্যাপে নিশ্চিত করুন' })}
                 </a>
@@ -101,10 +103,10 @@ export function BkashPay({ course, open, onClose }: { course: RecordedCourse; op
             </div>
           ) : (
             <form onSubmit={submit} className="mt-4 flex flex-col gap-3">
-              <div className="rounded-2xl border border-bkash/30 bg-bkash/[.06] p-4">
-                <p className="text-sm">{title}</p>
-                <p className="font-display text-3xl font-semibold text-bkash">{taka(course.offerPrice, t.locale)}</p>
-                <div className="mt-3 flex items-center justify-between gap-2 rounded-xl bg-surface p-3">
+              <div className="rounded-xl bg-red-soft p-4">
+                <p className="text-sm text-muted">{title}</p>
+                <p className="font-display text-3xl font-semibold text-fg">{taka(course.offerPrice, t.locale)}</p>
+                <div className="mt-3 flex items-center justify-between gap-2 rounded-xl border border-line bg-surface p-3">
                   <span className="font-mono text-lg font-bold">{BRAND_CONTACT.bkashPersonal}</span>
                   <button
                     type="button"
@@ -113,12 +115,12 @@ export function BkashPay({ course, open, onClose }: { course: RecordedCourse; op
                       setCopied(true);
                       setTimeout(() => setCopied(false), 1500);
                     }}
-                    className="flex items-center gap-1 rounded-lg bg-bkash px-3 py-1.5 text-xs font-bold text-white"
+                    className="flex min-h-10 items-center gap-1 rounded-lg bg-ink px-3 py-1.5 text-xs font-bold text-white dark:bg-white dark:text-ink"
                   >
                     {copied ? <Check size={13} /> : <Copy size={13} />} {copied ? t({ en: 'Copied', bn: 'কপি হয়েছে' }) : t({ en: 'Copy', bn: 'কপি করুন' })}
                   </button>
                 </div>
-                <ol className={`mt-3 space-y-1 text-sm text-fg/80 ${t.locale === 'bn' ? 'font-bangla' : ''}`}>
+                <ol className={`mt-3 space-y-1.5 text-sm text-fg/85 ${t.locale === 'bn' ? 'font-bangla' : ''}`}>
                   <li>{t({ en: '1. bKash app ➔ Send Money', bn: '১. bKash অ্যাপ ➔ Send Money' })}</li>
                   <li>
                     {t({ en: '2. Recipient: ', bn: '২. প্রাপক: ' })}
@@ -136,8 +138,8 @@ export function BkashPay({ course, open, onClose }: { course: RecordedCourse; op
               <input value={sender} onChange={(e) => setSender(e.target.value)} placeholder={t({ en: 'Sender bKash number', bn: 'প্রেরক বিকাশ নম্বর' })} inputMode="tel" className={input} />
               <input value={trx} onChange={(e) => setTrx(e.target.value.toUpperCase())} placeholder="TrxID" className={`${input} font-mono`} />
               <input value={note} onChange={(e) => setNote(e.target.value)} placeholder={t({ en: 'Note (optional)', bn: 'নোট (ঐচ্ছিক)' })} className={input} />
-              {err && <p className="rounded-xl bg-rouge/10 p-3 text-sm text-rouge">{err}</p>}
-              <button disabled={busy} className={btn('rouge', 'md', 'mt-1 bg-bkash hover:bg-[#c50f5f]')}>
+              {err && <p className="rounded-xl border border-rouge/30 bg-red-soft p-3 text-sm font-medium text-rouge">{err}</p>}
+              <button disabled={busy} className={btn('rouge', 'md', 'mt-1')}>
                 {busy && <Loader2 size={16} className="animate-spin" />}
                 {t({ en: 'Submit payment for verification', bn: 'যাচাইয়ের জন্য পেমেন্ট জমা দিন' })}
               </button>

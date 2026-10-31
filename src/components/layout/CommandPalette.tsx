@@ -57,14 +57,15 @@ export function CommandPalette() {
     router.push(href);
   };
 
-  const item = 'flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] text-fg data-[selected=true]:bg-ink data-[selected=true]:text-white';
+  const item =
+    'flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-[14px] text-fg data-[selected=true]:bg-surface-2 data-[selected=true]:text-fg data-[selected=true]:shadow-[inset_2px_0_0_var(--rouge)]';
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-[90] bg-ink/60 backdrop-blur-sm" />
+        <Dialog.Overlay className="fixed inset-0 z-[90] bg-ink/60" />
         <Dialog.Content
-          className="fixed top-[12vh] left-1/2 z-[91] w-[min(640px,calc(100vw-24px))] -translate-x-1/2 overflow-hidden rounded-3xl border border-line bg-surface shadow-2xl"
+          className="fixed top-[12vh] left-1/2 z-[91] w-[min(640px,calc(100vw-24px))] -translate-x-1/2 overflow-hidden rounded-[var(--radius)] border border-line bg-surface shadow-[var(--shadow-lift)]"
           aria-describedby={undefined}
         >
           <Dialog.Title className="sr-only">{t(ui.searchSite)}</Dialog.Title>
@@ -76,15 +77,15 @@ export function CommandPalette() {
                 placeholder={t(GROUPS.placeholder)}
                 className="h-14 w-full bg-transparent text-[15px] text-fg outline-none placeholder:text-muted"
               />
-              <kbd className="rounded-md border border-line px-1.5 py-0.5 text-[10px] text-muted">ESC</kbd>
+              <kbd className="rounded-md border border-line px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-muted">ESC</kbd>
             </div>
             <Command.List className="max-h-[min(60vh,460px)] overflow-y-auto p-2">
               <Command.Empty className="p-6 text-center text-sm text-muted">{t(GROUPS.empty)}</Command.Empty>
 
-              <Command.Group heading={t(GROUPS.courses)} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-muted [&_[cmdk-group-heading]]:uppercase">
+              <Command.Group heading={t(GROUPS.courses)} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-[0.14em] [&_[cmdk-group-heading]]:text-muted [&_[cmdk-group-heading]]:uppercase [&:not(:first-child)]:mt-1 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-line [&:not(:first-child)]:pt-1">
                 {COURSES_DATA.map((c) => (
                   <Command.Item key={c.id} value={`${c.title} ${c.banglaTitle} ${c.code}`} onSelect={() => go(`/courses/${c.id}`)} className={item}>
-                    <span className="font-display flex h-8 w-8 items-center justify-center rounded-lg bg-rouge text-[11px] font-bold text-white">{c.code}</span>
+                    <span className="font-display flex h-8 w-8 items-center justify-center rounded-md bg-ink text-[11px] font-semibold text-white">{c.code}</span>
                     <span className="flex-1">{t.locale === 'bn' ? c.banglaTitle : c.title}</span>
                     <ArrowRight size={14} className="opacity-50" />
                   </Command.Item>
@@ -97,7 +98,7 @@ export function CommandPalette() {
                 ))}
               </Command.Group>
 
-              <Command.Group heading={t(GROUPS.tools)} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-muted [&_[cmdk-group-heading]]:uppercase">
+              <Command.Group heading={t(GROUPS.tools)} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-[0.14em] [&_[cmdk-group-heading]]:text-muted [&_[cmdk-group-heading]]:uppercase [&:not(:first-child)]:mt-1 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-line [&:not(:first-child)]:pt-1">
                 {MEGA.tools.map((tool) => (
                   <Command.Item key={tool.href} value={`${tool.t.en} ${tool.t.bn}`} onSelect={() => go(tool.href)} className={item}>
                     <Icon name={tool.icon} size={16} className="mx-2" />
@@ -110,7 +111,7 @@ export function CommandPalette() {
                 </Command.Item>
               </Command.Group>
 
-              <Command.Group heading={t(GROUPS.pages)} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-muted [&_[cmdk-group-heading]]:uppercase">
+              <Command.Group heading={t(GROUPS.pages)} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-[0.14em] [&_[cmdk-group-heading]]:text-muted [&_[cmdk-group-heading]]:uppercase [&:not(:first-child)]:mt-1 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-line [&:not(:first-child)]:pt-1">
                 {SECTIONS.map((s) => (
                   <Command.Item key={s.id} value={`${s.label.en} ${s.label.bn} section`} onSelect={() => go(`/#${s.id}`)} className={item}>
                     <CornerDownLeft size={14} className="mx-2.5 opacity-60" />
@@ -119,7 +120,7 @@ export function CommandPalette() {
                 ))}
               </Command.Group>
 
-              <Command.Group heading={t(GROUPS.quizzes)} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-muted [&_[cmdk-group-heading]]:uppercase">
+              <Command.Group heading={t(GROUPS.quizzes)} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-[0.14em] [&_[cmdk-group-heading]]:text-muted [&_[cmdk-group-heading]]:uppercase [&:not(:first-child)]:mt-1 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-line [&:not(:first-child)]:pt-1">
                 {QUIZ_CATEGORIES.map((q) => (
                   <Command.Item key={q.id} value={`${q.title} ${q.banglaTitle} quiz`} onSelect={() => go(quizHref(q.slug))} className={item}>
                     <Icon name="clipboard" size={16} className="mx-2" />
@@ -128,7 +129,7 @@ export function CommandPalette() {
                 ))}
               </Command.Group>
 
-              <Command.Group heading={t(GROUPS.faq)} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-muted [&_[cmdk-group-heading]]:uppercase">
+              <Command.Group heading={t(GROUPS.faq)} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-[0.14em] [&_[cmdk-group-heading]]:text-muted [&_[cmdk-group-heading]]:uppercase [&:not(:first-child)]:mt-1 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-line [&:not(:first-child)]:pt-1">
                 {FAQ_DATA.map((f) => (
                   <Command.Item key={f.id} value={`${f.question} ${f.banglaQuestion} ${f.answer}`} onSelect={() => go(`/#faq-${f.id}`)} className={item}>
                     <Icon name="message" size={16} className="mx-2" />
