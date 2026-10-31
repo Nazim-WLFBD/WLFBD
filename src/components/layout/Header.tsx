@@ -148,25 +148,25 @@ export function Header() {
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             onMouseEnter={() => open(menu)}
             onMouseLeave={scheduleClose}
-            className="mx-auto hidden max-w-[1080px] overflow-hidden rounded-b-[var(--radius)] border border-t-0 border-white/10 bg-ink/97 text-white shadow-2xl backdrop-blur-xl lg:block"
+            className="mx-auto hidden max-w-[1040px] overflow-hidden rounded-b-[var(--radius)] border border-t-0 border-line bg-surface text-fg shadow-[var(--shadow-lift)] lg:block"
           >
             {menu === 'courses' ? (
-              <div className="grid grid-cols-[1.6fr_1fr]">
+              <div className="grid grid-cols-[1.55fr_1fr]">
                 <div className="p-6">
-                  <p className="mb-3 text-[11px] font-bold tracking-[0.18em] text-gold uppercase">{t(MEGA.live)}</p>
-                  <div className="grid grid-cols-2 gap-1.5">
+                  <p className="eyebrow mb-4 text-rouge">{t(MEGA.live)}</p>
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-0.5">
                     {live.map((c) => (
                       <Link
                         key={c.id}
                         href={`/courses/${c.id}`}
-                        className="group flex items-center gap-3 rounded-2xl p-3 transition hover:bg-white/7"
+                        className="group flex items-center gap-3 rounded-xl px-2 py-2.5 transition hover:bg-surface-2"
                       >
-                        <span className="font-display flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/8 text-sm font-bold text-white group-hover:bg-rouge">
+                        <span className="font-display flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-soft text-sm font-bold text-rouge transition group-hover:bg-rouge group-hover:text-white">
                           {c.code}
                         </span>
                         <span className="min-w-0">
                           <span className="block truncate text-sm font-semibold">{courseName(c, t.locale)}</span>
-                          <span className="block truncate text-xs text-white/55">
+                          <span className="block truncate text-xs text-muted">
                             {c.isCustomPricing
                               ? (t.locale === 'bn' ? (c.banglaTargetClb ?? c.targetClb) : c.targetClb)
                               : `${taka(c.offerPrice, t.locale)} · ${t.locale === 'bn' ? (c.banglaDuration ?? c.duration) : c.duration.split(' (')[0]}`}
@@ -175,61 +175,61 @@ export function Header() {
                       </Link>
                     ))}
                   </div>
-                  <Link href="/courses" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-gold hover:underline">
+                  <Link href="/courses" className="mt-5 inline-flex items-center gap-1.5 border-t border-line pt-4 text-sm font-semibold text-rouge hover:underline">
                     {t(MEGA.allCourses)} <ArrowUpRight size={14} />
                   </Link>
                 </div>
-                <div className="flex flex-col gap-4 border-l border-white/10 bg-white/[.03] p-6">
+                <div className="flex flex-col gap-5 border-l border-line bg-bg p-6">
                   <div>
-                    <p className="mb-3 text-[11px] font-bold tracking-[0.18em] text-gold uppercase">{t(MEGA.recorded)}</p>
+                    <p className="eyebrow mb-3 text-rouge">{t(MEGA.recorded)}</p>
                     {RECORDED_COURSES.map((r) => (
                       <Link
                         key={r.id}
                         href={`/recorded/${r.slug}`}
-                        className="flex items-center justify-between rounded-xl p-2.5 text-sm transition hover:bg-white/7"
+                        className="flex items-center justify-between border-t border-line py-2.5 text-sm transition first-of-type:border-t-0 hover:text-rouge"
                       >
                         <span className="font-semibold">
                           DELF {r.level} · {t(ui.recorded)}
                         </span>
-                        <span className="text-white/55">{taka(r.offerPrice, t.locale)}</span>
+                        <span className="text-muted">{taka(r.offerPrice, t.locale)}</span>
                       </Link>
                     ))}
                   </div>
                   <div>
-                    <p className="mb-3 text-[11px] font-bold tracking-[0.18em] text-gold uppercase">{t(MEGA.combos)}</p>
+                    <p className="eyebrow mb-3 text-rouge">{t(MEGA.combos)}</p>
                     {COMBO_OFFERS.map((c) => (
                       <Link
                         key={c.id}
                         href={{ pathname: '/courses', hash: 'combos' }}
-                        className="flex items-center justify-between rounded-xl p-2.5 text-sm transition hover:bg-white/7"
+                        className="flex items-center justify-between border-t border-line py-2.5 text-sm transition first-of-type:border-t-0 hover:text-rouge"
                       >
                         <span className="font-semibold">{c.courses.join(' + ')}</span>
-                        <span className="text-white/55">{taka(c.combinedFee, t.locale)}</span>
+                        <span className="text-muted">{taka(c.combinedFee, t.locale)}</span>
                       </Link>
                     ))}
                   </div>
                   <Link
                     href="/quiz/placement-test"
-                    className="mt-auto rounded-2xl bg-rouge/90 p-4 transition hover:bg-rouge"
+                    className="accent-top mt-auto rounded-xl bg-ink p-4 text-white transition hover:bg-ink-3"
                   >
                     <span className="block text-sm font-bold">{t(MEGA.unsure)}</span>
-                    <span className="text-xs text-white/80">{t(MEGA.unsureSub)}</span>
+                    <span className="text-xs text-white/70">{t(MEGA.unsureSub)}</span>
                   </Link>
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-2 p-4">
+              <div className="grid grid-cols-3 divide-x divide-line p-2">
                 {MEGA.tools.map((tool) => (
                   <Link
                     key={tool.href}
                     href={tool.href}
-                    className="group flex flex-col gap-3 rounded-2xl p-4 transition hover:bg-white/7"
+                    className="group flex flex-col gap-3 rounded-xl p-5 transition hover:bg-surface-2"
                   >
-                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/8 text-gold transition group-hover:bg-gold group-hover:text-ink">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-soft text-bleu transition group-hover:bg-rouge group-hover:text-white">
                       <Icon name={tool.icon} size={20} />
                     </span>
                     <span className="text-sm font-bold">{t(tool.t)}</span>
-                    <span className="text-xs leading-relaxed text-white/55">{t(tool.s)}</span>
+                    <span className="text-xs leading-relaxed text-muted">{t(tool.s)}</span>
                   </Link>
                 ))}
               </div>

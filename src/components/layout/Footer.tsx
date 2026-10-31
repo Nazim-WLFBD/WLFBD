@@ -5,7 +5,7 @@ import { Link } from '@/i18n/navigation';
 import { useT } from '@/i18n/t';
 import { Logo } from '@/components/ui/Logo';
 import { btn } from '@/components/ui/Button';
-import { BRAND_SOCIAL_LINKS, BRAND_TAGLINE_BANGLA } from '@/lib/brand';
+import { BRAND_SOCIAL_LINKS } from '@/lib/brand';
 import { footer, ui } from '@/content/home';
 import { Flag } from '@/components/ui/Flag';
 
@@ -49,7 +49,6 @@ export function Footer() {
               {t(footer.ctaTitle)}
             </h2>
             <p className="font-display mt-4 text-xl text-white/60 italic">{t(footer.ctaSub)}</p>
-            <p className="font-bangla mt-3 text-sm text-white/50">{BRAND_TAGLINE_BANGLA}</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href="/enroll" className={btn('rouge', 'lg')}>
@@ -62,7 +61,7 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="container-x grid grid-cols-2 gap-x-6 gap-y-10 border-t border-white/10 py-14 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] lg:gap-12">
+      <div className="container-x grid grid-cols-2 gap-x-6 gap-y-10 border-t border-white/10 py-14 lg:grid-cols-[minmax(0,1.5fr)_auto_auto_auto] lg:justify-between lg:gap-16">
         <div className="col-span-2 lg:col-span-1">
           <Link href="/" aria-label={t(ui.homepage)}>
             <Logo size={52} light />
@@ -115,8 +114,8 @@ export function Footer() {
         <p>
           © {year} {t(footer.rights)}
         </p>
-        <p className="font-bangla flex items-center gap-2">
-          <Flag country="fr" /> {BRAND_TAGLINE_BANGLA}
+        <p className="flex items-center gap-2 text-white/60">
+          <Flag country="ca" /> <Flag country="fr" /> Dhaka · Toronto · Paris
         </p>
       </div>
     </footer>

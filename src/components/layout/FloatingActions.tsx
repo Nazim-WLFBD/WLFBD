@@ -144,15 +144,15 @@ export function FloatingActions() {
           aria-haspopup="menu"
           title={t(COPY.support)}
           className={cn(
-            'relative flex h-14 w-14 items-center justify-center rounded-full text-white shadow-[0_14px_30px_-12px_rgba(13,27,51,.7)] transition hover:scale-105',
+            'relative flex h-10 w-10 items-center justify-center rounded-full text-white shadow-[0_10px_24px_-10px_rgba(13,27,51,.7)] transition hover:scale-105 lg:h-11 lg:w-11',
             menu ? 'bg-ink' : 'bg-rouge',
           )}
         >
           {!menu && <span className="animate-pulse-ring absolute inset-0 rounded-full bg-rouge" />}
           <span className="lg:hidden">
-            <GraduationCap size={24} />
+            <GraduationCap size={19} />
           </span>
-          <span className="hidden lg:block">{menu ? <X size={22} /> : <Headset size={24} />}</span>
+          <span className="hidden lg:block">{menu ? <X size={18} /> : <Headset size={19} />}</span>
         </button>
       </div>
 

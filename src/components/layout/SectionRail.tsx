@@ -24,7 +24,7 @@ export function SectionRail() {
   }, []);
 
   return (
-    <nav aria-label={t(ui.pageSections)} className="fixed top-1/2 right-5 z-30 hidden -translate-y-1/2 flex-col items-end gap-1 min-[1360px]:flex">
+    <nav aria-label={t(ui.pageSections)} className="fixed top-1/2 right-5 z-30 hidden -translate-y-1/2 flex-col items-end gap-1 rounded-xl bg-surface/85 py-2 pr-2 pl-1 shadow-[var(--shadow-card)] backdrop-blur-sm min-[1360px]:flex">
       {SECTIONS.map((s, i) => {
         const on = active === s.id;
         return (
@@ -38,7 +38,7 @@ export function SectionRail() {
             <span
               className={cn(
                 'section-num text-[10px] leading-none transition-opacity duration-300',
-                on ? 'text-rouge opacity-100' : 'opacity-0 group-hover:opacity-100',
+                on ? 'text-rouge opacity-100' : 'text-muted opacity-0 group-hover:opacity-100',
               )}
             >
               {String(i + 1).padStart(2, '0')}
@@ -46,7 +46,7 @@ export function SectionRail() {
             <span
               className={cn(
                 'block h-px transition-all duration-300',
-                on ? 'w-7 bg-rouge' : 'w-4 bg-fg/30 group-hover:w-6 group-hover:bg-fg/60',
+                on ? 'w-7 bg-rouge' : 'w-4 bg-fg/35 group-hover:w-6 group-hover:bg-fg/70',
               )}
             />
             <span className="pointer-events-none absolute top-1/2 right-full mr-10 -translate-y-1/2 rounded-md bg-ink px-2.5 py-1.5 text-xs font-semibold whitespace-nowrap text-white opacity-0 transition group-hover:opacity-100">
