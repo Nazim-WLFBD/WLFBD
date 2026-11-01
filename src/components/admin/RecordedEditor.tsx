@@ -140,7 +140,7 @@ export function RecordedEditor() {
         for (const l of m.lessons)
           if (!l.isPreview) await setDoc(doc(fb.db, 'recordedCourses', c.id, 'private', l.id), { videoUrl: links[l.id]?.videoUrl ?? '', pdfUrl: links[l.id]?.pdfUrl ?? null });
       // Clear the server's short cache so the classroom sees the new links at once
-      await authFetch('/api/admin', { method: 'POST', body: JSON.stringify({ action: 'refreshRecordedCourses' }) }).catch(() => {});
+      await authFetch('/api/admin', { method: 'POST', body: JSON.stringify({ action: 'refreshContent' }) }).catch(() => {});
       setDirty(false);
       setMsg('Saved. The public site updates within 5 minutes.');
     } catch (e) {

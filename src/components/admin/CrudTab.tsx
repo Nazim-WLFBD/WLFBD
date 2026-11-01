@@ -7,6 +7,7 @@ import { Download, Loader2, Pencil, Plus, Trash2, Upload, X } from 'lucide-react
 import { btn } from '@/components/ui/Button';
 import { firebase, getStorageLazy } from '@/lib/firebase';
 import { dialog } from '@/components/ui/DialogHost';
+import { useAuth } from '@/components/auth/AuthContext';
 
 type Base = { key: string; label: string; hint?: string; /** Save is refused while the field is empty. */ required?: boolean };
 export type Field =
@@ -53,6 +54,12 @@ const saveError = (e: unknown) => {
 
 /** Generic list + add/edit/delete editor for a Firestore collection (admin-only by rules). */
 export function CrudTab({ path, fields, columns, seed, seedId, newDefaults = {}, idFrom, splitFields, onSaved, lockedOnEdit = [], validate }: Props) {
+  const { authFetch } = useAuth();
+  // Re-render the public site right away (otherwise pages refresh up to 5 minutes later)
+  const publish = async () => {
+    await authFetch('/api/admin', { method: 'POST', body: JSON.stringify({ action: 'refreshContent' }) }).catch(() => {});
+    await onSaved?.();
+  };
   const [rows, setRows] = useState<Row[] | null>(null);
   const [edit, setEdit] = useState<Row | null>(null);
   /** Multi-line `list` fields are edited as raw text and split into an array only on save. */
@@ -165,7 +172,7 @@ export function CrudTab({ path, fields, columns, seed, seedId, newDefaults = {},
       setSaving(false);
     }
     await load().catch(() => {});
-    await onSaved?.();
+    await publish();
   };
 
   const remove = async (id: string, name: string) => {
@@ -175,7 +182,7 @@ export function CrudTab({ path, fields, columns, seed, seedId, newDefaults = {},
       await deleteDoc(doc(fb.db, path, id));
       if (splitFields) await deleteDoc(doc(fb.db, splitFields.path(id))).catch(() => {});
       await load();
-      await onSaved?.();
+      await publish();
     } catch (e) {
       await dialog.alert({ title: 'Could not delete', message: saveError(e), tone: 'danger' });
     }
@@ -197,7 +204,7 @@ export function CrudTab({ path, fields, columns, seed, seedId, newDefaults = {},
         await setDoc(ref, { ...data, createdAt: serverTimestamp() });
       }
       await load();
-      await onSaved?.();
+      await publish();
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e));
     }

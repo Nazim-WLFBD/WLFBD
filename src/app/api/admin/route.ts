@@ -16,6 +16,7 @@ const Action = z.discriminatedUnion('action', [
   z.object({ action: z.literal('setApproval'), uid: z.string().max(128), approval: z.enum(['pending', 'approved', 'rejected']) }),
   z.object({ action: z.literal('refreshRecordedCourses') }),
   z.object({ action: z.literal('refreshCourses') }),
+  z.object({ action: z.literal('refreshContent') }),
   // Removes a rejected payment / failed enrollment (and its linked record). Live records can't be deleted.
   z.object({ action: z.literal('deletePayment'), paymentId: z.string().max(60) }),
   z.object({ action: z.literal('deleteEnrollment'), enrollmentId: z.string().max(60) }),
@@ -201,8 +202,11 @@ export async function POST(req: Request) {
 
   // "Publish changes now" in the Courses editor: drop the in-memory course cache and re-render every page
   // (courses appear in the header menu, enroll form and pricing, so the whole locale layout is revalidated)
-  if (a.action === 'refreshCourses') {
+  if (a.action === 'refreshCourses' || a.action === 'refreshContent') {
+    // Admin edits (courses, reviews, FAQ, batches, quiz questions, recorded courses…) must show at once:
+    // drop the in-memory caches and re-render every page instead of waiting for the 5-minute revalidate
     invalidateCourseCache();
+    invalidateRecordedCache();
     revalidatePath('/', 'layout');
     return json({ ok: true });
   }

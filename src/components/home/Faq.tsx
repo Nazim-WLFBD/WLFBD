@@ -47,8 +47,8 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
       return (
         f.question.toLowerCase().includes(q) ||
         f.answer.toLowerCase().includes(q) ||
-        f.banglaQuestion.includes(query.trim()) ||
-        f.banglaAnswer.includes(query.trim())
+        (f.banglaQuestion ?? '').includes(query.trim()) ||
+        (f.banglaAnswer ?? '').includes(query.trim())
       );
     });
   }, [items, query, cat]);
@@ -111,7 +111,7 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
                       {t(copy.categoryLabels[f.category])}
                     </span>
                     <span className="font-display flex-1 text-lg leading-snug font-semibold transition-colors group-hover:text-rouge md:text-xl">
-                      {t.locale === 'bn' ? f.banglaQuestion : f.question}
+                      {(t.locale === 'bn' && f.banglaQuestion) || f.question}
                     </span>
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-line transition group-data-[state=open]:rotate-45 group-data-[state=open]:border-rouge group-data-[state=open]:bg-rouge group-data-[state=open]:text-white">
                       <Plus size={16} />
@@ -120,7 +120,7 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
                 </Accordion.Header>
                 <Accordion.Content className="overflow-hidden data-[state=closed]:animate-[collapse_.25s_ease] data-[state=open]:animate-[expand_.3s_ease]">
                   <p className="pb-6 text-[15px] leading-relaxed whitespace-pre-line text-muted sm:pl-28 md:pl-30 md:text-base">
-                    {t.locale === 'bn' ? f.banglaAnswer : f.answer}
+                    {(t.locale === 'bn' && f.banglaAnswer) || f.answer}
                   </p>
                 </Accordion.Content>
               </Accordion.Item>
