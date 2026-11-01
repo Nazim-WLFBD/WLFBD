@@ -114,7 +114,7 @@ export function WritingReviews() {
     }
   };
 
-  const input = 'rounded-xl border border-line bg-surface px-3 py-2 text-sm outline-none focus:border-fg/50';
+  const input = 'rounded-xl border border-line bg-surface px-3 py-2 text-base outline-none focus:border-fg/50 sm:text-sm';
 
   if (!rows) return <Loader2 className="animate-spin" />;
   return (

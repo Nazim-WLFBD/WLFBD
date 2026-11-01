@@ -73,6 +73,8 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
             <label className="flex w-full min-w-0 items-center gap-3 rounded-lg border border-line bg-bg px-4 focus-within:border-fg/40">
               <Search size={18} className="shrink-0 text-muted" />
               <input
+                type="search"
+                enterKeyHint="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t(copy.search)}
@@ -89,7 +91,7 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
                   onClick={() => setCat(c)}
                   aria-pressed={cat === c}
                   className={cn(
-                    'relative -mb-px min-h-11 shrink-0 border-b-2 px-3 py-3 text-sm font-semibold whitespace-nowrap transition-colors',
+                    'relative -mb-px min-h-11 min-w-11 shrink-0 border-b-2 px-3 py-3 text-sm font-semibold whitespace-nowrap transition-colors',
                     cat === c ? 'border-rouge text-fg' : 'border-transparent text-muted hover:text-fg',
                   )}
                 >

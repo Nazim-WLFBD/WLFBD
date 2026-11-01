@@ -367,7 +367,7 @@ function Users() {
           </button>
         ))}
       </div>
-      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, email, phone…" className="mb-4 w-full rounded-xl border border-line bg-surface px-4 py-2.5 text-sm" />
+      <input value={q} onChange={(e) => setQ(e.target.value)} type="search" enterKeyHint="search" placeholder="Search name, email, phone…" className="mb-4 w-full text-base sm:text-sm rounded-xl border border-line bg-surface px-4 py-2.5 text-sm" />
       <div className="overflow-x-auto rounded-2xl border border-line">
         <table className="w-full text-left text-sm">
           <thead className="bg-surface-2/60 text-[11px] tracking-wider text-muted uppercase">

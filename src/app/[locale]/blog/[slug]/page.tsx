@@ -192,7 +192,7 @@ export default async function BlogPostPage({ params }: P) {
             <div className="max-w-[70ch] min-w-0">
               {toc.length >= 2 && (
                 <details className="mb-8 rounded-2xl border border-line bg-surface p-5 lg:hidden">
-                  <summary className="cursor-pointer text-sm font-bold text-fg">{ui.toc[locale]}</summary>
+                  <summary className="flex min-h-11 cursor-pointer items-center text-sm font-bold text-fg">{ui.toc[locale]}</summary>
                   <Toc items={toc} title={ui.toc[locale]} bn={bn} className="mt-4" />
                 </details>
               )}

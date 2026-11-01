@@ -160,7 +160,7 @@ export function CrudTab({ path, fields, columns, seed, seedId, newDefaults = {},
     }
   };
 
-  const input = 'w-full rounded-xl border border-line bg-surface px-3 py-2 text-sm outline-none focus:border-fg/50';
+  const input = 'w-full rounded-xl border border-line bg-surface px-3 py-2 text-base outline-none focus:border-fg/50 sm:text-sm';
   const show = (v: unknown) => (Array.isArray(v) ? v.join(', ') : typeof v === 'boolean' ? (v ? 'Yes' : 'No') : v == null ? '' : typeof v === 'object' ? '…' : String(v));
 
   return (

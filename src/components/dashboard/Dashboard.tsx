@@ -83,7 +83,7 @@ export function Dashboard() {
   const recorded = RECORDED_COURSES.filter((r) => profile?.enrolledCourses?.includes(r.id));
   const avg = attempts.length ? Math.round(attempts.reduce((a, x) => a + Number(x.percentage ?? 0), 0) / attempts.length) : null;
   const best = attempts.length ? Math.max(...attempts.map((x) => Number(x.percentage ?? 0))) : null;
-  const input = 'w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm outline-none transition focus:border-bleu focus:ring-2 focus:ring-bleu/20';
+  const input = 'w-full rounded-xl border border-line bg-surface min-h-11 px-3.5 py-2.5 text-base outline-none sm:text-sm transition focus:border-bleu focus:ring-2 focus:ring-bleu/20';
   const name = profile?.displayName || user?.email?.split('@')[0] || '';
 
   return (
@@ -257,13 +257,18 @@ export function Dashboard() {
               value={form.displayName}
               onChange={(e) => setForm({ ...form, displayName: e.target.value })}
               placeholder={t({ en: 'Name', bn: 'নাম' })}
+              aria-label={t({ en: 'Name', bn: 'নাম' })}
+              autoComplete="name"
             />
             <input
               className={input}
               value={form.phoneNumber}
               onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })}
               placeholder={t({ en: 'WhatsApp', bn: 'হোয়াটসঅ্যাপ নম্বর' })}
+              aria-label={t({ en: 'WhatsApp number', bn: 'হোয়াটসঅ্যাপ নম্বর' })}
+              type="tel"
               inputMode="tel"
+              autoComplete="tel"
             />
             <select className={input} value={form.targetGoal} onChange={(e) => setForm({ ...form, targetGoal: e.target.value })}>
               <option value="">{t({ en: 'Goal…', bn: 'লক্ষ্য…' })}</option>

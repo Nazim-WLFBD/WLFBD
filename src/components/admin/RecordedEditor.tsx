@@ -60,7 +60,7 @@ export function RecordedEditor() {
 
   const c = courses.find((x) => x.id === sel)!;
   const patch = (p: Partial<RecordedCourse>) => setCourses(courses.map((x) => (x.id === c.id ? { ...x, ...p } : x)));
-  const input = 'w-full rounded-lg border border-line bg-surface px-2.5 py-1.5 text-sm';
+  const input = 'w-full rounded-lg border border-line bg-surface px-2.5 py-1.5 text-base sm:text-sm';
 
   const save = async () => {
     const fb = firebase()!;
@@ -125,7 +125,7 @@ export function RecordedEditor() {
           Regular price (৳) <input type="number" className={input} value={c.regularPrice} onChange={(e) => patch({ regularPrice: Number(e.target.value) })} />
         </label>
         <label className="text-xs font-bold text-muted md:col-span-2">
-          Thumbnail URL <input className={input} value={c.thumbnail} onChange={(e) => patch({ thumbnail: e.target.value })} />
+          Thumbnail URL <input type="url" className={input} value={c.thumbnail} onChange={(e) => patch({ thumbnail: e.target.value })} />
         </label>
         <label className="flex items-center gap-2 text-sm font-semibold">
           <input type="checkbox" checked={c.published !== false} onChange={(e) => patch({ published: e.target.checked })} /> Published

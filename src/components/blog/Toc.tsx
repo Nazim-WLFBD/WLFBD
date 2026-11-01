@@ -22,7 +22,7 @@ export function Toc({ items, title, bn, className }: Props) {
           <li key={h.id} className="border-b border-line">
             <a
               href={`#${h.id}`}
-              className="group flex min-h-10 items-center gap-3 py-2 pr-2 leading-snug text-muted transition hover:text-fg"
+              className="group flex min-h-11 items-center gap-3 py-2 pr-2 leading-snug text-muted transition hover:text-fg"
             >
               <span aria-hidden className="h-[2px] w-0 shrink-0 bg-rouge transition-all group-hover:w-3" />
               <span className="section-num shrink-0">{String(i + 1).padStart(2, '0')}</span>

@@ -112,7 +112,7 @@ export function Header() {
         <Link
           href="/"
           aria-label={t(ui.homepage)}
-          className={cn(pill, "shrink-0")}
+          className={cn(pill, "min-w-11 shrink-0 justify-center")}
         >
           <span className="hidden xl:block">
             <Logo size={46} priority />
@@ -151,7 +151,7 @@ export function Header() {
         </nav>
 
         {/* Actions */}
-        <div className={cn(pill, "shrink-0 gap-0.5")}>
+        <div className={cn(pill, "shrink-0 gap-2 lg:gap-0.5")}>
           <button
             onClick={openPalette}
             className="flex h-11 w-11 items-center justify-center rounded-full text-white/75 transition hover:bg-white/10 hover:text-white lg:h-10 lg:w-10"

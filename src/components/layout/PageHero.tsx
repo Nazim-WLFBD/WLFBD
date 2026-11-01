@@ -27,7 +27,7 @@ export function PageHero({ eyebrow, title, intro, crumbs, children, className }:
                 {i > 0 && <span aria-hidden className="h-px w-4 bg-white/25" />}
                 {c.href ? (
                   // Tap target ≥44px tall without widening the row's visual rhythm
-                  <Link href={c.href} className="-mx-1 inline-flex min-h-11 items-center px-1 py-2.5 transition hover:text-white">
+                  <Link href={c.href} className="-mx-1 inline-flex min-h-11 min-w-11 items-center px-1.5 py-2.5 transition hover:text-white">
                     {c.label}
                   </Link>
                 ) : (

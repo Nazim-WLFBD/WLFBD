@@ -58,7 +58,7 @@ export function BkashPay({ course, open, onClose }: { course: RecordedCourse; op
     }
   };
 
-  const input = 'w-full rounded-xl border border-line bg-surface px-4 py-3 text-[15px] outline-none transition focus:border-bleu focus:ring-2 focus:ring-bleu/20';
+  const input = 'w-full rounded-xl border border-line bg-surface px-4 py-3 text-base outline-none sm:text-[15px] transition focus:border-bleu focus:ring-2 focus:ring-bleu/20';
 
   return (
     <Dialog.Root open={open} onOpenChange={(o) => !o && onClose()}>
@@ -134,9 +134,9 @@ export function BkashPay({ course, open, onClose }: { course: RecordedCourse; op
                 </ol>
               </div>
               <input value={profile?.displayName ?? ''} readOnly className={`${input} opacity-70`} aria-label={t({ en: 'Name', bn: 'নাম' })} />
-              <input value={user?.email ?? ''} readOnly className={`${input} opacity-70`} aria-label={t({ en: 'Email', bn: 'ইমেইল' })} />
-              <input value={sender} onChange={(e) => setSender(e.target.value)} placeholder={t({ en: 'Sender bKash number', bn: 'প্রেরক বিকাশ নম্বর' })} inputMode="tel" className={input} />
-              <input value={trx} onChange={(e) => setTrx(e.target.value.toUpperCase())} placeholder="TrxID" className={`${input} font-mono`} />
+              <input type="email" value={user?.email ?? ''} readOnly className={`${input} opacity-70`} aria-label={t({ en: 'Email', bn: 'ইমেইল' })} />
+              <input value={sender} onChange={(e) => setSender(e.target.value)} type="tel" inputMode="tel" autoComplete="tel" enterKeyHint="next" placeholder={t({ en: 'Sender bKash number', bn: 'প্রেরক বিকাশ নম্বর' })} className={input} />
+              <input value={trx} onChange={(e) => setTrx(e.target.value.toUpperCase())} autoCapitalize="characters" autoComplete="off" spellCheck={false} enterKeyHint="next" placeholder="TrxID" className={`${input} font-mono`} />
               <input value={note} onChange={(e) => setNote(e.target.value)} placeholder={t({ en: 'Note (optional)', bn: 'নোট (ঐচ্ছিক)' })} className={input} />
               {err && <p className="rounded-xl border border-rouge/30 bg-red-soft p-3 text-sm font-medium text-rouge">{err}</p>}
               <button disabled={busy} className={btn('rouge', 'md', 'mt-1')}>
