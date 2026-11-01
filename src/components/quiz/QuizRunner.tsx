@@ -64,6 +64,8 @@ export function QuizRunner({
   const answersRef = useRef(answers);
   answersRef.current = answers;
   const startedAt = useRef(0);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [jump, setJump] = useState(0); // bumped on Next / Previous / navigator jumps to scroll the card into view
 
   // Questions added by admins are normally passed in from the server; this fallback fetch is only for callers
   // that render the runner without them
@@ -107,6 +109,20 @@ export function QuizRunner({
       localStorage.setItem(storeKey, JSON.stringify({ answers, flags, plays, left, startedAt: startedAt.current }));
     } catch {}
   }, [answers, flags, plays, left, phase, storeKey]);
+
+  // While a test is in progress the phone bottom bar and the floating support / back-to-top cluster step aside
+  // (globals.css hides them under body.quiz-active), so they never cover answers or the Next button
+  useEffect(() => {
+    if (phase !== 'running' && phase !== 'review') return;
+    document.body.classList.add('quiz-active');
+    return () => document.body.classList.remove('quiz-active');
+  }, [phase]);
+
+  // After moving between questions, bring the top of the question card back into view (instant: Lenis ignores
+  // native smooth scrolling). scroll-mt on the card clears the fixed header and the sticky phone timer.
+  useEffect(() => {
+    if (jump) cardRef.current?.scrollIntoView({ block: 'start' });
+  }, [jump]);
 
   // Stop any text-to-speech when the question changes or the runner unmounts
   useEffect(() => {
@@ -173,6 +189,12 @@ export function QuizRunner({
   const q = questions[i];
   const answered = questions.filter((x) => answersRef.current[x.id] != null && answersRef.current[x.id] !== '').length;
   const setAnswer = (v: unknown) => setAnswers((a) => ({ ...a, [q.id]: v }));
+  /** Go to question k (from any phase) and scroll its card into view. */
+  const goTo = (k: number) => {
+    setI(Math.max(0, Math.min(questions.length - 1, k)));
+    setPhase('running');
+    setJump((n) => n + 1);
+  };
   const speak = (text: string) => {
     const u = new SpeechSynthesisUtterance(text);
     u.lang = 'fr-FR';
@@ -428,9 +450,9 @@ export function QuizRunner({
             {t({ en: `${missing} question(s) unanswered.`, bn: `${num(missing, 'bn')}টি প্রশ্নের উত্তর দেওয়া হয়নি।` })}
           </p>
         )}
-        <Navigator questions={questions} answers={answers} flags={flags} current={-1} onGo={(k) => (setI(k), setPhase('running'))} locale={t.locale} />
+        <Navigator questions={questions} answers={answers} flags={flags} current={-1} onGo={goTo} locale={t.locale} />
         <div className="hairline mt-6 flex flex-wrap gap-3 pt-6">
-          <button onClick={() => setPhase('running')} className={btn('ghost', 'md')}>
+          <button onClick={() => goTo(i)} className={btn('ghost', 'md')}>
             <ArrowLeft size={16} /> {t({ en: 'Back to questions', bn: 'প্রশ্নে ফিরে যান' })}
           </button>
           <button onClick={finish} className={btn('rouge', 'md')}>
@@ -449,7 +471,7 @@ export function QuizRunner({
       {/* Phones/tablets: compact timer that stays visible while scrolling (the sidebar sits below there) */}
       <div
         className={cn(
-          'sticky top-[84px] z-20 flex items-center justify-between rounded-xl px-4 py-2.5 text-white shadow-[var(--shadow-card)] lg:hidden',
+          'sticky top-[calc(84px+env(safe-area-inset-top))] z-20 flex items-center justify-between rounded-xl px-4 py-2.5 text-white shadow-[var(--shadow-card)] lg:hidden',
           left < 60 ? 'bg-rouge' : 'bg-ink',
         )}
       >
@@ -460,7 +482,7 @@ export function QuizRunner({
           <Clock size={16} /> {fmt(left)}
         </span>
       </div>
-      <div className="card p-5 md:p-8">
+      <div ref={cardRef} className="card scroll-mt-36 p-5 md:p-8">
         <div className="flex items-center justify-between gap-3">
           <span className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">
             {t({ en: 'Question', bn: 'প্রশ্ন' })} <span className="font-display text-base tracking-normal text-fg tabular-nums">{num(i + 1, t.locale)}</span> / {num(questions.length, t.locale)}
@@ -556,7 +578,7 @@ export function QuizRunner({
 
         <div className="hairline mt-8 flex items-center justify-between gap-2 pt-6">
           <button
-            onClick={() => setI((k) => Math.max(0, k - 1))}
+            onClick={() => goTo(i - 1)}
             disabled={i === 0}
             className={btn('ghost', 'md', 'px-4 sm:px-6')}
             aria-label={t({ en: 'Previous', bn: 'আগের' })}
@@ -571,7 +593,7 @@ export function QuizRunner({
             <Flag size={15} fill={flags.includes(q.id) ? 'currentColor' : 'none'} /> {t({ en: 'Flag', bn: 'চিহ্নিত' })}
           </button>
           {i < questions.length - 1 ? (
-            <button onClick={() => setI((k) => k + 1)} className={btn('ink', 'md')}>
+            <button onClick={() => goTo(i + 1)} className={btn('ink', 'md')}>
               {t({ en: 'Next', bn: 'পরের' })} <ArrowRight size={16} />
             </button>
           ) : (
@@ -593,7 +615,7 @@ export function QuizRunner({
           <p className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">
             <span className="font-display text-base tracking-normal text-fg tabular-nums">{num(answered, t.locale)}</span> / {num(questions.length, t.locale)} {t({ en: 'answered', bn: 'উত্তর দেওয়া হয়েছে' })}
           </p>
-          <Navigator questions={questions} answers={answers} flags={flags} current={i} onGo={setI} locale={t.locale} />
+          <Navigator questions={questions} answers={answers} flags={flags} current={i} onGo={goTo} locale={t.locale} />
           <button onClick={() => setPhase('review')} className={btn('rouge', 'sm', 'mt-4 w-full')}>
             {t({ en: 'Finish test', bn: 'টেস্ট শেষ করুন' })}
           </button>
@@ -708,7 +730,8 @@ function Navigator({
   locale: 'en' | 'bn';
 }) {
   return (
-    <div className="mt-4 grid grid-cols-8 gap-1.5">
+    // Phones/tablets: as many ≥44px cells per row as fit; the narrow desktop sidebar keeps its 8-column grid
+    <div className="mt-4 grid grid-cols-[repeat(auto-fill,minmax(44px,1fr))] gap-1.5 lg:grid-cols-8">
       {questions.map((q, k) => {
         const done = answers[q.id] != null && answers[q.id] !== '';
         return (
@@ -717,7 +740,7 @@ function Navigator({
             onClick={() => onGo(k)}
             aria-label={locale === 'bn' ? `প্রশ্ন ${num(k + 1, 'bn')}` : `Question ${k + 1}`}
             className={cn(
-              'relative h-10 rounded-md border text-xs font-bold transition tabular-nums',
+              'relative h-11 rounded-md border text-xs font-bold transition tabular-nums lg:h-10',
               k === current
                 ? 'border-rouge bg-rouge text-white'
                 : done

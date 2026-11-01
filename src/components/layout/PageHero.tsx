@@ -26,12 +26,12 @@ export function PageHero({ eyebrow, title, intro, crumbs, children, className }:
               <span key={c.label} className="flex items-center gap-3">
                 {i > 0 && <span aria-hidden className="h-px w-4 bg-white/25" />}
                 {c.href ? (
-                  // Tap target ≥40px tall without widening the row's visual rhythm
-                  <Link href={c.href} className="-mx-1 inline-flex min-h-10 items-center px-1 py-2.5 transition hover:text-white">
+                  // Tap target ≥44px tall without widening the row's visual rhythm
+                  <Link href={c.href} className="-mx-1 inline-flex min-h-11 items-center px-1 py-2.5 transition hover:text-white">
                     {c.label}
                   </Link>
                 ) : (
-                  <span className="inline-flex min-h-10 items-center py-2.5 text-white/85" aria-current="page">
+                  <span className="inline-flex min-h-11 items-center py-2.5 text-white/85" aria-current="page">
                     {c.label}
                   </span>
                 )}

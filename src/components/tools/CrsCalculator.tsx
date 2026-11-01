@@ -75,7 +75,8 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
     { l: t(copy.frL), v: r.french, c: 'bg-maple' },
   ];
 
-  const field = 'w-full rounded-xl border border-line bg-surface px-4 py-3 text-[15px] outline-none transition focus:border-bleu focus:ring-2 focus:ring-bleu/20';
+  // text-base (16px) on phones: iOS Safari zooms the page into any field with a smaller font
+  const field = 'w-full rounded-xl border border-line bg-surface px-4 py-3 text-base outline-none transition focus:border-bleu focus:ring-2 focus:ring-bleu/20 sm:text-[15px]';
   const label = 'mb-2 block text-[11px] font-bold tracking-[0.14em] text-muted uppercase';
 
   return (
@@ -136,7 +137,7 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
               aria-checked={hasFrench}
               onClick={() => setHasFrench(!hasFrench)}
               className={cn(
-                'min-h-10 shrink-0 rounded-lg border px-4 py-2 text-[11px] font-extrabold tracking-wider transition',
+                'min-h-11 shrink-0 rounded-lg border px-4 py-2 text-[11px] font-extrabold tracking-wider transition',
                 hasFrench ? 'border-rouge bg-rouge text-white' : 'border-line bg-surface text-muted',
               )}
             >

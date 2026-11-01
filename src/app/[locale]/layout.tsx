@@ -15,7 +15,7 @@ import { MobileBottomBar } from '@/components/layout/MobileBottomBar';
 import { SmoothScroll } from '@/components/layout/SmoothScroll';
 import { CommandPalette } from '@/components/layout/CommandPalette';
 import { LegacyHashRedirect } from '@/components/layout/LegacyHashRedirect';
-import { themeScript } from '@/components/layout/ThemeToggle';
+
 import { Providers } from '@/components/Providers';
 import { CoursesProvider } from '@/components/CoursesProvider';
 import { getCombos, getCourses } from '@/lib/content';
@@ -44,6 +44,8 @@ export const viewport: Viewport = {
   themeColor: '#0e1a2f',
   width: 'device-width',
   initialScale: 1,
+  // Lets the fixed header / bottom bar reach under notches; they pad themselves with env(safe-area-inset-*)
+  viewportFit: 'cover',
 };
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -107,6 +109,12 @@ const jsonLd = {
   },
 };
 
+// Runs before first paint: marks <html class="js"> (scroll-reveal hidden states only apply with JS) and applies
+// the saved theme. Inlined here rather than imported: ThemeToggle is a 'use client' module, so importing its
+// `themeScript` string into this server component yields a client reference, not the string. Keep 'wlf-theme'
+// in sync with THEME_KEY in ThemeToggle.tsx.
+const headScript = `(function(){var d=document.documentElement;d.classList.add('js');try{var t=localStorage.getItem('wlf-theme');if(t==='dark'||t==='light')d.dataset.theme=t;}catch(e){}})();`;
+
 const pixel = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${FACEBOOK_PIXEL_ID}');fbq('track','PageView');`;
 
 export default async function LocaleLayout({
@@ -130,7 +138,7 @@ export default async function LocaleLayout({
       <body>
         {/* Inline scripts live at the top of <body>: React 19 hoists <script> children of <head> and the
             server/client trees then disagree (hydration mismatch). The theme script still runs before paint. */}
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script dangerouslySetInnerHTML={{ __html: headScript }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
         <NextIntlClientProvider>
           <Providers>

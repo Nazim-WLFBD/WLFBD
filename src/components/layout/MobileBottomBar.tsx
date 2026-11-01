@@ -5,15 +5,20 @@ import { Link } from '@/i18n/navigation';
 import { useT } from '@/i18n/t';
 import { ui } from '@/content/home';
 
-const item = 'flex flex-col items-center justify-center gap-1 rounded-2xl py-1.5 text-[11px] font-bold';
+const item = 'flex min-h-11 flex-col items-center justify-center gap-1 rounded-2xl py-1.5 text-xs leading-tight font-bold';
 
-/** Phone-only action bar: Courses, Free Quiz, Free Class (opens the registration sheet), Enroll. */
+/**
+ * Phone-only action bar (hidden from md up): Courses, Free Quiz, Free Class (opens the registration sheet), Enroll.
+ * Solid surface with a hairline + soft shadow rather than a backdrop blur, which is costly on phone GPUs.
+ * `data-bottom-bar` lets globals.css hide it while a quiz is running (body.quiz-active).
+ */
 export function MobileBottomBar() {
   const t = useT();
   return (
     <nav
+      data-bottom-bar
       aria-label={t(ui.quickActions)}
-      className="glass-paper fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 gap-1 px-2 pt-2 pb-[max(8px,env(safe-area-inset-bottom))] lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 gap-1 border-t border-line bg-surface/97 px-2 pt-2 pb-[max(8px,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_-16px_rgba(15,23,42,.35)] md:hidden"
     >
       <Link href="/courses" className={`${item} text-fg`}>
         <BookOpen size={19} />

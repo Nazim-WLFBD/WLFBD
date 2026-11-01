@@ -48,6 +48,10 @@ const SERVER_ERRORS: Record<EnrollErrorCode, L> = {
 };
 const FALLBACK_ERROR: L = { en: 'Could not submit. Please try WhatsApp.', bn: 'জমা দেওয়া যায়নি। অনুগ্রহ করে WhatsApp-এ চেষ্টা করুন।' };
 const FIELD_STEP: Record<ErrorField, number> = { phone: 1, email: 1, senderPhone: 2, trxId: 2 };
+/** Form fields in on-screen order, with their element ids (used to focus the first invalid one). */
+const FIELD_IDS = { name: 'enroll-name', phone: 'enroll-phone', email: 'enroll-email', senderPhone: 'enroll-sender', trxId: 'enroll-trx' } as const;
+type FieldKey = keyof typeof FIELD_IDS;
+const FIELD_ORDER = Object.keys(FIELD_IDS) as FieldKey[];
 const METHOD_LABEL: Record<PaymentMethod, L> = {
   bkash: { en: 'bKash', bn: 'bKash' },
   nagad: { en: 'Nagad', bn: 'Nagad' },
@@ -145,12 +149,24 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
   const card = useRef<HTMLDivElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const prevStep = useRef(step);
+  // Field to bring into view after the next render (first invalid field after a failed Continue/submit)
+  const pendingFocus = useRef<FieldKey | null>(null);
   useEffect(() => {
     if (prevStep.current === step) return;
     prevStep.current = step;
+    if (pendingFocus.current) return; // a server error sent us back to a field: the effect below focuses it instead
     card.current?.scrollIntoView({ block: 'start', behavior: 'auto' });
     heading.current?.focus({ preventScroll: true });
   }, [step]);
+  useEffect(() => {
+    const key = pendingFocus.current;
+    if (!key) return;
+    pendingFocus.current = null;
+    const el = document.getElementById(FIELD_IDS[key]);
+    if (!el) return;
+    el.scrollIntoView({ block: 'center' });
+    el.focus({ preventScroll: true });
+  }, [errors, step]);
 
   const validate = (s: number) => {
     const e: Record<string, string> = {};
@@ -163,6 +179,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
       if (!/^(\+?88)?01[3-9]\d{8}$/.test(senderPhone.replace(/[\s-]/g, ''))) e.senderPhone = t(copy.errors.phone);
       if (trxId.trim().length < 6) e.trxId = t(copy.errors.trx);
     }
+    pendingFocus.current = FIELD_ORDER.find((k) => e[k]) ?? null;
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -170,7 +187,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
   const next = () => validate(step) && setStep((s) => s + 1);
 
   const submit = async () => {
-    if (!course || !validate(step)) return;
+    if (busy || !course || !validate(step)) return;
     const data: EnrollmentInput = {
       courseId: course.id,
       courseTitle: course.title,
@@ -199,6 +216,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
       const message = known ? t(known) : err instanceof Error && err.message ? err.message : t(FALLBACK_ERROR);
       if (field && field in FIELD_STEP) {
         const f = field as ErrorField;
+        pendingFocus.current = f;
         setErrors({ [f]: message });
         setStep(FIELD_STEP[f]);
         setFailure(null);
@@ -220,11 +238,25 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
         : `Bonjour! I'm ${done.name}. Enrolled in ${done.courseTitle} (${done.batchLabel}). Paid ${taka(done.amount)} via ${t(METHOD_LABEL[done.method])}${done.trxId ? `, TrxID ${done.trxId}` : ''}. Phone: ${done.phone}`
     : '';
 
+  // text-base (16px) on phones: iOS Safari zooms the page into any field with a smaller font
   const field = (err?: string) =>
     cn(
-      'w-full rounded-xl border bg-surface px-4 py-3 text-[15px] outline-none transition focus:border-bleu focus:ring-2 focus:ring-bleu/20',
+      'w-full rounded-xl border bg-surface px-4 py-3 text-base outline-none transition focus:border-bleu focus:ring-2 focus:ring-bleu/20 sm:text-[15px]',
       err ? 'border-rouge' : 'border-line',
     );
+  // id + error wiring for a field: the error text is announced with the input
+  const a11y = (k: FieldKey) => ({
+    id: FIELD_IDS[k],
+    'aria-invalid': errors[k] ? true : undefined,
+    'aria-describedby': errors[k] ? `${FIELD_IDS[k]}-error` : undefined,
+  });
+  const isLastStep = step === steps.length - 1;
+  // Keyboard Go/Enter submits the step's form: Continue on earlier steps, the final confirm on the last
+  const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (isLastStep) void submit();
+    else next();
+  };
 
   if (!course) {
     return (
@@ -292,7 +324,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                 setTrxId('');
                 setSenderPhone('');
               }}
-              className="mx-auto mt-3 block min-h-10 text-sm font-semibold text-bleu hover:underline"
+              className="mx-auto mt-3 block min-h-11 text-sm font-semibold text-bleu hover:underline"
             >
               {t(copy.newOne)}
             </button>
@@ -327,6 +359,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
           ))}
         </ol>
 
+        <form noValidate onSubmit={onFormSubmit}>
         <motion.div key={step} initial={{ opacity: 0.4, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25 }}>
             {/* Step heading: the focus target after Continue/Back (the stepper's labels are hidden on phones) */}
             <h2 ref={heading} tabIndex={-1} className="mb-5 text-[11px] font-bold tracking-[0.14em] text-rouge uppercase outline-none">
@@ -396,22 +429,39 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
 
             {step === 1 && (
               <div className="flex flex-col gap-5">
-                <Field label={t(copy.name)} error={errors.name}>
-                  <input value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" className={field(errors.name)} />
-                </Field>
-                <Field label={t(copy.phone)} error={errors.phone}>
+                <Field label={t(copy.name)} error={errors.name} errorId={`${FIELD_IDS.name}-error`}>
                   <input
+                    {...a11y('name')}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    autoComplete="name"
+                    enterKeyHint="next"
+                    className={field(errors.name)}
+                  />
+                </Field>
+                <Field label={t(copy.phone)} error={errors.phone} errorId={`${FIELD_IDS.phone}-error`}>
+                  <input
+                    {...a11y('phone')}
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     type="tel"
-                    inputMode="numeric"
+                    inputMode="tel"
                     autoComplete="tel"
+                    enterKeyHint="next"
                     placeholder="01XXXXXXXXX"
                     className={field(errors.phone)}
                   />
                 </Field>
-                <Field label={t(copy.email)} error={errors.email}>
-                  <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" autoComplete="email" className={field(errors.email)} />
+                <Field label={t(copy.email)} error={errors.email} errorId={`${FIELD_IDS.email}-error`}>
+                  <input
+                    {...a11y('email')}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    type="email"
+                    autoComplete="email"
+                    enterKeyHint="go"
+                    className={field(errors.email)}
+                  />
                 </Field>
                 {custom && (
                   <div className="rounded-xl bg-surface-2 p-4 text-sm leading-relaxed">
@@ -476,7 +526,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                           setCopied(true);
                           setTimeout(() => setCopied(false), 2000);
                         }}
-                        className="flex min-h-10 items-center gap-1.5 rounded-lg bg-ink px-3 py-1.5 text-xs font-bold text-white dark:bg-white dark:text-ink"
+                        className="flex min-h-11 items-center gap-1.5 rounded-lg bg-ink px-3 py-1.5 text-xs font-bold text-white dark:bg-white dark:text-ink"
                       >
                         {copied ? <Check size={13} /> : <Copy size={13} />} {t(copied ? copy.copied : copy.copy)}
                       </button>
@@ -498,19 +548,23 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                       ))}
                     </ol>
                     <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                      <Field label={t(copy.sender)} error={errors.senderPhone}>
+                      <Field label={t(copy.sender)} error={errors.senderPhone} errorId={`${FIELD_IDS.senderPhone}-error`}>
                         <input
+                          {...a11y('senderPhone')}
                           value={senderPhone}
                           onChange={(e) => setSenderPhone(e.target.value)}
                           type="tel"
-                          inputMode="numeric"
+                          inputMode="tel"
                           autoComplete="tel"
+                          enterKeyHint="next"
                           placeholder="01XXXXXXXXX"
                           className={field(errors.senderPhone)}
                         />
                       </Field>
-                      <Field label={t(copy.trx)} error={errors.trxId}>
+                      <Field label={t(copy.trx)} error={errors.trxId} errorId={`${FIELD_IDS.trxId}-error`}>
                         <input
+                          {...a11y('trxId')}
+                          enterKeyHint="go"
                           value={trxId}
                           onChange={(e) => setTrxId(e.target.value.toUpperCase())}
                           autoCapitalize="characters"
@@ -529,7 +583,11 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
             )}
         </motion.div>
 
-        {failure && <p className="mt-5 rounded-xl border border-rouge/30 bg-red-soft p-4 text-sm font-medium text-rouge">{failure}</p>}
+        {failure && (
+          <p role="alert" className="mt-5 rounded-xl border border-rouge/30 bg-red-soft p-4 text-sm font-medium text-rouge">
+            {failure}
+          </p>
+        )}
 
         <div className="hairline mt-8 flex items-center justify-between gap-3 pt-6">
           {step > 0 ? (
@@ -539,17 +597,18 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
           ) : (
             <span />
           )}
-          {step < steps.length - 1 ? (
-            <button type="button" onClick={next} className={btn('ink', 'md')}>
+          {!isLastStep ? (
+            <button type="submit" className={btn('ink', 'md')}>
               {t(copy.next)} <ArrowRight size={16} />
             </button>
           ) : (
-            <button type="button" onClick={submit} disabled={busy} className={btn('rouge', 'md')}>
+            <button type="submit" disabled={busy} className={btn('rouge', 'md')}>
               {busy && <Loader2 size={16} className="animate-spin" />}
               {t(custom ? copy.submitCustom : copy.submit)}
             </button>
           )}
         </div>
+        </form>
       </div>
 
       {/* Summary */}
@@ -587,12 +646,16 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
   );
 }
 
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+function Field({ label, error, errorId, children }: { label: string; error?: string; errorId?: string; children: React.ReactNode }) {
   return (
     <label className="block">
       <span className="mb-2 block text-[11px] font-bold tracking-[0.14em] text-muted uppercase">{label}</span>
       {children}
-      {error && <span className="mt-1.5 block text-xs font-semibold text-rouge">{error}</span>}
+      {error && (
+        <span id={errorId} className="mt-1.5 block text-xs font-semibold text-rouge">
+          {error}
+        </span>
+      )}
     </label>
   );
 }

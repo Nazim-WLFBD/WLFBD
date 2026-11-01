@@ -1,25 +1,47 @@
 'use client';
 
-import { motion, useReducedMotion, type HTMLMotionProps } from 'motion/react';
+import { useEffect, useRef, useState, type HTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
 
-type Props = HTMLMotionProps<'div'> & { delay?: number; y?: number };
+type Props = HTMLAttributes<HTMLDivElement> & { delay?: number; y?: number };
 
 /**
- * Fades and lifts its children into view once, as they scroll in. `initial` is the same on the server and the
- * client (useReducedMotion differs between them, which would break hydration); reduced-motion users get a
- * zero-length transition instead.
+ * Fades and lifts its children into view once, as they scroll in. CSS-driven (see `.reveal` in globals.css):
+ * the server HTML is fully visible, and the hidden start state only applies once the inline head script has
+ * put `js` on <html>, so content never depends on JavaScript to show. Reduced-motion users get no transition.
  */
-export function Reveal({ delay = 0, y = 28, children, ...rest }: Props) {
-  const reduce = useReducedMotion();
+export function Reveal({ delay = 0, y = 24, className, style, children, ...rest }: Props) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      setInView(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setInView(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: '0px 0px -12% 0px' },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '0px 0px -12% 0px' }}
-      transition={reduce ? { duration: 0 } : { duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
+    <div
+      ref={ref}
+      className={cn('reveal', inView && 'is-in', className)}
+      style={{ ...(delay ? { '--reveal-delay': `${delay}s` } : null), ...(y !== 24 ? { '--reveal-y': `${y}px` } : null), ...style } as React.CSSProperties}
       {...rest}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }

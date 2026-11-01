@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Lightbulb, Monitor } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { useT } from '@/i18n/t';
@@ -30,8 +30,28 @@ function slotOf(b: BatchSchedule) {
 export function Schedule({ batches = BATCH_SCHEDULES }: { batches?: BatchSchedule[] }) {
   const t = useT();
   const [hover, setHover] = useState<string | null>(null);
+  const [flash, setFlash] = useState<string | null>(null); // batch row briefly highlighted after tapping its cell
+  const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const bn = t.locale === 'bn';
   const nameOf = (b: BatchSchedule) => (bn ? (b.banglaBatchName ?? b.batchName) : b.batchName);
+  /** Short day names for a batch, e.g. "Fri / Sun" (bn "শুক্র / রবি"). */
+  const shortDays = (b: BatchSchedule) =>
+    b.dayKeys
+      .map((d) => schedule.days[d as keyof typeof schedule.days])
+      .filter(Boolean)
+      .map((d) => t(d))
+      .join(' / ') || (bn ? b.banglaDays : b.days);
+
+  useEffect(() => () => void (flashTimer.current && clearTimeout(flashTimer.current)), []);
+
+  // Tap (or click) a timetable cell: scroll to its batch row and highlight it for a moment. Hover still links
+  // cell and row on desktop; this makes the link work on touch screens too.
+  const showBatch = (id: string) => {
+    document.getElementById(`row-${id}`)?.scrollIntoView({ block: 'center' });
+    setFlash(id);
+    if (flashTimer.current) clearTimeout(flashTimer.current);
+    flashTimer.current = setTimeout(() => setFlash(null), 2000);
+  };
 
   return (
     <section id="schedule" className="relative bg-surface py-20 md:py-28">
@@ -42,7 +62,7 @@ export function Schedule({ batches = BATCH_SCHEDULES }: { batches?: BatchSchedul
           {/* Weekly timetable */}
           <Reveal>
             <div className="card overflow-hidden">
-              <div className="grid grid-cols-[72px_repeat(4,minmax(0,1fr))] border-b border-line text-center text-[11px] font-bold tracking-[0.16em] text-muted uppercase sm:grid-cols-[120px_repeat(4,minmax(0,1fr))]">
+              <div className="grid grid-cols-[72px_repeat(4,minmax(0,1fr))] border-b border-line text-center text-xs font-bold tracking-[0.12em] text-muted uppercase sm:grid-cols-[120px_repeat(4,minmax(0,1fr))] sm:tracking-[0.16em]">
                 <div className="p-3 text-left sm:p-4">{t(schedule.bst)}</div>
                 {DAYS.map((d) => (
                   <div key={d} className="border-l border-line px-1 py-4 sm:p-4">
@@ -53,25 +73,30 @@ export function Schedule({ batches = BATCH_SCHEDULES }: { batches?: BatchSchedul
               {schedule.slots.map((slot) => (
                 <div key={slot.id} className="grid grid-cols-[72px_repeat(4,minmax(0,1fr))] border-b border-line last:border-0 sm:grid-cols-[120px_repeat(4,minmax(0,1fr))]">
                   <div className="flex items-center p-3 sm:p-4">
-                    <span className="eyebrow text-[10px] leading-tight text-fg before:hidden sm:text-[11px] sm:before:block sm:before:w-4">{t(slot.label)}</span>
+                    <span className="eyebrow leading-tight tracking-[0.08em] text-fg before:hidden sm:tracking-[0.18em] sm:before:block sm:before:w-4">{t(slot.label)}</span>
                   </div>
                   {DAYS.map((d) => {
                     const b = batches.find((x) => x.dayKeys.includes(d) && slotOf(x) === slot.id);
                     return (
                       <div key={d} className="border-l border-line p-1.5 sm:p-2.5">
                         {b && (
-                          <div
+                          <button
+                            type="button"
+                            onClick={() => showBatch(b.id)}
                             onMouseEnter={() => setHover(b.id)}
                             onMouseLeave={() => setHover(null)}
+                            aria-label={`${t({ en: 'Show batch', bn: 'ব্যাচ দেখুন' })} ${String(batches.indexOf(b) + 1).padStart(2, '0')}: ${nameOf(b)}`}
                             className={cn(
-                              'flex h-full min-h-[72px] flex-col justify-between rounded-md border-l-2 p-2 text-[10px] font-bold transition-opacity duration-300 sm:min-h-[88px] sm:p-3 sm:text-xs',
+                              'flex h-full min-h-[72px] w-full cursor-pointer flex-col justify-between gap-1 rounded-md border-l-2 p-2 text-left text-xs font-bold transition-opacity duration-300 sm:min-h-[88px] sm:p-3',
                               PAIR[pairOf(b)].cell,
-                              hover && hover !== b.id && 'opacity-40',
+                              (hover || flash) && hover !== b.id && flash !== b.id && 'opacity-40',
                             )}
                           >
                             <span className="font-display text-base leading-none font-semibold sm:text-lg">{String(batches.indexOf(b) + 1).padStart(2, '0')}</span>
+                            {/* Phones: short day names (the full ones don't fit a quarter-width cell) */}
+                            <span className="leading-tight sm:hidden">{shortDays(b)}</span>
                             <span className="hidden leading-tight sm:block">{bn ? b.banglaDays : b.days}</span>
-                          </div>
+                          </button>
                         )}
                       </div>
                     );
@@ -95,9 +120,14 @@ export function Schedule({ batches = BATCH_SCHEDULES }: { batches?: BatchSchedul
                 return (
                   <Reveal key={b.id} delay={i * 0.05}>
                     <div
+                      id={`row-${b.id}`}
                       onMouseEnter={() => setHover(b.id)}
                       onMouseLeave={() => setHover(null)}
-                      className={cn('hairline flex items-center gap-4 py-4 transition-colors', hover === b.id && 'bg-surface-2/60')}
+                      className={cn(
+                        'hairline flex items-center gap-4 py-4 transition-colors duration-500',
+                        hover === b.id && 'bg-surface-2/60',
+                        flash === b.id && 'bg-gold/15 ring-2 ring-gold/50 ring-inset',
+                      )}
                     >
                       <span className={cn('font-display w-8 shrink-0 text-2xl leading-none font-semibold', PAIR[pairOf(b)].num)}>
                         {String(i + 1).padStart(2, '0')}
@@ -111,7 +141,7 @@ export function Schedule({ batches = BATCH_SCHEDULES }: { batches?: BatchSchedul
                           </p>
                         )}
                       </div>
-                      <Link href={{ pathname: '/enroll', query: { batch: b.id } }} aria-label={`${t(schedule.book)}: ${nameOf(b)}`} className={btn('rouge', 'sm', 'shrink-0 px-3')}>
+                      <Link href={{ pathname: '/enroll', query: { batch: b.id } }} aria-label={`${t(schedule.book)}: ${nameOf(b)}`} className={btn('rouge', 'sm', 'min-w-11 shrink-0 px-3')}>
                         <span className="hidden sm:inline">{t(schedule.book)}</span>
                         <ArrowRight size={16} />
                       </Link>

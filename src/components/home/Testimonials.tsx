@@ -201,7 +201,7 @@ export function Testimonials({ items = TESTIMONIALS_DATA }: { items?: Testimonia
               <blockquote className="mt-3 min-h-0 flex-1">
                 <p className={cn('font-display text-[1.2rem] leading-[1.5] whitespace-pre-line italic md:text-[1.3rem]', long && 'line-clamp-6')}>{quote}</p>
                 {long && (
-                  <button onClick={() => (setPaused(true), setOpen(r))} className="mt-2 -ml-1 inline-flex min-h-10 items-center px-1 text-sm font-bold text-rouge hover:underline">
+                  <button onClick={() => (setPaused(true), setOpen(r))} className="mt-2 -ml-1 inline-flex min-h-11 items-center px-1 text-sm font-bold text-rouge hover:underline">
                     {t(copy.readFull)} →
                   </button>
                 )}
@@ -235,14 +235,14 @@ export function Testimonials({ items = TESTIMONIALS_DATA }: { items?: Testimonia
           <Dialog.Overlay className="fixed inset-0 z-[90] bg-ink/70" />
           <Dialog.Content
             data-lenis-prevent
-            className="fixed top-1/2 left-1/2 z-[91] max-h-[88vh] w-[min(640px,calc(100vw-24px))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[var(--radius)] border border-line bg-surface p-7 text-fg md:p-9"
+            className="fixed top-1/2 left-1/2 z-[91] max-h-[85dvh] w-[min(640px,calc(100vw-24px))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[var(--radius)] border border-line bg-surface p-7 text-fg md:p-9"
             aria-describedby={undefined}
           >
             {open && (
               <>
                 <div className="flex items-center justify-between">
                   <Stars n={open.rating ?? 5} />
-                  <Dialog.Close aria-label={t(copy.close)} className="flex h-10 w-10 items-center justify-center rounded-lg hover:bg-fg/10">
+                  <Dialog.Close aria-label={t(copy.close)} className="-mr-2 flex h-11 w-11 items-center justify-center rounded-lg hover:bg-fg/10">
                     <X size={18} />
                   </Dialog.Close>
                 </div>

@@ -28,7 +28,7 @@ export function LangSwitch({ light = true }: { light?: boolean }) {
           onClick={() => go(l)}
           aria-pressed={locale === l}
           className={cn(
-            'rounded-full px-3 py-1.5 transition',
+            'flex min-h-11 min-w-11 items-center justify-center rounded-full px-4 transition',
             locale === l ? 'bg-white text-ink' : light ? 'text-white/70 hover:text-white' : 'text-muted',
             l === 'bn' && 'font-bangla',
           )}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AnimatePresence, LayoutGroup, motion } from 'motion/react';
 import { ArrowRight, ShieldCheck, X } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
@@ -35,6 +35,14 @@ export function CourseExplorer({ notchClass = 'bg-bg', layout = 'swipe' }: Props
   const toggleCompare = (id: string) =>
     setCompare((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : cur.length >= 3 ? [...cur.slice(1), id] : [...cur, id]));
   const compared = courses.filter((c) => compare.includes(c.id));
+  const comparing = compare.length > 0;
+
+  // While the compare drawer is open, back-to-top steps aside (globals.css: body.comparing) so it can't sit on the drawer
+  useEffect(() => {
+    if (!comparing) return;
+    document.body.classList.add('comparing');
+    return () => document.body.classList.remove('comparing');
+  }, [comparing]);
 
   return (
     <>
@@ -82,7 +90,8 @@ export function CourseExplorer({ notchClass = 'bg-bg', layout = 'swipe' }: Props
               : 'grid gap-6',
           )}
         >
-          <AnimatePresence mode="popLayout">
+          {/* initial={false}: cards present on first render are in the server HTML at full opacity (no fade-in from 0) */}
+          <AnimatePresence mode="popLayout" initial={false}>
             {list.map((c) => (
               <motion.div
                 key={c.id}
@@ -168,12 +177,13 @@ export function CourseExplorer({ notchClass = 'bg-bg', layout = 'swipe' }: Props
 
       {/* Compare drawer */}
       <AnimatePresence>
-        {compare.length > 0 && (
+        {comparing && (
           <motion.div
             initial={{ y: 120, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 120, opacity: 0 }}
-            className="fixed inset-x-3 bottom-[84px] z-[45] mx-auto max-w-3xl rounded-[var(--radius)] border border-line bg-surface p-3 text-fg shadow-[var(--shadow-lift)] lg:bottom-6"
+            // Phones: sits just above the bottom bar (which hides from md up)
+            className="fixed inset-x-3 bottom-[calc(84px+env(safe-area-inset-bottom))] z-[45] mx-auto max-w-3xl rounded-[var(--radius)] border border-line bg-surface p-3 text-fg shadow-[var(--shadow-lift)] md:bottom-6"
           >
             <div className="flex items-center gap-2">
               <div className="flex flex-1 flex-wrap gap-1.5">
@@ -181,13 +191,13 @@ export function CourseExplorer({ notchClass = 'bg-bg', layout = 'swipe' }: Props
                   <button
                     key={c.id}
                     onClick={() => toggleCompare(c.id)}
-                    className="flex min-h-10 items-center gap-1.5 rounded-lg border border-line bg-surface-2 py-1.5 pr-2 pl-3 text-xs font-bold"
+                    className="flex min-h-11 items-center gap-1.5 rounded-lg border border-line bg-surface-2 py-1.5 pr-2.5 pl-3 text-xs font-bold"
                   >
                     {c.code} <X size={12} />
                   </button>
                 ))}
               </div>
-              <button onClick={() => setCompare([])} className="min-h-10 px-2 text-xs font-semibold text-muted hover:text-fg">
+              <button onClick={() => setCompare([])} className="min-h-11 min-w-11 px-2 text-xs font-semibold text-muted hover:text-fg">
                 {t(copy.clear)}
               </button>
               <button onClick={() => setShowTable((s) => !s)} className={btn('rouge', 'sm')} disabled={compare.length < 2}>

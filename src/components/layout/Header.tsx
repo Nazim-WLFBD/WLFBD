@@ -99,9 +99,11 @@ export function Header() {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 border-t-[3px] border-rouge transition-[background-color,box-shadow,border-color] duration-500",
+        // Safe-area padding keeps the bar clear of notches (viewport-fit=cover). Below lg the solid bar is opaque
+        // with no backdrop blur (costly on phone GPUs while scrolling); the frosted look starts at lg.
+        "fixed inset-x-0 top-0 z-50 border-t-[3px] border-rouge pt-[env(safe-area-inset-top)] transition-[background-color,box-shadow,border-color] duration-500",
         solid
-          ? "bg-ink/95 shadow-[0_12px_32px_-20px_rgba(0,0,0,.7)] backdrop-blur-md border-b border-b-white/10"
+          ? "bg-ink shadow-[0_12px_32px_-20px_rgba(0,0,0,.7)] border-b border-b-white/10 lg:bg-ink/95 lg:backdrop-blur-md"
           : "bg-transparent",
       )}
     >
@@ -152,7 +154,7 @@ export function Header() {
         <div className={cn(pill, "shrink-0 gap-0.5")}>
           <button
             onClick={openPalette}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-white/75 transition hover:bg-white/10 hover:text-white"
+            className="flex h-11 w-11 items-center justify-center rounded-full text-white/75 transition hover:bg-white/10 hover:text-white lg:h-10 lg:w-10"
             aria-label={`${t(ui.search)} (Ctrl K)`}
             title="Ctrl K"
           >
@@ -169,7 +171,7 @@ export function Header() {
             className={btn(
               "rouge",
               "sm",
-              "ml-1 hidden h-11 whitespace-nowrap sm:inline-flex",
+              "ml-1 hidden h-11 whitespace-nowrap sm:inline-flex sm:h-11",
             )}
           >
             {t(ui.enroll)}
@@ -179,7 +181,7 @@ export function Header() {
             />
           </Link>
           <button
-            className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-white/10 lg:hidden"
+            className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-white/10 lg:hidden"
             onClick={() => setDrawer((d) => !d)}
             aria-label={t(ui.menu)}
             aria-expanded={drawer}
@@ -343,7 +345,7 @@ export function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.25 }}
-            className="mx-auto mt-2 flex max-h-[calc(100dvh-96px)] flex-col overflow-hidden rounded-[28px] border border-white/10 bg-ink/97 text-white shadow-2xl backdrop-blur-xl lg:hidden"
+            className="mx-3 mt-2 mb-3 flex max-h-[calc(100dvh-96px-env(safe-area-inset-top))] flex-col overflow-hidden rounded-[28px] border border-white/10 bg-ink text-white shadow-2xl lg:hidden"
           >
             {/* Scrolling middle: courses + tools. Primary actions stay pinned in the footer below. */}
             <div data-lenis-prevent className="min-h-0 flex-1 overflow-y-auto p-4 pb-3">
@@ -409,7 +411,7 @@ export function Header() {
             </div>
 
             {/* Pinned footer: account, Enroll / Free class, language + theme */}
-            <div className="shrink-0 border-t border-white/10 bg-ink/97 p-4 pt-3">
+            <div className="shrink-0 border-t border-white/10 bg-ink p-4 pt-3">
               <MobileAccount />
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <Link href="/enroll" className={btn("rouge", "md")}>

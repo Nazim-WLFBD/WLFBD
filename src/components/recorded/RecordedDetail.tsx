@@ -191,7 +191,15 @@ export function RecordedDetail({ course: c }: { course: RecordedCourse }) {
           <aside className="lg:sticky lg:top-28 lg:self-start">
             <div className="card accent-top overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={c.thumbnail} alt="" className="aspect-video w-full border-b border-line object-cover" />
+              <img
+                src={c.thumbnail}
+                alt=""
+                width={800}
+                height={450}
+                loading="lazy"
+                decoding="async"
+                className="aspect-video h-auto w-full border-b border-line object-cover"
+              />
               <div className="p-6">
                 <p className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase">{t({ en: 'One-time Fee', bn: 'এককালীন ফি' })}</p>
                 <p className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1">

@@ -38,8 +38,10 @@ const COPY = {
 };
 
 /**
- * Floating support button (desktop only): opens Call / WhatsApp options.
+ * Floating support button (tablet and desktop, md+): opens Call / WhatsApp options.
  * Phones get the free class sheet instead, opened by the bottom bar via the 'wlf:free-class' event.
+ * The whole cluster hides during a quiz (body.quiz-active) and back-to-top hides while comparing courses
+ * (body.comparing); see globals.css.
  */
 export function FloatingActions() {
   const t = useT();
@@ -77,7 +79,11 @@ export function FloatingActions() {
 
   return (
     <>
-      <div ref={wrap} className="fixed right-3 bottom-[84px] z-40 flex flex-col items-end gap-3 lg:right-6 lg:bottom-6">
+      <div
+        ref={wrap}
+        data-floating-actions
+        className="fixed right-3 bottom-[calc(84px+env(safe-area-inset-bottom))] z-40 flex flex-col items-end gap-3 md:right-6 md:bottom-[max(24px,env(safe-area-inset-bottom))]"
+      >
         <AnimatePresence>
           {showTop && !menu && (
             <motion.button
@@ -86,7 +92,8 @@ export function FloatingActions() {
               exit={{ opacity: 0, scale: 0.6 }}
               // Instant: Lenis owns the scroll position and swallows native smooth scrolls
               onClick={() => window.scrollTo({ top: 0, behavior: 'auto' })}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface text-fg shadow-md lg:h-11 lg:w-11"
+              data-back-to-top
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-line bg-surface text-fg shadow-md"
               aria-label={t(ui.backToTop)}
               title={t(ui.backToTop)}
             >
@@ -105,7 +112,7 @@ export function FloatingActions() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.97 }}
               transition={{ duration: 0.18 }}
-              className="hidden w-72 overflow-hidden rounded-[20px] border border-line bg-surface shadow-[var(--shadow-lift)] lg:block"
+              className="hidden w-72 overflow-hidden rounded-[20px] border border-line bg-surface shadow-[var(--shadow-lift)] md:block"
             >
               <p className="border-b border-line px-5 py-3.5 text-sm font-semibold">{t(COPY.title)}</p>
               <a role="menuitem" href={`tel:${BRAND_CONTACT.phone}`} className="flex items-center gap-3.5 px-5 py-3.5 transition hover:bg-surface-2">
@@ -145,7 +152,7 @@ export function FloatingActions() {
           aria-controls="support-menu"
           title={t(COPY.support)}
           className={cn(
-            'relative hidden h-11 w-11 items-center justify-center rounded-full text-white shadow-[0_10px_24px_-10px_rgba(13,27,51,.7)] transition hover:scale-105 lg:flex',
+            'relative hidden h-11 w-11 items-center justify-center rounded-full text-white shadow-[0_10px_24px_-10px_rgba(13,27,51,.7)] transition hover:scale-105 md:flex',
             menu ? 'bg-ink' : 'bg-rouge',
           )}
         >
@@ -169,7 +176,7 @@ export function FloatingActions() {
                 <Dialog.Title className="font-display text-2xl font-semibold">{t(COPY.freeClass)}</Dialog.Title>
                 <p className="mt-1 text-sm text-muted">{t(COPY.freeClassSub)}</p>
               </div>
-              <Dialog.Close aria-label={t(COPY.close)} className="rounded-full p-2 hover:bg-surface-2">
+              <Dialog.Close aria-label={t(COPY.close)} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full hover:bg-surface-2">
                 <X size={20} />
               </Dialog.Close>
             </div>

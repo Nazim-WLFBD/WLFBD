@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CheckCircle2, Loader2 } from 'lucide-react';
 import { useT, type L } from '@/i18n/t';
 import { btn } from '@/components/ui/Button';
@@ -35,6 +35,9 @@ const ERR = {
 } satisfies Record<string, L>;
 
 type Field = 'name' | 'phone' | 'whatsapp' | 'email' | 'interest';
+/** Fields in on-screen order with their id stems (the form's `source` is appended, so the page and sheet never clash). */
+const FIELD_ID: Record<Field, string> = { name: 'fc-name', phone: 'fc-phone', whatsapp: 'fc-wa', email: 'fc-email', interest: 'fc-interest' };
+const FIELD_ORDER = Object.keys(FIELD_ID) as Field[];
 
 /** Free class registration form, used on /free-class and in the phone support sheet. */
 export function FreeClassForm({ source = 'page', compact = false }: { source?: 'page' | 'mobile-sheet'; compact?: boolean }) {
@@ -46,6 +49,23 @@ export function FreeClassForm({ source = 'page', compact = false }: { source?: '
   const [done, setDone] = useState(false);
 
   const set = (k: Field) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setF((s) => ({ ...s, [k]: e.target.value }));
+  const idOf = (k: Field) => `${FIELD_ID[k]}-${source}`;
+
+  // First invalid field, brought into view and focused once its error state has rendered
+  const pendingFocus = useRef<Field | null>(null);
+  useEffect(() => {
+    const k = pendingFocus.current;
+    if (!k) return;
+    pendingFocus.current = null;
+    const el = document.getElementById(`${FIELD_ID[k]}-${source}`);
+    if (!el) return;
+    // Instant: Lenis owns the page scroll and swallows native smooth scrolls
+    el.scrollIntoView({ block: 'center' });
+    el.focus({ preventScroll: true });
+  }, [errors, source]);
+  const focusFirst = (e: Partial<Record<Field, string>>) => {
+    pendingFocus.current = FIELD_ORDER.find((key) => e[key]) ?? null;
+  };
 
   const validate = () => {
     const e: Partial<Record<Field, string>> = {};
@@ -55,6 +75,7 @@ export function FreeClassForm({ source = 'page', compact = false }: { source?: '
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.email.trim())) e.email = t(ERR.email);
     if (!f.interest) e.interest = t(ERR.interest);
     setErrors(e);
+    focusFirst(e);
     return Object.keys(e).length === 0;
   };
 
@@ -79,7 +100,11 @@ export function FreeClassForm({ source = 'page', compact = false }: { source?: '
       });
       if (!r.ok) {
         const d = await r.json().catch(() => ({}));
-        if (d.field && d.field in f) setErrors({ [d.field]: t(ERR[d.field as keyof typeof ERR] ?? ERR.generic) });
+        if (d.field && d.field in f) {
+          const fe = { [d.field as Field]: t(ERR[d.field as keyof typeof ERR] ?? ERR.generic) };
+          setErrors(fe);
+          focusFirst(fe);
+        }
         setFailure(t(d.code === 'rate_limited' ? ERR.rate_limited : ERR.generic));
         return;
       }
@@ -105,17 +130,32 @@ export function FreeClassForm({ source = 'page', compact = false }: { source?: '
             setF({ name: '', phone: '', whatsapp: '', email: '', interest: '' });
             setDone(false);
           }}
-          className="mt-2 min-h-10 text-sm font-semibold text-rouge hover:underline"
+          className="mt-2 min-h-11 text-sm font-semibold text-rouge hover:underline"
         >
           {t(COPY.another)}
         </button>
       </div>
     );
 
+  // text-base (16px) on phones: iOS Safari zooms the page into any field with a smaller font
   const field = (err?: string) =>
-    cn('w-full rounded-xl border bg-surface px-4 py-3 text-[15px] outline-none transition focus:border-bleu focus:ring-2 focus:ring-bleu/20', err ? 'border-rouge' : 'border-line');
+    cn(
+      'w-full rounded-xl border bg-surface px-4 py-3 text-base outline-none transition focus:border-bleu focus:ring-2 focus:ring-bleu/20 sm:text-[15px]',
+      err ? 'border-rouge' : 'border-line',
+    );
   const label = 'mb-2 block text-[11px] font-bold tracking-[0.14em] text-muted uppercase';
-  const errText = (k: Field) => errors[k] && <p className="mt-1 text-xs font-semibold text-rouge">{errors[k]}</p>;
+  const errText = (k: Field) =>
+    errors[k] && (
+      <p id={`${idOf(k)}-error`} className="mt-1 text-xs font-semibold text-rouge">
+        {errors[k]}
+      </p>
+    );
+  // id + error wiring: the error text is announced with the field
+  const a11y = (k: Field) => ({
+    id: idOf(k),
+    'aria-invalid': errors[k] ? true : undefined,
+    'aria-describedby': errors[k] ? `${idOf(k)}-error` : undefined,
+  });
 
   return (
     <form onSubmit={submit} noValidate className={cn('grid gap-4', !compact && 'sm:grid-cols-2')}>
@@ -123,35 +163,55 @@ export function FreeClassForm({ source = 'page', compact = false }: { source?: '
         <label htmlFor={`fc-name-${source}`} className={label}>
           {t(COPY.name)}
         </label>
-        <input id={`fc-name-${source}`} value={f.name} onChange={set('name')} autoComplete="name" className={field(errors.name)} />
+        <input {...a11y('name')} value={f.name} onChange={set('name')} autoComplete="name" enterKeyHint="next" className={field(errors.name)} />
         {errText('name')}
       </div>
       <div>
         <label htmlFor={`fc-phone-${source}`} className={label}>
           {t(COPY.phone)}
         </label>
-        <input id={`fc-phone-${source}`} value={f.phone} onChange={set('phone')} type="tel" inputMode="numeric" autoComplete="tel" placeholder="01XXXXXXXXX" className={field(errors.phone)} />
+        <input
+          {...a11y('phone')}
+          value={f.phone}
+          onChange={set('phone')}
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          enterKeyHint="next"
+          placeholder="01XXXXXXXXX"
+          className={field(errors.phone)}
+        />
         {errText('phone')}
       </div>
       <div>
         <label htmlFor={`fc-wa-${source}`} className={label}>
           {t(COPY.whatsapp)}
         </label>
-        <input id={`fc-wa-${source}`} value={f.whatsapp} onChange={set('whatsapp')} type="tel" inputMode="numeric" autoComplete="tel" placeholder="01XXXXXXXXX" className={field(errors.whatsapp)} />
+        <input
+          {...a11y('whatsapp')}
+          value={f.whatsapp}
+          onChange={set('whatsapp')}
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          enterKeyHint="next"
+          placeholder="01XXXXXXXXX"
+          className={field(errors.whatsapp)}
+        />
         {errText('whatsapp')}
       </div>
       <div>
         <label htmlFor={`fc-email-${source}`} className={label}>
           {t(COPY.email)}
         </label>
-        <input id={`fc-email-${source}`} value={f.email} onChange={set('email')} type="email" autoComplete="email" className={field(errors.email)} />
+        <input {...a11y('email')} value={f.email} onChange={set('email')} type="email" autoComplete="email" enterKeyHint="next" className={field(errors.email)} />
         {errText('email')}
       </div>
       <div>
         <label htmlFor={`fc-interest-${source}`} className={label}>
           {t(COPY.interest)}
         </label>
-        <select id={`fc-interest-${source}`} value={f.interest} onChange={set('interest')} className={field(errors.interest)}>
+        <select {...a11y('interest')} value={f.interest} onChange={set('interest')} className={field(errors.interest)}>
           <option value="">{t(COPY.choose)}</option>
           {FREE_CLASS_INTERESTS.map((i) => (
             <option key={i.id} value={i.id}>

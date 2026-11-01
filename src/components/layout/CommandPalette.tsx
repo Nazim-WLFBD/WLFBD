@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Command } from 'cmdk';
 import * as Dialog from '@radix-ui/react-dialog';
-import { ArrowRight, CornerDownLeft, Search } from 'lucide-react';
+import { ArrowRight, CornerDownLeft, Search, X } from 'lucide-react';
 import { useRouter } from '@/i18n/navigation';
 import { useT, type L } from '@/i18n/t';
 import { useCourses } from '@/components/CoursesProvider';
@@ -64,21 +64,26 @@ export function CommandPalette() {
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[90] bg-ink/60" />
         <Dialog.Content
-          className="fixed top-[12vh] left-1/2 z-[91] w-[min(640px,calc(100vw-24px))] -translate-x-1/2 overflow-hidden rounded-[var(--radius)] border border-line bg-surface shadow-[var(--shadow-lift)]"
+          className="fixed top-[8dvh] left-1/2 z-[91] w-[min(640px,calc(100vw-24px))] -translate-x-1/2 overflow-hidden rounded-[var(--radius)] border border-line bg-surface shadow-[var(--shadow-lift)]"
           aria-describedby={undefined}
         >
           <Dialog.Title className="sr-only">{t(ui.searchSite)}</Dialog.Title>
           <Command label={t(ui.searchSite)} className="flex flex-col">
-            <div className="flex items-center gap-3 border-b border-line px-5">
-              <Search size={18} className="text-muted" />
+            <div className="flex items-center gap-3 border-b border-line pr-1.5 pl-5 sm:pr-3">
+              <Search size={18} className="shrink-0 text-muted" />
+              {/* text-base (16px) on phones: iOS Safari zooms the page into any field with a smaller font */}
               <Command.Input
                 autoFocus
                 placeholder={t(GROUPS.placeholder)}
-                className="h-14 w-full bg-transparent text-[15px] text-fg outline-none placeholder:text-muted"
+                className="h-14 w-full min-w-0 bg-transparent text-base text-fg outline-none placeholder:text-muted sm:text-[15px]"
               />
-              <kbd className="rounded-md border border-line px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-muted">ESC</kbd>
+              <kbd className="hidden rounded-md border border-line px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-muted sm:inline-block">ESC</kbd>
+              {/* Touch users have no Esc key: a visible close button */}
+              <Dialog.Close aria-label={t(ui.close)} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-muted transition hover:bg-fg/10 hover:text-fg">
+                <X size={18} />
+              </Dialog.Close>
             </div>
-            <Command.List data-lenis-prevent className="max-h-[min(60vh,460px)] overflow-y-auto p-2">
+            <Command.List data-lenis-prevent className="max-h-[min(55dvh,460px)] overflow-y-auto p-2">
               <Command.Empty className="p-6 text-center text-sm text-muted">{t(GROUPS.empty)}</Command.Empty>
 
               <Command.Group heading={t(GROUPS.courses)} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-[0.14em] [&_[cmdk-group-heading]]:text-muted [&_[cmdk-group-heading]]:uppercase [&:not(:first-child)]:mt-1 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-line [&:not(:first-child)]:pt-1">

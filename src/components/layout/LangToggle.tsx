@@ -13,7 +13,7 @@ export function LangToggle() {
   return (
     <button
       onClick={() => router.replace(pathname + window.location.search + window.location.hash, { locale: next, scroll: false })}
-      className="flex h-10 items-center gap-1.5 rounded-full px-3 text-sm font-semibold whitespace-nowrap text-white/80 transition hover:bg-white/10 hover:text-white"
+      className="flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full px-3 text-sm font-semibold whitespace-nowrap text-white/80 transition hover:bg-white/10 hover:text-white"
       aria-label={next === 'bn' ? 'বাংলায় দেখুন' : 'View in English'}
       lang={next}
     >

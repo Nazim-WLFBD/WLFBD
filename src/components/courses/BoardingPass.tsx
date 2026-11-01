@@ -86,17 +86,17 @@ export function BoardingPass({ course: c, comparing, onCompare }: Props) {
 
         <dl className="hairline mt-5 grid grid-cols-3 border-b border-line py-4">
           <div className="pr-3">
-            <dt className="text-[10px] font-bold tracking-[0.14em] text-muted uppercase">{t(copy.duration)}</dt>
+            <dt className="text-xs font-bold tracking-[0.1em] text-muted uppercase">{t(copy.duration)}</dt>
             <dd className="font-display mt-1 text-[15px] font-semibold text-fg">{x.duration}</dd>
           </div>
           <div className="border-l border-line px-3">
-            <dt className="text-[10px] font-bold tracking-[0.14em] text-muted uppercase">{t({ en: 'Classes', bn: 'ক্লাস' })}</dt>
+            <dt className="text-xs font-bold tracking-[0.1em] text-muted uppercase">{t({ en: 'Classes', bn: 'ক্লাস' })}</dt>
             <dd className="font-display mt-1 text-[15px] font-semibold text-fg">
               {c.whatsappOnly ? t({ en: 'Flexible', bn: 'ফ্লেক্সিবল' }) : num(c.classCount, t.locale)}
             </dd>
           </div>
           <div className="border-l border-line pl-3">
-            <dt className="text-[10px] font-bold tracking-[0.14em] text-muted uppercase">{t({ en: 'Per week', bn: 'প্রতি সপ্তাহে' })}</dt>
+            <dt className="text-xs font-bold tracking-[0.1em] text-muted uppercase">{t({ en: 'Per week', bn: 'প্রতি সপ্তাহে' })}</dt>
             <dd className="font-display mt-1 text-[15px] font-semibold text-fg">{x.classesPerWeek}</dd>
           </div>
         </dl>
@@ -123,7 +123,7 @@ export function BoardingPass({ course: c, comparing, onCompare }: Props) {
       <div className="px-6 pb-6">
         <div className="hairline flex items-end justify-between gap-3 pt-5">
           <div>
-            <p className="text-[10px] font-bold tracking-[0.14em] text-muted uppercase">{t(copy.fee)}</p>
+            <p className="text-xs font-bold tracking-[0.1em] text-muted uppercase">{t(copy.fee)}</p>
             {c.isCustomPricing ? (
               <p className="font-display mt-1 text-xl font-semibold text-rouge">{t(copy.feeCustom)}</p>
             ) : (
@@ -156,7 +156,7 @@ export function BoardingPass({ course: c, comparing, onCompare }: Props) {
         </div>
         <div className="mt-3 flex items-center justify-between">
           {onCompare ? (
-            <label className="-my-2 flex min-h-10 cursor-pointer items-center gap-2 text-xs font-semibold text-muted select-none">
+            <label className="-my-2 flex min-h-11 cursor-pointer items-center gap-2 pr-2 text-xs font-semibold text-muted select-none">
               <input
                 type="checkbox"
                 checked={!!comparing}
@@ -169,7 +169,7 @@ export function BoardingPass({ course: c, comparing, onCompare }: Props) {
             <span />
           )}
           {c.isCustomPricing && (
-            <a href={BRAND_CONTACT.whatsappUrl} target="_blank" rel="noopener" className="-my-2 inline-flex min-h-10 items-center px-1 text-xs font-bold text-mint hover:underline">
+            <a href={BRAND_CONTACT.whatsappUrl} target="_blank" rel="noopener" className="-my-2 inline-flex min-h-11 items-center px-2 text-xs font-bold text-mint hover:underline">
               WhatsApp →
             </a>
           )}

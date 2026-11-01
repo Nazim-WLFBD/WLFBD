@@ -4,9 +4,10 @@ import { useMemo } from 'react';
 import { MAPLE_PATH } from '@/components/ui/MapleLeaf';
 
 /**
- * Maple leaves drifting down the left side of the hero. Pure CSS animation (see
- * leaf-fall / leaf-sway in globals.css). Always rendered, so the server and client markup match;
- * reduced-motion users never see it thanks to `motion-reduce:hidden`.
+ * Maple leaves drifting down the left side of the hero. Pure CSS, transform/opacity only (see leaf-fall /
+ * leaf-sway in globals.css), so every frame stays on the compositor. Always rendered, so the server and client
+ * markup match; reduced-motion users never see it thanks to `motion-reduce:hidden`. Phones (<640px) show
+ * the first 10 leaves only.
  */
 export function MapleDrift({ count = 14 }: { count?: number }) {
   // Deterministic pseudo-random layout so server and client render the same leaves
@@ -36,7 +37,7 @@ export function MapleDrift({ count = 14 }: { count?: number }) {
       {leaves.map((l, i) => (
         <span
           key={i}
-          className="absolute top-0 block will-change-transform"
+          className={`absolute top-0 block will-change-transform${i >= 10 ? ' max-sm:hidden' : ''}`}
           style={
             {
               left: `${l.left}%`,
@@ -47,15 +48,15 @@ export function MapleDrift({ count = 14 }: { count?: number }) {
             } as React.CSSProperties
           }
         >
-          <svg
-            viewBox="0 0 100 100"
-            width={l.size}
-            height={l.size}
-            fill={l.tone}
-            style={{ animation: `leaf-sway ${l.swayDur}s ease-in-out ${l.delay}s infinite`, '--leaf-sway': `${l.sway}px`, filter: 'drop-shadow(0 6px 10px rgba(0,0,0,.25))' } as React.CSSProperties}
+          {/* Side-to-side sway on its own wrapper (translateX), so it composes with the fall transform above */}
+          <span
+            className="block will-change-transform"
+            style={{ animation: `leaf-sway ${l.swayDur}s ease-in-out ${l.delay}s infinite`, '--leaf-sway': `${l.sway}px` } as React.CSSProperties}
           >
-            <path d={MAPLE_PATH} />
-          </svg>
+            <svg viewBox="0 0 100 100" width={l.size} height={l.size} fill={l.tone} className="block">
+              <path d={MAPLE_PATH} />
+            </svg>
+          </span>
         </span>
       ))}
     </div>

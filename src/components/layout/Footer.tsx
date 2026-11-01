@@ -39,7 +39,7 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden border-t-[3px] border-rouge bg-ink pb-28 text-white lg:pb-0">
+    <footer className="relative overflow-hidden border-t-[3px] border-rouge bg-ink pb-28 text-white md:pb-0">
       {/* Closing CTA */}
       <div className="container-x relative pt-20 pb-16">
         <div className="relative flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
@@ -75,7 +75,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener"
                 aria-label={s.label}
-                className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/15 text-white/80 transition hover:border-rouge hover:bg-rouge hover:text-white"
+                className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 text-white/80 transition hover:border-rouge hover:bg-rouge hover:text-white"
               >
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden>
                   <path d={s.path} />
@@ -126,7 +126,8 @@ function FooterCol({ title, children, className }: { title: string; children: Re
   return (
     <div className={className}>
       <h3 className="eyebrow mb-5 text-[#ffb3ab]">{title}</h3>
-      <div className="flex flex-col gap-1 text-sm [&_.footer-link]:py-1.5 [&_.footer-link]:text-white/65 [&_.footer-link]:transition [&_.footer-link:hover]:text-white">
+      {/* Links are ≥44px tall tap targets on phones/tablets, compact rows on desktop */}
+      <div className="flex flex-col text-sm lg:gap-1 [&_.footer-link]:flex [&_.footer-link]:min-h-11 [&_.footer-link]:items-center [&_.footer-link]:py-1.5 [&_.footer-link]:text-white/65 [&_.footer-link]:transition lg:[&_.footer-link]:min-h-0 [&_.footer-link:hover]:text-white">
         {children}
       </div>
     </div>

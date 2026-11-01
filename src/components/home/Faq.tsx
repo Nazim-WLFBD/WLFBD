@@ -30,7 +30,8 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
         setCat('All');
         setQuery('');
         setOpen(m[1]);
-        requestAnimationFrame(() => document.getElementById(`faq-${m[1]}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+        // Instant: Lenis owns the page scroll and swallows native smooth scrolls
+        requestAnimationFrame(() => document.getElementById(`faq-${m[1]}`)?.scrollIntoView({ block: 'center' }));
       }
     };
     sync();
@@ -75,7 +76,7 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t(copy.search)}
-                className="h-12 w-full min-w-0 bg-transparent text-[15px] outline-none placeholder:text-muted"
+                className="h-12 w-full min-w-0 bg-transparent text-base outline-none placeholder:text-muted sm:text-[15px]"
                 aria-label={t(copy.search)}
               />
             </label>
@@ -88,7 +89,7 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
                   onClick={() => setCat(c)}
                   aria-pressed={cat === c}
                   className={cn(
-                    'relative -mb-px shrink-0 border-b-2 px-3 py-3 text-sm font-semibold whitespace-nowrap transition-colors',
+                    'relative -mb-px min-h-11 shrink-0 border-b-2 px-3 py-3 text-sm font-semibold whitespace-nowrap transition-colors',
                     cat === c ? 'border-rouge text-fg' : 'border-transparent text-muted hover:text-fg',
                   )}
                 >
@@ -103,7 +104,7 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
             {list.map((f) => (
               <Accordion.Item key={f.id} value={f.id} id={`faq-${f.id}`} className="hairline scroll-mt-28">
                 <Accordion.Header>
-                  <Accordion.Trigger className="group flex w-full items-center gap-4 py-5 text-left md:gap-6">
+                  <Accordion.Trigger className="group flex min-h-11 w-full items-center gap-4 py-5 text-left md:gap-6">
                     <span aria-hidden className="hidden w-24 shrink-0 text-[10px] font-bold tracking-[0.16em] text-muted uppercase sm:inline">
                       {t(copy.categoryLabels[f.category])}
                     </span>

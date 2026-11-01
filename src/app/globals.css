@@ -117,6 +117,11 @@ html[lang="bn"] :is(h1, h2, h3, h4, h5, h6, .font-display) {
 html[lang="bn"] .eyebrow {
   letter-spacing: 0.04em;
 }
+/* Bangla glyphs at 10–11px are unreadable on phones: lift the explicit tiny sizes to 13px */
+html[lang="bn"] .text-\[10px\],
+html[lang="bn"] .text-\[11px\] {
+  font-size: 13px;
+}
 /* Bangla script needs a little more air between lines than Latin */
 html[lang="bn"] p,
 html[lang="bn"] li {
@@ -166,11 +171,15 @@ html[lang="bn"] li {
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+/* Frosted paper: solid below lg (backdrop blur is expensive on phone GPUs), frosted from lg up */
 @utility glass-paper {
-  background: color-mix(in oklab, var(--surface) 78%, transparent);
-  backdrop-filter: blur(16px) saturate(150%);
-  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  background: color-mix(in oklab, var(--surface) 97%, transparent);
   border: 1px solid var(--line);
+  @media (width >= 1024px) {
+    background: color-mix(in oklab, var(--surface) 78%, transparent);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+  }
 }
 
 /* Dotted map texture used on dark panels */
@@ -205,10 +214,13 @@ html[lang="bn"] li {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+  :where(html[lang="bn"]) & {
+    font-size: 13px;
+  }
   &::before {
     content: "";
     width: 22px;
@@ -270,13 +282,14 @@ html[lang="bn"] li {
     opacity: 0;
   }
 }
+/* Transform-only (compositor) sway, on a wrapper inside the falling element */
 @keyframes leaf-sway {
   0%,
   100% {
-    margin-left: 0;
+    transform: translateX(0);
   }
   50% {
-    margin-left: var(--leaf-sway, 40px);
+    transform: translateX(var(--leaf-sway, 40px));
   }
 }
 @keyframes ken-burns {
@@ -285,6 +298,52 @@ html[lang="bn"] li {
   }
   to {
     transform: scale(1) translateX(0);
+  }
+}
+
+/* Hero copy entrance: CSS only, so the copy is in the server HTML and visible without JS.
+   Starts at .001 rather than 0 so the headline still counts as the LCP element. */
+@keyframes hero-in {
+  from {
+    opacity: 0.001;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@layer components {
+  .hero-in {
+    animation: hero-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* Scroll reveal (ui/Reveal.tsx): visible by default; the hidden start state only applies once the inline
+     script has marked <html class="js">, and Reveal adds .is-in when the block scrolls into view. */
+  .reveal {
+    opacity: 1;
+  }
+  html.js .reveal {
+    transition:
+      opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s),
+      transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s);
+  }
+  html.js .reveal:not(.is-in) {
+    opacity: 0;
+    transform: translateY(var(--reveal-y, 24px));
+  }
+}
+
+/* Phone chrome that steps aside: the bottom bar and the floating cluster during a quiz (QuizRunner sets
+   body.quiz-active), and back-to-top while the course compare drawer is open (CourseExplorer sets body.comparing) */
+.quiz-active :is([data-bottom-bar], [data-floating-actions]),
+.comparing [data-back-to-top] {
+  display: none;
+}
+/* Below ~960px the centred compare drawer (max-w-3xl) also covers the support button's corner */
+@media (width < 960px) {
+  .comparing [data-floating-actions] {
+    display: none;
   }
 }
 
@@ -338,5 +397,22 @@ html[lang="bn"] li {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  /* A delayed, near-zero animation would hold the hero copy invisible for its delay: skip it entirely */
+  .hero-in {
+    animation: none !important;
+  }
+  html.js .reveal:not(.is-in) {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Phones: no text below 12px (badges, labels and tags across components use 10–11px for desktop density) */
+@media (max-width: 639px) {
+  .text-\[9px\],
+  .text-\[10px\],
+  .text-\[11px\] {
+    font-size: 12px;
   }
 }

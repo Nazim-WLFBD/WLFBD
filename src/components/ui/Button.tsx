@@ -16,7 +16,8 @@ const VARIANTS: Record<ButtonVariant, string> = {
 export function btn(variant: ButtonVariant = 'rouge', size: 'sm' | 'md' | 'lg' = 'md', extra?: string) {
   return cn(
     'group inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-200 active:scale-[.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer',
-    size === 'sm' && 'h-10 px-4 text-sm',
+    // sm is a 44px tap target on phones, the compact 40px from sm up
+    size === 'sm' && 'h-11 px-4 text-sm sm:h-10',
     size === 'md' && 'h-12 px-6 text-[15px]',
     size === 'lg' && 'h-14 px-7 text-base',
     VARIANTS[variant],

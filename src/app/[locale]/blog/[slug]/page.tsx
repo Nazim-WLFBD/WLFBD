@@ -217,19 +217,15 @@ export default async function BlogPostPage({ params }: P) {
                   ))}
                 </ul>
               )}
+
+              {/* Phones/tablets: the sidebar CTA (hidden below lg) appears as an inline card after the article */}
+              <SideCta locale={locale} bn={bn} className="mt-12 lg:hidden" />
             </div>
 
             <aside className="hidden lg:block">
               <div className="sticky top-28 flex flex-col gap-8">
                 <Toc items={toc} title={ui.toc[locale]} bn={bn} />
-                <div className="rounded-[20px] bg-ink p-5 text-white dark:ring-1 dark:ring-white/10">
-                  <p className={cn('text-lg leading-snug', headingFont)}>{ui.sideTitle[locale]}</p>
-                  <p className={cn('mt-2 text-sm leading-relaxed text-white/70', bn && 'font-bangla')}>{ui.sideText[locale]}</p>
-                  <Link href="/quiz/placement-test" className={btn('gold', 'sm', 'mt-4')}>
-                    {ui.sideCta[locale]}
-                    <ArrowRight size={14} aria-hidden />
-                  </Link>
-                </div>
+                <SideCta locale={locale} bn={bn} />
               </div>
             </aside>
           </div>
@@ -259,5 +255,20 @@ export default async function BlogPostPage({ params }: P) {
         </section>
       )}
     </>
+  );
+}
+
+/** "Not sure of your level?" card: in the desktop sidebar, and inline after the article below lg. */
+function SideCta({ locale, bn, className }: { locale: Locale; bn: boolean; className?: string }) {
+  const headingFont = bn ? 'font-bangla font-bold' : 'font-display font-semibold';
+  return (
+    <div className={cn('rounded-[20px] bg-ink p-5 text-white dark:ring-1 dark:ring-white/10', className)}>
+      <p className={cn('text-lg leading-snug', headingFont)}>{ui.sideTitle[locale]}</p>
+      <p className={cn('mt-2 text-sm leading-relaxed text-white/70', bn && 'font-bangla')}>{ui.sideText[locale]}</p>
+      <Link href="/quiz/placement-test" className={btn('gold', 'sm', 'mt-4')}>
+        {ui.sideCta[locale]}
+        <ArrowRight size={14} aria-hidden />
+      </Link>
+    </div>
   );
 }
