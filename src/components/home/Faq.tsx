@@ -20,7 +20,7 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
   const t = useT();
   const [query, setQuery] = useState('');
   const [cat, setCat] = useState<Cat>('All');
-  const [open, setOpen] = useState<string>('f1');
+  const [open, setOpen] = useState<string>('');
 
   // Open an answer linked as /#faq-<id> (e.g. from the search palette)
   useEffect(() => {
