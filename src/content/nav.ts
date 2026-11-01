@@ -42,7 +42,6 @@ export const MEGA = {
 export const SECTIONS = [
   { id: 'hero', label: { en: 'Home', bn: 'হোম' } },
   { id: 'about', label: { en: 'About', bn: 'আমাদের কথা' } },
-  { id: 'urgency-law', label: { en: '2026 Law', bn: '২০২৬ আইন' } },
   { id: 'pathways', label: { en: 'Pathways', bn: 'পাথওয়ে' } },
   { id: 'recorded-courses', label: { en: 'Recorded', bn: 'রেকর্ডেড' } },
   { id: 'courses', label: { en: 'Courses', bn: 'কোর্স' } },

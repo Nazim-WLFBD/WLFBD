@@ -6,6 +6,7 @@ import { useT, type L } from '@/i18n/t';
 import { btn } from '@/components/ui/Button';
 import { FREE_CLASS_INTERESTS } from '@/data/freeClass';
 import { BD_PHONE, normalizePhone } from '@/lib/phone';
+import { BRAND_CONTACT, waLink } from '@/lib/brand';
 import { cn } from '@/lib/utils';
 
 const COPY = {
@@ -230,6 +231,18 @@ export function FreeClassForm({ source = 'page', compact = false }: { source?: '
         <button type="submit" disabled={busy} className={btn('rouge', 'lg', 'w-full')}>
           {busy && <Loader2 size={17} className="animate-spin" />} {t(COPY.submit)}
         </button>
+        <a
+          href={waLink(t({ en: 'Bonjour! I would like to join a free French class.', bn: 'Bonjour! আমি একটি ফ্রি ফ্রেঞ্চ ক্লাসে যোগ দিতে চাই।' }))}
+          target="_blank"
+          rel="noopener"
+          className={btn('ink', 'lg', 'mt-3 w-full bg-[#128c7e] text-white hover:bg-[#0f7a6e] dark:bg-[#128c7e] dark:text-white dark:hover:bg-[#0f7a6e]')}
+        >
+          <svg viewBox="0 0 24 24" width={20} height={20} fill="currentColor" aria-hidden>
+            <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2s-1 .3-3.3-.7a11 11 0 0 1-4.4-3.9c-.3-.5-1.1-1.6-1.1-3s.7-2.1 1-2.4a1 1 0 0 1 .8-.4h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .6l-.3.5-.5.5c-.1.2-.3.3-.1.6a8 8 0 0 0 3.8 3.3c.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l2 1c.3.1.5.2.5.3s0 .6-.1 1.1Z" />
+          </svg>
+          {t({ en: 'Chat on WhatsApp', bn: 'WhatsApp-এ কথা বলুন' })}
+          <span className="sr-only"> {BRAND_CONTACT.whatsapp}</span>
+        </a>
         <p className="mt-3 text-center text-xs text-muted">{t(COPY.privacy)}</p>
       </div>
     </form>

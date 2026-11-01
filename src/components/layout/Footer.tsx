@@ -12,7 +12,6 @@ import { Flag } from '@/components/ui/Flag';
 const ABOUT_LINKS = [
   { href: { pathname: '/', hash: 'about' }, l: { en: 'Our Mission & Vision', bn: 'আমাদের মিশন ও ভিশন' } },
   { href: { pathname: '/', hash: 'why-founded' }, l: { en: 'Why We Founded We Learn French BD', bn: 'প্রতিষ্ঠার গল্প' } },
-  { href: { pathname: '/', hash: 'urgency-law' }, l: { en: '2026 French Residency Law', bn: '২০২৬ ফ্রেঞ্চ রেসিডেন্সি আইন' } },
   { href: '/crs-calculator', l: { en: 'Canada CRS Calculator', bn: 'কানাডা CRS ক্যালকুলেটর' } },
   { href: { pathname: '/', hash: 'schedule' }, l: { en: 'Class Schedule', bn: 'ক্লাস সময়সূচী' } },
   { href: { pathname: '/', hash: 'faq' }, l: { en: 'Exam FAQs', bn: 'পরীক্ষা সংক্রান্ত প্রশ্নোত্তর' } },
@@ -32,6 +31,7 @@ const SOCIALS = [
   { href: BRAND_SOCIAL_LINKS.instagram, label: 'Instagram', path: 'M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 8.2a3.2 3.2 0 1 1 0-6.4 3.2 3.2 0 0 1 0 6.4ZM17.3 5.5a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4ZM12 2.2c2.7 0 3 0 4 .1 2.7.1 4 1.4 4.1 4.1.1 1 .1 1.3.1 4s0 3-.1 4c-.1 2.7-1.4 4-4.1 4.1-1 .1-1.3.1-4 .1s-3 0-4-.1c-2.7-.1-4-1.4-4.1-4.1-.1-1-.1-1.3-.1-4s0-3 .1-4c.1-2.7 1.4-4 4.1-4.1 1-.1 1.3-.1 4-.1Z' },
   { href: BRAND_SOCIAL_LINKS.linkedin, label: 'LinkedIn', path: 'M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.5h4V21H3V9.5Zm6.5 0h3.8v1.6h.1c.5-1 1.8-2 3.8-2 4 0 4.8 2.6 4.8 6V21h-4v-5.1c0-1.2 0-2.8-1.7-2.8s-2 1.3-2 2.7V21h-4V9.5Z' },
   { href: BRAND_SOCIAL_LINKS.x, label: 'X (Twitter)', path: 'M17.75 3h3.07l-6.7 7.66L22 21h-6.17l-4.83-6.32L5.47 21H2.4l7.17-8.2L2 3h6.33l4.37 5.78L17.75 3Zm-1.08 16.17h1.7L7.4 4.74H5.58l11.09 14.43Z' },
+  { href: BRAND_SOCIAL_LINKS.whatsapp, label: 'WhatsApp', path: 'M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2s-1 .3-3.3-.7a11 11 0 0 1-4.4-3.9c-.3-.5-1.1-1.6-1.1-3s.7-2.1 1-2.4a1 1 0 0 1 .8-.4h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .6l-.3.5-.5.5c-.1.2-.3.3-.1.6a8 8 0 0 0 3.8 3.3c.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l2 1c.3.1.5.2.5.3s0 .6-.1 1.1Z' },
 ];
 
 export function Footer() {

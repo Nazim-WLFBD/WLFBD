@@ -56,7 +56,7 @@ export function Schedule({ batches = BATCH_SCHEDULES }: { batches?: BatchSchedul
   return (
     <section id="schedule" className="relative bg-surface py-20 md:py-28">
       <div className="container-x">
-        <SectionHeading tag={t(schedule.tag)} title={t(schedule.title)} intro={t(schedule.intro)} num="07" />
+        <SectionHeading tag={t(schedule.tag)} title={t(schedule.title)} intro={t(schedule.intro)} num="06" />
 
         <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:gap-14 [&>*]:min-w-0">
           {/* Weekly timetable */}

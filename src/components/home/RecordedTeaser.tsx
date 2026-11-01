@@ -30,7 +30,7 @@ export function RecordedTeaser({ courses }: { courses: RecordedCourse[] }) {
             </>
           }
           intro={t(recorded.intro)}
-          num="05"
+          num="04"
         />
 
         {/* Benefits as a hairline row */}

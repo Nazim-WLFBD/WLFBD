@@ -30,6 +30,7 @@ export const BRAND_SOCIAL_LINKS = {
   instagram: 'https://www.instagram.com/welearnfrenchbd',
   linkedin: 'https://www.linkedin.com/company/we-learn-french-bd',
   x: 'https://x.com/welearnfrenchbd',
+  whatsapp: 'https://wa.me/8801758599797',
   messenger: 'https://m.me/WeLearnFrenchBD',
 };
 

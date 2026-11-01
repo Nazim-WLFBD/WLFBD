@@ -135,7 +135,7 @@ export function Testimonials({ items = TESTIMONIALS_DATA }: { items?: Testimonia
   return (
     <section id="students-voice" className="relative bg-surface py-20 md:py-28">
       <div className="container-x">
-        <SectionHeading tag={t(copy.badge)} title={t(copy.title)} intro={t(copy.intro)} num="08" className="mb-6 md:mb-8" />
+        <SectionHeading tag={t(copy.badge)} title={t(copy.title)} intro={t(copy.intro)} num="07" className="mb-6 md:mb-8" />
 
         {/* Counter + controls on a hairline */}
         <Reveal className="hairline mb-8 flex items-center justify-between pt-4">

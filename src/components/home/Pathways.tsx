@@ -32,7 +32,7 @@ export function Pathways() {
   return (
     <section id="pathways" className="relative bg-bg py-20 md:py-28">
       <div className="container-x">
-        <SectionHeading tag={t(pathways.tag)} title={t(pathways.title)} intro={t(pathways.intro)} num="04" />
+        <SectionHeading tag={t(pathways.tag)} title={t(pathways.title)} intro={t(pathways.intro)} num="03" />
 
         <div className="grid gap-5 lg:grid-cols-2">
           {/* Canada */}

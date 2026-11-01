@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { ArrowUp, Headset, Phone, X } from 'lucide-react';
 import { useT } from '@/i18n/t';
-import { BRAND_CONTACT, BRAND_SOCIAL_LINKS, waLink, waMessage } from '@/lib/brand';
+import { BRAND_CONTACT, waLink, waMessage } from '@/lib/brand';
 import { ui } from '@/content/home';
 import { FreeClassForm } from '@/components/freeclass/FreeClassForm';
 import { cn } from '@/lib/utils';
@@ -18,14 +18,6 @@ export function WhatsAppGlyph({ size = 26 }: { size?: number }) {
   );
 }
 
-export function MessengerGlyph({ size = 22 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M12 2C6.4 2 2 6.1 2 11.7c0 2.9 1.2 5.4 3.1 7.2.2.1.3.4.3.6l.1 1.8c0 .6.6 1 1.2.7l2-.9c.2-.1.4-.1.6 0 .9.3 1.8.4 2.7.4 5.6 0 10-4.1 10-9.7S17.6 2 12 2Zm6 7.5-2.9 4.6c-.5.7-1.5.9-2.2.4l-2.3-1.7a.6.6 0 0 0-.7 0l-3.1 2.4c-.4.3-1-.2-.7-.6L9 10c.5-.7 1.5-.9 2.2-.4l2.3 1.7c.2.2.5.2.7 0l3.1-2.4c.4-.3 1 .2.7.6Z" />
-    </svg>
-  );
-}
-
 const COPY = {
   support: { en: 'Contact support', bn: 'সাপোর্টে যোগাযোগ' },
   title: { en: 'How can we help?', bn: 'কীভাবে সাহায্য করতে পারি?' },
@@ -34,7 +26,6 @@ const COPY = {
   close: { en: 'Close', bn: 'বন্ধ করুন' },
   freeClass: { en: 'Book a free class', bn: 'ফ্রি ক্লাস বুক করুন' },
   freeClassSub: { en: 'Register in under a minute — we’ll send the class link on WhatsApp.', bn: 'এক মিনিটেই রেজিস্টার করুন — ক্লাসের লিংক WhatsApp-এ পাঠাব।' },
-  messenger: { en: 'Message us on Messenger', bn: 'Messenger-এ মেসেজ দিন' },
 };
 
 /**
@@ -161,7 +152,7 @@ export function FloatingActions() {
         </button>
       </div>
 
-      {/* Phone sheet: free class registration (+ Messenger) */}
+      {/* Phone sheet: free class registration (WhatsApp button lives inside the form) */}
       <Dialog.Root open={sheet} onOpenChange={setSheet}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-[90] bg-ink/60 backdrop-blur-sm" />
@@ -181,14 +172,6 @@ export function FloatingActions() {
               </Dialog.Close>
             </div>
             <FreeClassForm source="mobile-sheet" compact />
-            <a
-              href={BRAND_SOCIAL_LINKS.messenger}
-              target="_blank"
-              rel="noopener"
-              className="mt-4 flex items-center justify-center gap-2.5 rounded-2xl border border-line bg-surface py-3 text-sm font-semibold text-[#0866ff]"
-            >
-              <MessengerGlyph /> {t(COPY.messenger)}
-            </a>
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>

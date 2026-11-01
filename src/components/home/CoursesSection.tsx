@@ -10,7 +10,7 @@ export function CoursesSection() {
   return (
     <section id="courses" className="relative bg-bg py-20 md:py-28">
       <div className="container-x">
-        <SectionHeading tag={t(courses.tag)} title={t(courses.title)} intro={t(courses.intro)} num="06" />
+        <SectionHeading tag={t(courses.tag)} title={t(courses.title)} intro={t(courses.intro)} num="05" />
         <CourseExplorer />
       </div>
     </section>

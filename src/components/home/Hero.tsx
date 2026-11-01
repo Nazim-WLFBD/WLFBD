@@ -44,7 +44,10 @@ export function Hero() {
 
       <div className="container-x relative grid min-h-[92svh] items-end pt-32 pb-12 md:min-h-[88svh] md:pt-40 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,.85fr)] lg:items-center lg:pb-16">
         <div className="max-w-2xl">
-          <p {...enter(0, 'eyebrow text-[#ffb3ab]')}>
+          <p lang="bn" {...enter(0, 'font-bangla mb-3 text-base font-semibold text-white/90 sm:text-lg')}>
+            স্বল্প খরচে, সহজে ফরাসি শেখার প্লাটফর্ম
+          </p>
+          <p {...enter(0.06, 'eyebrow text-[#ffb3ab]')}>
             {t(hero.eyebrow)}
           </p>
 

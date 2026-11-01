@@ -13,7 +13,7 @@ export function Instructor() {
   return (
     <section id="instructor" className="relative bg-bg py-20 md:py-28">
       <div className="container-x">
-        <SectionHeading tag={t(instructor.tag)} title={t(instructor.title)} intro={t(instructor.intro)} num="09" />
+        <SectionHeading tag={t(instructor.tag)} title={t(instructor.title)} intro={t(instructor.intro)} num="08" />
 
         {/* Portrait-less editorial profile */}
         <Reveal>
