@@ -62,7 +62,8 @@ export default async function VerifyPage({ params }: { params: Promise<{ locale:
               <p className="mt-4 text-muted">{COPY.completed[locale]}</p>
               <p className="font-display mt-1 text-2xl font-semibold">{String(c.courseTitle)}</p>
               <p className="mt-6 text-sm text-muted">
-                {COPY.level[locale]} {String(c.cefrLevel)} · {COPY.issued[locale]} {String(c.issueDate)} · {BRAND_NAME}
+                {c.cefrLevel ? `${COPY.level[locale]} ${String(c.cefrLevel)} · ` : ''}
+                {COPY.issued[locale]} {String(c.issueDate ?? '')} · {BRAND_NAME}
               </p>
             </div>
           ) : (

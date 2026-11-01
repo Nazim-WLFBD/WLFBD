@@ -47,6 +47,8 @@ export async function getStorageLazy(): Promise<FirebaseStorage | null> {
   if (!storage) {
     const { getStorage } = await import('firebase/storage');
     storage = getStorage(fb.app);
+    // The SDK otherwise retries a failing upload for 10 minutes while the progress bar sits at 0%
+    storage.maxUploadRetryTime = 60_000;
   }
   return storage;
 }

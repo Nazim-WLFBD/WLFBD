@@ -96,6 +96,9 @@ export function WritingReviews() {
     });
     const bad = payload.find((g, k) => !Number.isFinite(g.points) || g.points < 0 || g.points > a.pendingReview[k].points);
     if (bad) return alert('Enter points for every answer, between 0 and its maximum.');
+    // Marks can't be changed after submitting (the attempt leaves the queue and the student is emailed)
+    const total = payload.reduce((s, g) => s + g.points, 0);
+    if (!confirm(`Submit ${total} point(s) for ${a.userName || a.userEmail || 'this student'} and email them? Marks cannot be changed afterwards.`)) return;
     setBusy(a.path);
     try {
       const r = await authFetch('/api/admin', { method: 'POST', body: JSON.stringify({ action: 'gradeWriting', attemptPath: a.path, grades: payload }) });

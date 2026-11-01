@@ -104,7 +104,7 @@ export async function POST(req: Request) {
           await payRef.update({ status: 'Rejected', rejectionReason: 'Set from enrollment', verifiedAt: FieldValue.serverTimestamp(), verifiedBy: caller.email });
           // Free the TrxID so the student can resubmit after fixing a typo
           if (pay.trxId) await db.doc(`trxIds/${pay.trxId}`).delete().catch(() => {});
-        } else await payRef.update({ status: 'Pending', rejectionReason: FieldValue.delete() });
+        } else await payRef.update({ status: 'Pending', rejectionReason: FieldValue.delete(), verifiedAt: FieldValue.delete(), verifiedBy: FieldValue.delete() });
       }
     }
     if (a.status === 'Verified' && en.userEmail) {

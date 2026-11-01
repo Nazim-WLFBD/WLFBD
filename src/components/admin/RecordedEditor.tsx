@@ -17,6 +17,9 @@ export function RecordedEditor() {
   const [sel, setSel] = useState<string>('');
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [loadErr, setLoadErr] = useState<string | null>(null);
+  /** True once something was edited and not yet saved (guards against leaving the page and losing it). */
+  const [dirty, setDirty] = useState(false);
 
   const load = useCallback(async () => {
     const fb = firebase()!;
@@ -30,13 +33,42 @@ export function RecordedEditor() {
     setCourses(cs);
     setLinks(l);
     setSel((s) => s || cs[0]?.id || '');
+    setLoadErr(null);
+    setDirty(false);
   }, []);
 
-  useEffect(() => {
-    load().catch(() => setCourses([]));
+  const retry = useCallback(() => {
+    setLoadErr(null);
+    setCourses(null);
+    // A failed read must not look like an empty collection (that would offer "Import built-in courses")
+    load().catch((e) => {
+      setLoadErr(e instanceof Error ? e.message : String(e));
+      setCourses([]);
+    });
   }, [load]);
 
+  useEffect(() => {
+    retry();
+  }, [retry]);
+
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [dirty]);
+
   if (!courses) return <Loader2 className="animate-spin" />;
+
+  if (loadErr)
+    return (
+      <div className="rounded-2xl bg-rouge/10 p-5 text-sm text-rouge">
+        <p>Could not load the recorded courses: {loadErr}</p>
+        <button onClick={retry} className={btn('ghost', 'sm', 'mt-3')}>
+          Try again
+        </button>
+      </div>
+    );
 
   if (courses.length === 0)
     return (
@@ -46,10 +78,15 @@ export function RecordedEditor() {
           disabled={busy}
           onClick={async () => {
             setBusy(true);
-            const r = await authFetch('/api/admin', { method: 'POST', body: JSON.stringify({ action: 'seedRecordedCourses' }) });
-            setBusy(false);
-            if (r.ok) load();
-            else alert('Could not import courses.');
+            try {
+              const r = await authFetch('/api/admin', { method: 'POST', body: JSON.stringify({ action: 'seedRecordedCourses' }) });
+              if (r.ok) retry();
+              else alert((await r.json().catch(() => ({}))).error ?? 'Could not import courses.');
+            } catch {
+              alert('Network error. Check your connection and try again.');
+            } finally {
+              setBusy(false);
+            }
           }}
           className={btn('ink', 'md', 'mt-4')}
         >
@@ -59,7 +96,16 @@ export function RecordedEditor() {
     );
 
   const c = courses.find((x) => x.id === sel)!;
-  const patch = (p: Partial<RecordedCourse>) => setCourses(courses.map((x) => (x.id === c.id ? { ...x, ...p } : x)));
+  const patch = (p: Partial<RecordedCourse>) => {
+    setDirty(true);
+    setMsg(null);
+    setCourses(courses.map((x) => (x.id === c.id ? { ...x, ...p } : x)));
+  };
+  const setLink = (id: string, p: { videoUrl?: string; pdfUrl?: string }) => {
+    setDirty(true);
+    setMsg(null);
+    setLinks({ ...links, [id]: { ...links[id], ...p } });
+  };
   const input = 'w-full rounded-lg border border-line bg-surface px-2.5 py-1.5 text-base sm:text-sm';
 
   const save = async () => {
@@ -94,6 +140,7 @@ export function RecordedEditor() {
           if (!l.isPreview) await setDoc(doc(fb.db, 'recordedCourses', c.id, 'private', l.id), { videoUrl: links[l.id]?.videoUrl ?? '', pdfUrl: links[l.id]?.pdfUrl ?? null });
       // Clear the server's short cache so the classroom sees the new links at once
       await authFetch('/api/admin', { method: 'POST', body: JSON.stringify({ action: 'refreshRecordedCourses' }) }).catch(() => {});
+      setDirty(false);
       setMsg('Saved. The public site updates within 5 minutes.');
     } catch (e) {
       setMsg(e instanceof Error ? e.message : String(e));
@@ -103,7 +150,7 @@ export function RecordedEditor() {
   };
 
   return (
-    <div>
+    <div data-unsaved={dirty || undefined}>
       <div className="mb-4 flex flex-wrap gap-2">
         {courses.map((x) => (
           <button key={x.id} onClick={() => setSel(x.id)} className={btn(x.id === sel ? 'ink' : 'ghost', 'sm')}>
@@ -147,18 +194,38 @@ export function RecordedEditor() {
                     patch({ modules: mods });
                   }}
                 />
-                <input
-                  className={input}
-                  placeholder="Video embed URL (YouTube / Vimeo)"
-                  value={links[l.id]?.videoUrl ?? (l.isPreview ? l.videoUrl : '') ?? ''}
-                  onChange={(e) => setLinks({ ...links, [l.id]: { ...links[l.id], videoUrl: e.target.value } })}
-                />
-                <input
-                  className={input}
-                  placeholder="PDF URL"
-                  value={links[l.id]?.pdfUrl ?? (l.isPreview ? l.pdfUrl : '') ?? ''}
-                  onChange={(e) => setLinks({ ...links, [l.id]: { ...links[l.id], pdfUrl: e.target.value } })}
-                />
+                {(() => {
+                  const v = links[l.id]?.videoUrl ?? (l.isPreview ? l.videoUrl : '') ?? '';
+                  const bad = !!v && !safeEmbedUrl(v);
+                  return (
+                    <span>
+                      <input
+                        className={`${input} ${bad ? 'border-rouge' : ''}`}
+                        placeholder="Video embed URL (YouTube / Vimeo)"
+                        aria-invalid={bad}
+                        value={v}
+                        onChange={(e) => setLink(l.id, { videoUrl: e.target.value })}
+                      />
+                      {bad && <span className="mt-1 block text-xs text-rouge">{EMBED_HINT}</span>}
+                    </span>
+                  );
+                })()}
+                {(() => {
+                  const p = links[l.id]?.pdfUrl ?? (l.isPreview ? l.pdfUrl : '') ?? '';
+                  const bad = !!p && !safeHttpsUrl(p);
+                  return (
+                    <span>
+                      <input
+                        className={`${input} ${bad ? 'border-rouge' : ''}`}
+                        placeholder="PDF URL"
+                        aria-invalid={bad}
+                        value={p}
+                        onChange={(e) => setLink(l.id, { pdfUrl: e.target.value })}
+                      />
+                      {bad && <span className="mt-1 block text-xs text-rouge">The PDF link must start with https://</span>}
+                    </span>
+                  );
+                })()}
                 <label className="flex items-center gap-1.5 text-xs whitespace-nowrap">
                   <input
                     type="checkbox"
@@ -176,11 +243,11 @@ export function RecordedEditor() {
           </div>
         ))}
       </div>
-      <div className="sticky bottom-3 mt-5 flex items-center gap-3">
+      <div className="sticky bottom-[calc(84px+env(safe-area-inset-bottom))] z-30 mt-5 flex items-center gap-3 md:bottom-3">
         <button disabled={busy} onClick={save} className={btn('rouge', 'md')}>
           {busy ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />} Save course
         </button>
-        {msg && <span className="text-sm text-muted">{msg}</span>}
+        {msg ? <span className="text-sm text-muted">{msg}</span> : dirty && <span className="text-sm text-muted">Unsaved changes</span>}
       </div>
     </div>
   );

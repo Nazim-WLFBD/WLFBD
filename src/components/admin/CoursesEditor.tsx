@@ -115,7 +115,7 @@ export function CoursesEditor() {
           seed={COURSE_SEED}
           seedId={(r) => String(r.id)}
           idFrom={slugId('course')}
-          newDefaults={{ published: true, tagColor: TAG_COLORS[0], features: [], banglaFeatures: [] }}
+          newDefaults={{ published: false, tagColor: TAG_COLORS[0], features: [], banglaFeatures: [] }}
           onSaved={() => publish(true)}
         />
       </section>
@@ -128,7 +128,7 @@ export function CoursesEditor() {
           seed={COMBO_SEED}
           seedId={(r) => String(r.id)}
           idFrom={slugId('combo')}
-          newDefaults={{ published: true, courses: [] }}
+          newDefaults={{ published: false, courses: [] }}
           onSaved={() => publish(true)}
         />
       </section>
