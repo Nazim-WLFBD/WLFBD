@@ -112,7 +112,7 @@ export function CourseDetail({ course: c }: { course: Course }) {
 
             {/* Features */}
             <Reveal>
-              <div className="flex items-center gap-4 border-t border-line pt-5">
+              <div className="flex items-baseline gap-4 border-t border-line pt-5">
                 <span className="section-num">01</span>
                 <h2 className="font-display text-2xl font-semibold">{t(copy.features)}</h2>
               </div>
@@ -128,7 +128,7 @@ export function CourseDetail({ course: c }: { course: Course }) {
 
             {/* Modules as a numbered hairline list */}
             <Reveal>
-              <div className="flex items-center gap-4 border-t border-line pt-5">
+              <div className="flex items-baseline gap-4 border-t border-line pt-5">
                 <span className="section-num">02</span>
                 <h2 className="font-display text-2xl font-semibold">{t(c.whatsappOnly ? copy.oneToOneSyllabus : copy.syllabus)}</h2>
               </div>
@@ -137,7 +137,8 @@ export function CourseDetail({ course: c }: { course: Course }) {
                   <li key={m.t.en} className="hairline grid grid-cols-[2.75rem_1fr] gap-x-2 py-5 first:border-t-0">
                     <span className="font-display pt-0.5 text-lg font-semibold text-rouge tabular-nums">{String(i + 1).padStart(2, '0')}</span>
                     <div>
-                      <p className="font-display text-lg font-semibold text-fg">{t(m.t)}</p>
+                      {/* the 01/02 column already numbers the list: drop the "1." prefix the copy carries */}
+                      <p className="font-display text-lg font-semibold text-fg">{t(m.t).replace(/^[\d০-৯]+\.\s*/, '')}</p>
                       <p className="mt-1 text-[15px] leading-relaxed text-muted">{t(m.d)}</p>
                     </div>
                   </li>
@@ -165,7 +166,7 @@ export function CourseDetail({ course: c }: { course: Course }) {
                   <span className="text-[11px] font-semibold tracking-[0.14em] text-muted uppercase">{c.code}</span>
                 </div>
                 <p className="mt-6 text-[11px] font-bold tracking-[0.14em] text-muted uppercase">{t(copy.fee)}</p>
-                <p className="font-display mt-1 text-4xl font-semibold text-fg">{fee}</p>
+                <p className={cn('font-display mt-1 font-semibold text-fg', c.isCustomPricing ? 'text-2xl' : 'text-4xl')}>{fee}</p>
                 {!c.isCustomPricing && (
                   <p className="mt-1 text-sm text-muted">
                     <span className="line-through">{taka(c.regularPrice, t.locale)}</span> · <span className="font-semibold text-mint">{t(cardCopy.save)}{' '}
@@ -217,7 +218,7 @@ export function CourseDetail({ course: c }: { course: Course }) {
         </div>
 
         <div className="container-x mt-20">
-          <div className="mb-6 flex items-center gap-4 border-t border-line pt-5">
+          <div className="mb-6 flex items-baseline gap-4 border-t border-line pt-5">
             <span className="section-num">03</span>
             <h2 className="font-display text-2xl font-semibold">{t(copy.others)}</h2>
           </div>

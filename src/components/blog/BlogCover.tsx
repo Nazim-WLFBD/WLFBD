@@ -152,10 +152,10 @@ function Decor({ theme }: { theme: BlogCoverTheme }) {
       </div>
     );
 
-  // neutral: a winding learning route with milestones
+  // neutral: a winding learning route with milestones, kept in the top-right so its start dot clears a two-line label
   return (
     <div aria-hidden className="absolute inset-0 -z-10">
-      <svg viewBox="0 0 200 120" preserveAspectRatio="xMaxYMid meet" className="absolute top-[9%] right-[4%] w-[54%]">
+      <svg viewBox="0 0 200 120" preserveAspectRatio="xMaxYMid meet" className="absolute top-[7%] right-[4%] w-[40%]">
         <path
           d="M8 110 C 60 110, 50 70, 100 70 S 140 28, 192 18"
           fill="none"

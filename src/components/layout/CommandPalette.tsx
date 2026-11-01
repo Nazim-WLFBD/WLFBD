@@ -71,11 +71,13 @@ export function CommandPalette() {
           <Command label={t(ui.searchSite)} className="flex flex-col">
             <div className="flex items-center gap-3 border-b border-line pr-1.5 pl-5 sm:pr-3">
               <Search size={18} className="shrink-0 text-muted" />
-              {/* text-base (16px) on phones: iOS Safari zooms the page into any field with a smaller font */}
+              {/* text-base (16px) on phones: iOS Safari zooms the page into any field with a smaller font.
+                  outline-none! beats the global :focus-visible ring, which the overflow-hidden panel clipped into a half box;
+                  the open palette and caret already show where focus is. */}
               <Command.Input
                 autoFocus
                 placeholder={t(GROUPS.placeholder)}
-                className="h-14 w-full min-w-0 bg-transparent text-base text-fg outline-none placeholder:text-muted sm:text-[15px]"
+                className="h-14 w-full min-w-0 bg-transparent text-base text-fg outline-none! placeholder:text-muted sm:text-[15px]"
               />
               <kbd className="hidden rounded-md border border-line px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-muted sm:inline-block">ESC</kbd>
               {/* Touch users have no Esc key: a visible close button */}

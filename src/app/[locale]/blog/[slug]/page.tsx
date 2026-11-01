@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
-import { ArrowRight, CalendarDays, Clock, PenLine, RefreshCw } from 'lucide-react';
+import { ArrowRight, CalendarDays, ChevronDown, Clock, PenLine, RefreshCw } from 'lucide-react';
 import { PageHero } from '@/components/layout/PageHero';
 import { BlogCover } from '@/components/blog/BlogCover';
 import { BlogCard, formatPostDate, readTimeLabel, toCardData } from '@/components/blog/BlogCard';
@@ -191,9 +191,13 @@ export default async function BlogPostPage({ params }: P) {
           <div className="container-x grid gap-10 py-12 md:py-16 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-16 xl:max-w-[1120px]">
             <div className="max-w-[70ch] min-w-0">
               {toc.length >= 2 && (
-                <details className="mb-8 rounded-2xl border border-line bg-surface p-5 lg:hidden">
-                  <summary className="flex min-h-11 cursor-pointer items-center text-sm font-bold text-fg">{ui.toc[locale]}</summary>
-                  <Toc items={toc} title={ui.toc[locale]} bn={bn} className="mt-4" />
+                <details className="group mb-8 rounded-2xl border border-line bg-surface px-5 py-2 lg:hidden">
+                  {/* display:flex drops the native disclosure triangle, so draw our own */}
+                  <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm font-bold text-fg">
+                    {ui.toc[locale]}
+                    <ChevronDown size={18} aria-hidden className="shrink-0 text-muted transition-transform group-open:rotate-180" />
+                  </summary>
+                  <Toc items={toc} title={ui.toc[locale]} bn={bn} className="mt-2 pb-3 [&>p]:hidden" />
                 </details>
               )}
 

@@ -55,8 +55,8 @@ function Person({ r }: { r: Testimonial }) {
     <div className="flex min-w-0 items-center gap-3.5">
       <Avatar r={r} />
       <div className="min-w-0">
-        <p className="truncate font-bold">{nameOf(r)}</p>
-        <p className="truncate text-[13px] text-muted">{(bn && r.banglaProfessionRole) || r.professionRole || r.profession}</p>
+        <p className="line-clamp-2 font-bold leading-snug">{nameOf(r)}</p>
+        <p className="line-clamp-2 text-[13px] leading-snug text-muted">{(bn && r.banglaProfessionRole) || r.professionRole || r.profession}</p>
         <p className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-muted">
           <MapPin size={12} className="shrink-0" />
           <span className="truncate">{(bn && r.banglaLocation) || r.location}</span>

@@ -71,7 +71,7 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
   const bars = [
     { l: t(copy.ageL), v: r.age, c: 'bg-bleu' },
     { l: t(copy.eduL), v: r.education, c: 'bg-gold' },
-    { l: t(copy.engL), v: r.english, c: 'bg-ink-3 dark:bg-white/60' },
+    { l: t(copy.engL), v: r.english, c: 'bg-white/70' },
     { l: t(copy.frL), v: r.french, c: 'bg-maple' },
   ];
 
@@ -216,15 +216,15 @@ export function CrsCalculator({ onSave }: { onSave?: (score: number) => Promise<
                 setSaved(true);
                 setTimeout(() => setSaved(false), 3000);
               }}
-              className={btn('ghost-light', 'md', 'w-full')}
+              className={btn('ghost-light', 'md', 'h-auto min-h-12 w-full py-2.5 text-center leading-snug')}
             >
               {saved
                 ? t({ en: 'Score saved to profile!', bn: 'স্কোর প্রোফাইলে সেভ হয়েছে!' })
                 : t({ en: 'Save Score to My Profile', bn: 'এই পয়েন্ট স্কোর আমার প্রোফাইলে সেভ করুন' })}
             </button>
           )}
-          <Link href={{ pathname: '/enroll', query: { course: 'tef-canada' } }} className={btn('rouge', 'md', 'w-full')}>
-            {t(copy.enroll)} <ArrowRight size={16} />
+          <Link href={{ pathname: '/enroll', query: { course: 'tef-canada' } }} className={btn('rouge', 'md', 'h-auto min-h-12 w-full py-2.5 text-center leading-snug')}>
+            <span>{t(copy.enroll)}</span> <ArrowRight size={16} className="shrink-0" />
           </Link>
           <p className="mt-2 text-[11px] leading-relaxed text-white/45">{t(copy.disclaimer)}</p>
         </div>

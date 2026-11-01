@@ -51,7 +51,7 @@ export function LawSection() {
                   <p className="font-display mt-3 text-[72px] leading-none font-semibold md:text-[84px]">{level}</p>
                   <h3 className="font-display mt-7 text-xl leading-snug font-semibold md:text-2xl">{t(c.title)}</h3>
                   <p className="font-display mt-1.5 text-base text-white/60 italic">{c.fr}</p>
-                  <p className="mt-4 text-[15px] leading-relaxed text-white/70">{t(c.desc)}</p>
+                  <p className="mt-4 mb-6 text-[15px] leading-relaxed text-white/70">{t(c.desc)}</p>
                   <p className="mt-auto border-t border-white/12 pt-4 text-[10px] font-bold tracking-[0.2em] text-white/40 uppercase">République Française</p>
                 </article>
               </Reveal>

@@ -20,18 +20,19 @@ export function Instructor() {
           <article className="card accent-top grid gap-10 p-7 md:p-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16 lg:p-12">
             <div>
               <p className="eyebrow text-rouge">{t(instructor.role)}</p>
-              <h3 className="font-display mt-5 text-[clamp(2rem,4vw,3.2rem)] leading-[1.05] font-semibold text-balance">{t(instructor.name)}</h3>
+              <h3 className="font-display mt-5 text-[clamp(2rem,4vw,3.2rem)] leading-[1.05] font-semibold text-balance">{/* word joiner after the hyphen: never break "Al-Amin" across lines */}
+                {t(instructor.name).replace(/-/g, '-\u2060')}</h3>
               <p className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-mint">
                 <BadgeCheck size={16} />
                 {t(instructor.verified)}
               </p>
               <div className="mt-8 grid grid-cols-2 gap-6">
                 <div className="hairline pt-4">
-                  <p className="font-display text-2xl font-semibold">DELF A1–B2</p>
+                  <p className="font-display text-xl font-semibold whitespace-nowrap sm:text-2xl">DELF A1–B2</p>
                   <p className="mt-1 text-[11px] font-bold tracking-[0.16em] text-muted uppercase">Niveaux</p>
                 </div>
                 <div className="hairline pt-4">
-                  <p className="font-display text-2xl font-semibold">Alliance Française</p>
+                  <p className="font-display text-xl font-semibold sm:text-2xl">Alliance Française</p>
                   <p className="mt-1 text-[11px] font-bold tracking-[0.16em] text-muted uppercase">Formation</p>
                 </div>
               </div>

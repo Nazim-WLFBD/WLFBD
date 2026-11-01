@@ -536,7 +536,8 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
                         <li key={s.en} className="flex gap-3">
                           <span className="font-display w-6 shrink-0 font-semibold text-rouge tabular-nums">{String(i + 1).padStart(2, '0')}</span>
                           <span>
-                            {t(s)}
+                            {/* the 01/02 column numbers the steps: drop the "1." prefix the copy carries */}
+                            {t(s).replace(/^[\d০-৯]+\.\s*/, '')}
                             {i === 2 && (
                               <>
                                 {' '}
@@ -602,7 +603,7 @@ export function EnrollForm({ defaults, batches = BATCH_SCHEDULES, onSubmit }: Pr
               {t(copy.next)} <ArrowRight size={16} />
             </button>
           ) : (
-            <button type="submit" disabled={busy} className={btn('rouge', 'md')}>
+            <button type="submit" disabled={busy} className={btn('rouge', 'md', 'h-auto min-h-12 py-2.5 text-center leading-snug')}>
               {busy && <Loader2 size={16} className="animate-spin" />}
               {t(custom ? copy.submitCustom : copy.submit)}
             </button>

@@ -103,6 +103,13 @@ body {
   overflow-x: clip;
 }
 
+/* Even out multi-line headings so a lone last word never hangs on its own line (base layer: utilities still win) */
+@layer base {
+  :is(h1, h2, h3, h4) {
+    text-wrap: balance;
+  }
+}
+
 /* Bangla: Hind Siliguri for body copy and for every heading/title */
 html[lang="bn"] body {
   font-family: var(--font-bn-digits), var(--font-hind), var(--font-jakarta), sans-serif;
@@ -114,7 +121,8 @@ html[lang="bn"] :is(h1, h2, h3, h4, h5, h6, .font-display) {
   font-style: normal; /* Hind Siliguri has no italic; avoid faux-oblique Bangla */
 }
 /* Tracked uppercase labels: Bangla has no case and its matras collide at wide tracking */
-html[lang="bn"] .eyebrow {
+html[lang="bn"] .eyebrow,
+html[lang="bn"] .uppercase:is([class*="tracking-["], .tracking-wide, .tracking-wider, .tracking-widest) {
   letter-spacing: 0.04em;
 }
 /* Bangla glyphs at 10–11px are unreadable on phones: lift the explicit tiny sizes to 13px */

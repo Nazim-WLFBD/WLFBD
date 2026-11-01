@@ -81,7 +81,7 @@ export function BoardingPass({ course: c, comparing, onCompare }: Props) {
           )}
         </div>
 
-        <h3 className={cn('font-display mt-5 text-[22px] leading-tight font-semibold text-fg', bn && 'font-bangla')}>{x.title}</h3>
+        <h3 className={cn('font-display mt-5 text-[22px] leading-tight font-semibold text-balance text-fg', bn && 'font-bangla')}>{x.title}</h3>
         <p className={cn('mt-1 text-sm text-muted', !bn && 'font-bangla')}>{x.altTitle}</p>
 
         <dl className="hairline mt-5 grid grid-cols-3 border-b border-line py-4">
@@ -120,7 +120,7 @@ export function BoardingPass({ course: c, comparing, onCompare }: Props) {
       </div>
 
       {/* Price + actions */}
-      <div className="px-6 pb-6">
+      <div className="@container px-6 pb-6">
         <div className="hairline flex items-end justify-between gap-3 pt-5">
           <div>
             <p className="text-xs font-bold tracking-[0.1em] text-muted uppercase">{t(copy.fee)}</p>
@@ -139,7 +139,7 @@ export function BoardingPass({ course: c, comparing, onCompare }: Props) {
             </p>
           )}
         </div>
-        <div className="mt-5 grid grid-cols-2 gap-2">
+        <div className="mt-5 grid grid-cols-1 gap-2 @xs:grid-cols-2">
           {c.whatsappOnly ? (
             <a href={waLink(t(c.whatsappMessage!))} target="_blank" rel="noopener" className={btn('ink', 'sm', 'w-full bg-[#128c7e] hover:bg-[#0f7a6e] dark:bg-[#128c7e] dark:text-white dark:hover:bg-[#0f7a6e]')}>
               {t({ en: 'WhatsApp us', bn: 'WhatsApp করুন' })}

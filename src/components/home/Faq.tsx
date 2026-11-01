@@ -61,9 +61,9 @@ export function Faq({ items = FAQ_DATA }: { items?: FAQItem[] }) {
           <SectionHeading tag={t(copy.tag)} title={t(copy.title)} intro={t(copy.intro)} num="10" className="mb-8 md:mb-10" />
           <Reveal className="card accent-top p-6 md:p-7">
             <p className="font-display text-xl font-semibold md:text-2xl">{t(copy.customTitle)}</p>
-            <a href={waLink(waMessage('question', t.locale))} target="_blank" rel="noopener" className={btn('rouge', 'md', 'mt-5 w-full sm:w-auto')}>
+            <a href={waLink(waMessage('question', t.locale))} target="_blank" rel="noopener" className={btn('rouge', 'md', 'mt-5 h-auto min-h-12 w-full py-2.5 sm:w-auto')}>
               <WhatsAppGlyph size={18} />
-              {t(copy.customCta)}
+              <span className="text-center leading-snug">{t(copy.customCta)}</span>
             </a>
           </Reveal>
         </div>

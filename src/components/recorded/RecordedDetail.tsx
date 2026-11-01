@@ -118,15 +118,20 @@ export function RecordedDetail({ course: c }: { course: RecordedCourse }) {
                 {c.modules?.map((m, mi) => (
                   <details key={m.id} open={m.order === 1} className="group card overflow-hidden">
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-5">
-                      <span className="flex gap-4">
+                      <span className="flex min-w-0 gap-4">
                         <span className="font-display pt-0.5 text-lg font-semibold text-rouge tabular-nums">{String(mi + 1).padStart(2, '0')}</span>
-                        <span>
+                        <span className="min-w-0">
                         <span className={cn('font-display block text-lg font-semibold', bn && m.banglaTitle && 'font-bangla')}>{bn && m.banglaTitle ? m.banglaTitle : m.title}</span>
                         {!bn && m.banglaTitle && <span className="font-bangla text-sm text-muted">{m.banglaTitle}</span>}
                         {bn && m.banglaTitle && <span className="text-sm text-muted">{m.title}</span>}
+                        {/* Phones: the lesson count sits under the title so the title keeps the full width */}
+                        <span className="mt-1.5 block text-[11px] font-bold tracking-[0.14em] text-muted uppercase sm:hidden">
+                          {num(m.lessons.length, t.locale)}
+                          {t({ en: ' lessons', bn: 'টি লেসন' })}
+                        </span>
                         </span>
                       </span>
-                      <span className="shrink-0 text-[11px] font-bold tracking-[0.14em] text-muted uppercase">
+                      <span className="hidden shrink-0 text-[11px] font-bold tracking-[0.14em] text-muted uppercase sm:block">
                         {num(m.lessons.length, t.locale)}
                         {t({ en: ' lessons', bn: 'টি লেসন' })}
                       </span>

@@ -113,7 +113,7 @@ export function CourseExplorer({ notchClass = 'bg-bg', layout = 'swipe' }: Props
       <div id="combos" className="mt-24 scroll-mt-28">
         <Reveal className="mb-8 flex flex-col justify-between gap-6 border-t border-line pt-5 lg:flex-row lg:items-end">
           <div>
-            <p className="eyebrow text-rouge">
+            <p className="eyebrow flex-wrap gap-y-1 text-rouge">
               {t(copy.comboTag)} <span className="font-medium tracking-normal text-muted normal-case">{t(copy.comboTagSub)}</span>
             </p>
             <h3 className="font-display mt-4 text-[clamp(1.8rem,3.4vw,2.6rem)] leading-[1.05] font-semibold">{t(copy.comboTitle)}</h3>
@@ -136,10 +136,11 @@ export function CourseExplorer({ notchClass = 'bg-bg', layout = 'swipe' }: Props
                   <span className="text-xs text-white/60">{bn ? combo.eligibilityBangla : combo.eligibility}</span>
                 </div>
                 {/* Course sequence */}
-                <ol className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
+                <ol className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 sm:gap-x-3">
                   {combo.courses.map((name, idx) => (
                     <li key={name} className="flex items-center gap-3">
-                      {idx > 0 && <span aria-hidden className="h-px w-6 bg-white/30" />}
+                      {/* the connector would start a wrapped row on phones, where the 01/02 numbers carry the order */}
+                      {idx > 0 && <span aria-hidden className="hidden h-px w-6 bg-white/30 sm:block" />}
                       <span className="font-display text-xl font-semibold">
                         <span className="section-num mr-2 text-white/45">{String(idx + 1).padStart(2, '0')}</span>
                         {name}
@@ -148,10 +149,11 @@ export function CourseExplorer({ notchClass = 'bg-bg', layout = 'swipe' }: Props
                   ))}
                 </ol>
                 <h4 className={cn('font-display mt-6 text-2xl font-semibold', bn && 'font-bangla')}>
-                  {bn ? combo.banglaTitle : combo.title}
+                  {/* keep exam + level codes ("DELF A2") together when the title wraps */}
+                  {(bn ? combo.banglaTitle : combo.title)?.replace(/ (A1|A2|B1|B2)\b/g, '\u00a0$1')}
                 </h4>
                 <p className={cn('text-sm text-white/55', !bn && 'font-bangla')}>{bn ? combo.title : combo.banglaTitle}</p>
-                <p className="mt-3 text-sm leading-relaxed text-white/70">
+                <p className="mt-3 mb-6 text-sm leading-relaxed text-white/70">
                   {(bn && combo.banglaDescription) || combo.description}
                 </p>
                 <div className="mt-auto flex flex-wrap items-end justify-between gap-4 border-t border-white/15 pt-6">
@@ -185,8 +187,9 @@ export function CourseExplorer({ notchClass = 'bg-bg', layout = 'swipe' }: Props
             // Phones: sits just above the bottom bar (which hides from md up)
             className="fixed inset-x-3 bottom-[calc(84px+env(safe-area-inset-bottom))] z-[45] mx-auto max-w-3xl rounded-[var(--radius)] border border-line bg-surface p-3 text-fg shadow-[var(--shadow-lift)] md:bottom-6"
           >
-            <div className="flex items-center gap-2">
-              <div className="flex flex-1 flex-wrap gap-1.5">
+            {/* Phones: chips get their own row so they never stack into a tall column beside the buttons */}
+            <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
+              <div className="flex min-w-0 basis-full flex-wrap gap-1.5 sm:flex-1 sm:basis-auto">
                 {compared.map((c) => (
                   <button
                     key={c.id}
@@ -197,7 +200,7 @@ export function CourseExplorer({ notchClass = 'bg-bg', layout = 'swipe' }: Props
                   </button>
                 ))}
               </div>
-              <button onClick={() => setCompare([])} className="min-h-11 min-w-11 px-2 text-xs font-semibold text-muted hover:text-fg">
+              <button onClick={() => setCompare([])} className="ml-auto min-h-11 min-w-11 px-2 text-xs font-semibold text-muted hover:text-fg sm:ml-0">
                 {t(copy.clear)}
               </button>
               <button onClick={() => setShowTable((s) => !s)} className={btn('rouge', 'sm')} disabled={compare.length < 2}>

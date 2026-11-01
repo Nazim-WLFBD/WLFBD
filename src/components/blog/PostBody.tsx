@@ -26,9 +26,12 @@ export function PostBody({ blocks, locale }: { blocks: BlogBlock[]; locale: stri
             const id = headingId(h2++);
             const n = String(h2).padStart(2, '0');
             return (
-              <h2 key={i} id={id} className={cn('hairline mt-8 scroll-mt-28 pt-6 text-[1.75rem] leading-tight text-balance text-fg md:text-[2rem]', heading)}>
-                <span aria-hidden className="section-num mr-3 align-middle text-rouge">{n}</span>
-                <Inline text={b.text} />
+              <h2 key={i} id={id} className={cn('hairline mt-8 flex scroll-mt-28 items-baseline gap-3 pt-6 text-[1.75rem] leading-tight text-balance text-fg md:text-[2rem]', heading)}>
+                {/* number hangs in its own column so a wrapped heading lines up with itself, not under the number */}
+                <span aria-hidden className="section-num shrink-0 text-rouge">{n}</span>
+                <span className="min-w-0">
+                  <Inline text={b.text} />
+                </span>
               </h2>
             );
           }
