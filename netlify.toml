@@ -1,0 +1,7 @@
+# firebase-admin 14 and @google-cloud/firestore 9 require Node.js 22+. Without this pin Netlify
+# builds and runs the server functions on an older Node, and every API route fails to load (HTTP 500).
+[build]
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "22"
