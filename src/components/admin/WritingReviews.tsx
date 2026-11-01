@@ -8,6 +8,7 @@ import { useAuth } from '@/components/auth/AuthContext';
 import { firebase } from '@/lib/firebase';
 import { builtInQuestions, wordCount } from '@/lib/quizScoring';
 import type { PendingReview, Question } from '@/types/quiz';
+import { dialog } from '@/components/ui/DialogHost';
 
 interface Attempt {
   path: string;
@@ -95,14 +96,14 @@ export function WritingReviews() {
       return { id: p.id, points: g.points === '' ? NaN : Number(g.points), comment: g.comment.trim() || undefined };
     });
     const bad = payload.find((g, k) => !Number.isFinite(g.points) || g.points < 0 || g.points > a.pendingReview[k].points);
-    if (bad) return alert('Enter points for every answer, between 0 and its maximum.');
+    if (bad) return dialog.alert({ title: 'Marks missing', message: 'Enter points for every answer, between 0 and its maximum.', tone: 'danger' });
     // Marks can't be changed after submitting (the attempt leaves the queue and the student is emailed)
     const total = payload.reduce((s, g) => s + g.points, 0);
-    if (!confirm(`Submit ${total} point(s) for ${a.userName || a.userEmail || 'this student'} and email them? Marks cannot be changed afterwards.`)) return;
+    if (!(await dialog.confirm({ title: `Submit ${total} point(s) for ${a.userName || a.userEmail || 'this student'}?`, message: 'The student is emailed and the marks cannot be changed afterwards.', confirmLabel: 'Submit marks', tone: 'success' }))) return;
     setBusy(a.path);
     try {
       const r = await authFetch('/api/admin', { method: 'POST', body: JSON.stringify({ action: 'gradeWriting', attemptPath: a.path, grades: payload }) });
-      if (!r.ok) alert((await r.json().catch(() => ({}))).error ?? 'Could not save the marks.');
+      if (!r.ok) await dialog.alert({ title: 'Could not save the marks', message: (await r.json().catch(() => ({}))).error ?? 'The server refused the request.', tone: 'danger' });
       else {
         setRows((rs) => (rs ?? []).filter((x) => x.path !== a.path));
         setGrades((g) => {
@@ -111,7 +112,7 @@ export function WritingReviews() {
         });
       }
     } catch {
-      alert('Network error. Check your connection and try again.');
+      await dialog.alert({ title: 'Network error', message: 'Check your connection and try again.', tone: 'danger' });
     } finally {
       setBusy(null);
     }

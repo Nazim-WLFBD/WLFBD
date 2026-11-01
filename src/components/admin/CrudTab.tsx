@@ -6,6 +6,7 @@ import { addDoc, collection, deleteDoc, deleteField, doc, getDoc, getDocs, serve
 import { Download, Loader2, Pencil, Plus, Trash2, Upload, X } from 'lucide-react';
 import { btn } from '@/components/ui/Button';
 import { firebase, getStorageLazy } from '@/lib/firebase';
+import { dialog } from '@/components/ui/DialogHost';
 
 type Base = { key: string; label: string; hint?: string; /** Save is refused while the field is empty. */ required?: boolean };
 export type Field =
@@ -98,8 +99,8 @@ export function CrudTab({ path, fields, columns, seed, seedId, newDefaults = {},
   };
 
   const dirty = () => edit != null && JSON.stringify({ r: edit, text: raw }) !== opened.current;
-  const close = (force = false) => {
-    if (!force && dirty() && !confirm('Discard your unsaved changes?')) return;
+  const close = async (force = false) => {
+    if (!force && dirty() && !(await dialog.confirm({ title: 'Discard changes?', message: 'Your unsaved changes in this form will be lost.', confirmLabel: 'Discard', cancelLabel: 'Keep editing', tone: 'danger' }))) return;
     setEdit(null);
     setRaw({});
   };
@@ -168,7 +169,7 @@ export function CrudTab({ path, fields, columns, seed, seedId, newDefaults = {},
   };
 
   const remove = async (id: string, name: string) => {
-    if (!confirm(`Delete "${name || id}" permanently?`)) return;
+    if (!(await dialog.confirm({ title: `Delete "${name || id}"?`, message: 'This item is removed permanently.', confirmLabel: 'Delete', tone: 'danger' }))) return;
     try {
       const fb = firebase()!;
       await deleteDoc(doc(fb.db, path, id));
@@ -176,7 +177,7 @@ export function CrudTab({ path, fields, columns, seed, seedId, newDefaults = {},
       await load();
       await onSaved?.();
     } catch (e) {
-      alert(`Could not delete: ${saveError(e)}`);
+      await dialog.alert({ title: 'Could not delete', message: saveError(e), tone: 'danger' });
     }
   };
 
@@ -186,7 +187,7 @@ export function CrudTab({ path, fields, columns, seed, seedId, newDefaults = {},
 
   const importSeed = async () => {
     const fb = firebase()!;
-    if (!confirm(`Copy ${missingSeed.length} built-in item(s) into the database? Items already in the database are left as they are.`)) return;
+    if (!(await dialog.confirm({ title: `Copy ${missingSeed.length} built-in item(s)?`, message: 'They are added to the database. Items already in the database are left as they are.', confirmLabel: 'Copy items' }))) return;
     try {
       for (const r of missingSeed) {
         const { id: _drop, ...data } = r as Row; // eslint-disable-line @typescript-eslint/no-unused-vars

@@ -15,6 +15,7 @@ import { CrudTab } from './CrudTab';
 import { RecordedEditor } from './RecordedEditor';
 import { CoursesEditor } from './CoursesEditor';
 import { WritingReviews } from './WritingReviews';
+import { dialog } from '@/components/ui/DialogHost';
 
 type Row = Record<string, unknown> & { id: string };
 const TABS = ['Overview', 'Payments', 'Enrollments', 'Users', 'Free class', 'Courses', 'Recorded courses', 'Batches', 'Quiz questions', 'Writing reviews', 'Announcements', 'Certificates', 'Reviews', 'FAQ', 'Audit log'] as const;
@@ -28,9 +29,14 @@ const fmtDate = (v: unknown) => {
 export function AdminPortal() {
   const [tab, setTab] = useState<Tab>('Overview');
   const panel = useRef<HTMLDivElement>(null);
-  const go = (t: Tab) => {
+  const go = async (t: Tab) => {
     // Editors with unsaved work mark themselves with data-unsaved; switching tabs would unmount and lose it
-    if (t !== tab && document.querySelector('[data-unsaved]') && !confirm('You have unsaved changes in this section. Leave without saving?')) return;
+    if (
+      t !== tab &&
+      document.querySelector('[data-unsaved]') &&
+      !(await dialog.confirm({ title: 'Leave without saving?', message: 'You have unsaved changes in this section.', confirmLabel: 'Leave', cancelLabel: 'Stay', tone: 'danger' }))
+    )
+      return;
     setTab(t);
     // After switching from far down a long list, bring the new section's heading back into view
     requestAnimationFrame(() => {
@@ -235,10 +241,10 @@ function useAction() {
     setBusy(key);
     try {
       const r = await authFetch('/api/admin', { method: 'POST', body: JSON.stringify(body) });
-      if (!r.ok) alert((await r.json().catch(() => ({}))).error ?? 'Action failed');
+      if (!r.ok) await dialog.alert({ title: 'Action failed', message: (await r.json().catch(() => ({}))).error ?? 'The server refused this action.', tone: 'danger' });
       return r.ok;
     } catch {
-      alert('Network error. Check your connection and try again.');
+      await dialog.alert({ title: 'Network error', message: 'Check your connection and try again.', tone: 'danger' });
       return false;
     } finally {
       setBusy(null);
@@ -329,7 +335,12 @@ function Payments() {
                 <button
                   disabled={!!busy}
                   onClick={async () =>
-                    confirm(`Delete this rejected payment from ${String(p.userName)} (TrxID ${String(p.trxId || '—')}) and its enrollment permanently?`) &&
+                    (await dialog.confirm({
+                      title: 'Delete rejected payment?',
+                      message: `${String(p.userName)} · TrxID ${String(p.trxId || '—')}. The payment and its enrollment are removed permanently.`,
+                      confirmLabel: 'Delete',
+                      tone: 'danger',
+                    })) &&
                     (await run(p.id, { action: 'deletePayment', paymentId: p.id })) &&
                     load()
                   }
@@ -350,7 +361,12 @@ function Payments() {
                 <button
                   disabled={!!busy}
                   onClick={async () =>
-                    confirm(`Approve ৳${String(p.amount)} from ${String(p.userName)} (TrxID ${String(p.trxId || '—')})? This unlocks the course and emails the student.`) &&
+                    (await dialog.confirm({
+                      title: `Approve ৳${String(p.amount)} from ${String(p.userName)}?`,
+                      message: `TrxID ${String(p.trxId || '—')} · ${String(p.courseTitle)}. Approving unlocks the course and emails the student.`,
+                      confirmLabel: 'Approve payment',
+                      tone: 'success',
+                    })) &&
                     (await run(p.id, { action: 'approvePayment', paymentId: p.id })) &&
                     load()
                   }
@@ -361,7 +377,15 @@ function Payments() {
                 <button
                   disabled={!!busy}
                   onClick={async () => {
-                    const reason = prompt('Reason for rejecting?');
+                    const reason = await dialog.prompt({
+                      title: `Reject payment from ${String(p.userName)}?`,
+                      message: `TrxID ${String(p.trxId || '—')}. The enrollment is marked failed and the TrxID is freed so the student can resubmit.`,
+                      label: 'Reason (shown to admins)',
+                      placeholder: 'e.g. TrxID not found in bKash',
+                      required: true,
+                      confirmLabel: 'Reject payment',
+                      tone: 'danger',
+                    });
                     if (reason != null && (await run(p.id, { action: 'rejectPayment', paymentId: p.id, reason }))) load();
                   }}
                   className={btn('ghost', 'sm', 'text-rouge')}
@@ -433,7 +457,7 @@ function Enrollments() {
                           Failed: `Mark ${String(e.userName)}'s enrollment as failed? The linked payment is rejected and its TrxID freed.`,
                           Pending: `Move ${String(e.userName)}'s enrollment back to pending?`,
                         };
-                        if (!msg[status] || !confirm(msg[status])) return;
+                        if (!msg[status] || !(await dialog.confirm({ title: `Set enrollment to ${status}?`, message: msg[status], confirmLabel: `Set ${status}`, tone: status === 'Failed' ? 'danger' : status === 'Verified' ? 'success' : 'default' }))) return;
                         if (await run(e.id, { action: 'setEnrollmentStatus', enrollmentId: e.id, status })) load();
                       }}
                       className="rounded-lg border border-line bg-surface px-2 py-1 text-xs"
@@ -448,7 +472,12 @@ function Enrollments() {
                     <button
                       disabled={!!busy}
                       onClick={async () =>
-                        confirm(`Delete ${String(e.userName)}'s failed enrollment (and its rejected payment) permanently?`) &&
+                        (await dialog.confirm({
+                          title: 'Delete failed enrollment?',
+                          message: `${String(e.userName)}'s enrollment and its rejected payment are removed permanently.`,
+                          confirmLabel: 'Delete',
+                          tone: 'danger',
+                        })) &&
                         (await run(e.id, { action: 'deleteEnrollment', enrollmentId: e.id })) &&
                         load()
                       }
@@ -523,12 +552,12 @@ function Users() {
                   <div className="flex items-center gap-1.5">
                     <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-bold capitalize', APPROVAL[approvalOf(u)])}>{approvalOf(u)}</span>
                     {approvalOf(u) !== 'approved' && (
-                      <button disabled={!!busy} title="Approve" aria-label="Approve" onClick={async () => (await run(u.id, { action: 'setApproval', uid: u.id, approval: 'approved' })) && load()} className="rounded-lg bg-mint/15 p-1.5 text-mint">
+                      <button disabled={!!busy} title="Approve" aria-label="Approve" onClick={async () => (await dialog.confirm({ title: `Approve ${String(u.displayName || u.email || 'this account')}?`, message: 'They can log in to the dashboard and use their courses. An approval email is sent.', confirmLabel: 'Approve', tone: 'success' })) && (await run(u.id, { action: 'setApproval', uid: u.id, approval: 'approved' })) && load()} className="rounded-lg bg-mint/15 p-1.5 text-mint">
                         <Check size={14} />
                       </button>
                     )}
                     {approvalOf(u) !== 'rejected' && u.role !== 'admin' && u.role !== 'superAdmin' && (
-                      <button disabled={!!busy} title="Reject" aria-label="Reject" onClick={async () => confirm('Reject this account? The student will not be able to log in to the dashboard.') && (await run(u.id, { action: 'setApproval', uid: u.id, approval: 'rejected' })) && load()} className="rounded-lg bg-rouge/15 p-1.5 text-rouge">
+                      <button disabled={!!busy} title="Reject" aria-label="Reject" onClick={async () => (await dialog.confirm({ title: `Reject ${String(u.displayName || u.email || 'this account')}?`, message: 'The student will not be able to use the dashboard or courses.', confirmLabel: 'Reject', tone: 'danger' })) && (await run(u.id, { action: 'setApproval', uid: u.id, approval: 'rejected' })) && load()} className="rounded-lg bg-rouge/15 p-1.5 text-rouge">
                         <X size={14} />
                       </button>
                     )}
@@ -544,7 +573,7 @@ function Users() {
                       value={String(u.role ?? 'student')}
                       onChange={async (e) => {
                         const role = e.target.value;
-                        if (!confirm(`Change ${String(u.displayName || u.email || 'this user')}'s role to ${role}? They will be signed out and get the new access on next login.`)) return;
+                        if (!(await dialog.confirm({ title: `Make ${String(u.displayName || u.email || 'this user')} ${role}?`, message: 'They will be signed out and get the new access on their next login.', confirmLabel: 'Change role' }))) return;
                         if (await run(u.id, { action: 'setRole', uid: u.id, role })) load();
                       }}
                       className="rounded-lg border border-line bg-surface px-2 py-1"
@@ -673,19 +702,19 @@ function FreeClass() {
       await updateDoc(doc(firebase()!.db, 'freeClassRegistrations', id), { status });
       await load();
     } catch {
-      alert('Could not update. Check your connection and try again.');
+      await dialog.alert({ title: 'Could not update', message: 'Check your connection and try again.', tone: 'danger' });
     } finally {
       setBusy(null);
     }
   };
   const remove = async (r: Row) => {
-    if (!confirm(`Delete the registration of ${String(r.name ?? 'this person')} permanently?`)) return;
+    if (!(await dialog.confirm({ title: 'Delete registration?', message: `${String(r.name ?? 'This person')}'s free-class registration is removed permanently.`, confirmLabel: 'Delete', tone: 'danger' }))) return;
     setBusy(r.id);
     try {
       await deleteDoc(doc(firebase()!.db, 'freeClassRegistrations', r.id));
       await load();
     } catch {
-      alert('Could not delete. Check your connection and try again.');
+      await dialog.alert({ title: 'Could not delete', message: 'Check your connection and try again.', tone: 'danger' });
     } finally {
       setBusy(null);
     }

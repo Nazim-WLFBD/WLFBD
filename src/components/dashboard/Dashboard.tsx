@@ -13,6 +13,7 @@ import { cefrLabel } from '@/lib/quizScoring';
 import { RECORDED_COURSES } from '@/data/recordedCourses';
 import { BRAND_CONTACT } from '@/lib/brand';
 import { cn, num } from '@/lib/utils';
+import { dialog } from '@/components/ui/DialogHost';
 
 type Row = Record<string, unknown> & { id: string };
 
@@ -248,7 +249,7 @@ export function Dashboard() {
                 setSaved(true);
                 setTimeout(() => setSaved(false), 2500);
               } catch {
-                alert(t({ en: 'Could not save. Check your connection and try again.', bn: 'সেভ করা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।' }));
+                await dialog.alert({ title: t({ en: 'Could not save', bn: 'সেভ করা যায়নি' }), message: t({ en: 'Check your connection and try again.', bn: 'সেভ করা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।' }), tone: 'danger', confirmLabel: t({ en: 'OK', bn: 'ঠিক আছে' }) });
               }
             }}
           >

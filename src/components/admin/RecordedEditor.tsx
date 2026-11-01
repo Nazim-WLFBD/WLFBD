@@ -8,6 +8,7 @@ import { useAuth } from '@/components/auth/AuthContext';
 import { firebase } from '@/lib/firebase';
 import { EMBED_HINT, safeEmbedUrl, safeHttpsUrl } from '@/lib/embed';
 import type { RecordedCourse } from '@/types';
+import { dialog } from '@/components/ui/DialogHost';
 
 /** Edit recorded courses stored in Firestore: price, publish, and each lesson's links/preview flag. */
 export function RecordedEditor() {
@@ -81,9 +82,9 @@ export function RecordedEditor() {
             try {
               const r = await authFetch('/api/admin', { method: 'POST', body: JSON.stringify({ action: 'seedRecordedCourses' }) });
               if (r.ok) retry();
-              else alert((await r.json().catch(() => ({}))).error ?? 'Could not import courses.');
+              else await dialog.alert({ title: 'Could not import courses', message: (await r.json().catch(() => ({}))).error ?? 'The server refused the import.', tone: 'danger' });
             } catch {
-              alert('Network error. Check your connection and try again.');
+              await dialog.alert({ title: 'Network error', message: 'Check your connection and try again.', tone: 'danger' });
             } finally {
               setBusy(false);
             }
