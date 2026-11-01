@@ -16,6 +16,9 @@ const Action = z.discriminatedUnion('action', [
   z.object({ action: z.literal('setApproval'), uid: z.string().max(128), approval: z.enum(['pending', 'approved', 'rejected']) }),
   z.object({ action: z.literal('refreshRecordedCourses') }),
   z.object({ action: z.literal('refreshCourses') }),
+  // Removes a rejected payment / failed enrollment (and its linked record). Live records can't be deleted.
+  z.object({ action: z.literal('deletePayment'), paymentId: z.string().max(60) }),
+  z.object({ action: z.literal('deleteEnrollment'), enrollmentId: z.string().max(60) }),
   z.object({
     action: z.literal('gradeWriting'),
     /** Firestore path of the attempt: users/{uid}/quizAttempts/{id} */
@@ -152,6 +155,42 @@ export async function POST(req: Request) {
       ).catch(() => {});
     }
     await audit(caller, 'setApproval', `users/${a.uid}`, { approval: a.approval });
+    return json({ ok: true });
+  }
+
+  if (a.action === 'deletePayment' || a.action === 'deleteEnrollment') {
+    // Resolve both sides of the payment ↔ enrollment link, whichever one was clicked
+    let payRef: FirebaseFirestore.DocumentReference | null = null;
+    let enRefs: FirebaseFirestore.DocumentReference[] = [];
+    if (a.action === 'deletePayment') {
+      payRef = db.collection('coursePayments').doc(a.paymentId);
+      enRefs = (await db.collection('enrollments').where('paymentDocId', '==', a.paymentId).get()).docs.map((d) => d.ref);
+    } else {
+      const enRef = db.collection('enrollments').doc(a.enrollmentId);
+      const en = (await enRef.get()).data();
+      if (!en) return json({ error: 'Enrollment not found' }, 404);
+      enRefs = [enRef];
+      if (en.paymentDocId) payRef = db.collection('coursePayments').doc(String(en.paymentDocId));
+    }
+    const pay = payRef ? (await payRef.get()).data() : undefined;
+    const ens = (await Promise.all(enRefs.map((r) => r.get()))).map((s) => s.data()).filter(Boolean) as Record<string, unknown>[];
+    if (a.action === 'deletePayment' && !pay) return json({ error: 'Payment not found' }, 404);
+    // Only dead records may go: a verified or pending payment/enrollment is real business data
+    const payDead = !pay || pay.status === 'Rejected';
+    const ensDead = ens.every((e) => e.paymentStatus === 'Failed' || (e.paymentStatus === 'Consultation' && !pay));
+    if (!payDead || !ensDead)
+      return json({ error: 'Only rejected payments and failed enrollments can be deleted. Reject or mark it failed first.' }, 409);
+    const batch = db.batch();
+    if (payRef && pay) batch.delete(payRef);
+    enRefs.forEach((r) => batch.delete(r));
+    if (pay?.trxId) batch.delete(db.doc(`trxIds/${pay.trxId}`));
+    await batch.commit();
+    await audit(caller, a.action, a.action === 'deletePayment' ? `coursePayments/${a.paymentId}` : `enrollments/${a.enrollmentId}`, {
+      courseId: pay?.courseId ?? ens[0]?.courseId ?? null,
+      student: pay?.userEmail ?? ens[0]?.userEmail ?? null,
+      removedEnrollments: enRefs.length,
+      removedPayment: Boolean(pay),
+    });
     return json({ ok: true });
   }
 

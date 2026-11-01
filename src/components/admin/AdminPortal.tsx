@@ -325,6 +325,19 @@ function Payments() {
                 ৳{String(p.amount)} via {String(p.paymentMethod)} · sender {String(p.senderPhone || '—')} · <span className="font-mono font-bold text-fg">{String(p.trxId || '—')}</span> · {fmtDate(p.submittedAt)}
               </p>
               {p.status === 'Rejected' && p.rejectionReason ? <p className="text-xs text-rouge">Reason: {String(p.rejectionReason)}</p> : null}
+              {p.status === 'Rejected' ? (
+                <button
+                  disabled={!!busy}
+                  onClick={async () =>
+                    confirm(`Delete this rejected payment from ${String(p.userName)} (TrxID ${String(p.trxId || '—')}) and its enrollment permanently?`) &&
+                    (await run(p.id, { action: 'deletePayment', paymentId: p.id })) &&
+                    load()
+                  }
+                  className="mt-1 inline-flex min-h-9 items-center gap-1 text-xs font-semibold text-rouge hover:underline"
+                >
+                  <Trash2 size={13} /> Delete
+                </button>
+              ) : null}
               {p.verifiedBy && p.status !== 'Pending' ? (
                 <p className="text-xs text-muted">
                   {String(p.status)} by {String(p.verifiedBy)} {fmtDate(p.verifiedAt)}
@@ -430,6 +443,20 @@ function Enrollments() {
                       <option value="Verified">Verified</option>
                       <option value="Failed">Failed</option>
                     </select>
+                  )}
+                  {e.paymentStatus === 'Failed' && (
+                    <button
+                      disabled={!!busy}
+                      onClick={async () =>
+                        confirm(`Delete ${String(e.userName)}'s failed enrollment (and its rejected payment) permanently?`) &&
+                        (await run(e.id, { action: 'deleteEnrollment', enrollmentId: e.id })) &&
+                        load()
+                      }
+                      aria-label={`Delete ${String(e.userName)}'s failed enrollment`}
+                      className="ml-2 inline-flex h-9 w-9 items-center justify-center rounded-lg text-rouge hover:bg-rouge/10"
+                    >
+                      <Trash2 size={15} />
+                    </button>
                   )}
                 </td>
               </tr>
