@@ -8,6 +8,7 @@ import { useRouter } from '@/i18n/navigation';
 import { useT, type L } from '@/i18n/t';
 import { useCourses } from '@/components/CoursesProvider';
 import { RECORDED_COURSES } from '@/data/recordedCourses';
+import { RECORDED_COURSES_ENABLED } from '@/lib/features';
 import { QUIZ_CATEGORIES } from '@/data/quizData';
 import { SECTIONS, MEGA } from '@/content/nav';
 import { ui } from '@/content/home';
@@ -96,7 +97,7 @@ export function CommandPalette() {
                     <ArrowRight size={14} className="opacity-50" />
                   </Command.Item>
                 ))}
-                {RECORDED_COURSES.map((r) => (
+                {RECORDED_COURSES_ENABLED && RECORDED_COURSES.map((r) => (
                   <Command.Item key={r.id} value={`${r.title} ${r.banglaTitle} recorded`} onSelect={() => go(`/recorded/${r.slug}`)} className={item}>
                     <Icon name="video" size={16} className="mx-2" />
                     <span className="flex-1">{t.locale === 'bn' ? r.banglaTitle : r.title}</span>

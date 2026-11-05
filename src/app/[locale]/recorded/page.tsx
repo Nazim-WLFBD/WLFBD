@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation';
+import { RECORDED_COURSES_ENABLED } from '@/lib/features';
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import type { Locale } from '@/i18n/routing';
@@ -31,6 +33,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
 export default async function RecordedPage({ params }: { params: Promise<{ locale: Locale }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  // Hidden for now (see lib/features): old links land on the live courses instead of a 404
+  if (!RECORDED_COURSES_ENABLED) redirect(`/${locale}/courses`);
   return (
     <>
       <PageHero

@@ -11,6 +11,7 @@ import { Instructor } from '@/components/home/Instructor';
 import { Faq } from '@/components/home/Faq';
 import { SectionRail } from '@/components/layout/SectionRail';
 import { publicRecordedCourses } from '@/lib/recorded';
+import { RECORDED_COURSES_ENABLED } from '@/lib/features';
 import { getBatches, getFaq, getReviews } from '@/lib/content';
 
 export const revalidate = 300;
@@ -27,7 +28,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <TrustBento />
       <About />
       <Pathways />
-      <RecordedTeaser courses={recorded} />
+      {RECORDED_COURSES_ENABLED && <RecordedTeaser courses={recorded} />}
       <CoursesSection />
       <Schedule batches={batches} />
       <Testimonials items={reviews} />

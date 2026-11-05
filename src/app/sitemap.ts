@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { RECORDED_COURSES } from '@/data/recordedCourses';
+import { RECORDED_COURSES_ENABLED } from '@/lib/features';
 import { QUIZ_CATEGORIES } from '@/data/quizData';
 import { routing } from '@/i18n/routing';
 import { BRAND_META } from '@/lib/brand';
@@ -13,8 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '',
     '/courses',
     ...courses.map((c) => `/courses/${c.id}`),
-    '/recorded',
-    ...RECORDED_COURSES.map((r) => `/recorded/${r.slug}`),
+    ...(RECORDED_COURSES_ENABLED ? ['/recorded', ...RECORDED_COURSES.map((r) => `/recorded/${r.slug}`)] : []),
     '/quiz',
     ...QUIZ_CATEGORIES.map((q) => quizHref(q.slug)),
     '/crs-calculator',

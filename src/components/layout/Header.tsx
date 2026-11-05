@@ -20,6 +20,7 @@ import { btn } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { useCourses } from "@/components/CoursesProvider";
 import { RECORDED_COURSES } from "@/data/recordedCourses";
+import { RECORDED_COURSES_ENABLED } from '@/lib/features';
 import { BRAND_CONTACT } from "@/lib/brand";
 import { NAV, MEGA } from "@/content/nav";
 import { ui } from "@/content/home";
@@ -260,7 +261,7 @@ export function Header() {
                         </Link>
                       </div>
                       <div className="flex flex-col gap-5 border-l border-line bg-bg p-6">
-                        <div>
+                        {RECORDED_COURSES_ENABLED && <div>
                           <p className="eyebrow mb-3 text-rouge">
                             {t(MEGA.recorded)}
                           </p>
@@ -278,7 +279,7 @@ export function Header() {
                               </span>
                             </Link>
                           ))}
-                        </div>
+                        </div>}
                         <div>
                           <p className="eyebrow mb-3 text-rouge">
                             {t(MEGA.combos)}
@@ -376,13 +377,13 @@ export function Header() {
                   {t(tool.t)}
                 </Link>
               ))}
-              <Link
+              {RECORDED_COURSES_ENABLED && <Link
                 href="/recorded"
                 className="flex items-center gap-3 px-2 py-3.5 text-[15px] font-semibold"
               >
                 <Icon name="video" size={18} className="text-gold" />
                 {t(MEGA.recorded)}
-              </Link>
+              </Link>}
               <Link
                 href={{ pathname: "/", hash: "schedule" }}
                 className="flex items-center gap-3 px-2 py-3.5 text-[15px] font-semibold"

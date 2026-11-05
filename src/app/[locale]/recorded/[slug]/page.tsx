@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation';
+import { RECORDED_COURSES_ENABLED } from '@/lib/features';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
@@ -29,6 +31,8 @@ export async function generateMetadata({ params }: P): Promise<Metadata> {
 export default async function RecordedCoursePage({ params }: P) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
+  // Hidden for now (see lib/features): old links land on the live courses instead of a 404
+  if (!RECORDED_COURSES_ENABLED) redirect(`/${locale}/courses`);
   const course = (await publicRecordedCourses()).find((x) => x.slug === slug);
   if (!course) notFound();
   return (

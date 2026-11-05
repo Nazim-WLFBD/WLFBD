@@ -1,3 +1,4 @@
+import { RECORDED_COURSES_ENABLED } from '@/lib/features';
 import type { L } from '@/i18n/t';
 
 export const NAV = {
@@ -43,7 +44,7 @@ export const SECTIONS = [
   { id: 'hero', label: { en: 'Home', bn: 'হোম' } },
   { id: 'about', label: { en: 'About', bn: 'আমাদের কথা' } },
   { id: 'pathways', label: { en: 'Pathways', bn: 'পাথওয়ে' } },
-  { id: 'recorded-courses', label: { en: 'Recorded', bn: 'রেকর্ডেড' } },
+  ...(RECORDED_COURSES_ENABLED ? [{ id: 'recorded-courses', label: { en: 'Recorded', bn: 'রেকর্ডেড' } }] : []),
   { id: 'courses', label: { en: 'Courses', bn: 'কোর্স' } },
   { id: 'schedule', label: { en: 'Schedule', bn: 'সময়সূচী' } },
   { id: 'students-voice', label: { en: 'Reviews', bn: 'রিভিউ' } },

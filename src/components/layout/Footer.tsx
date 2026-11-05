@@ -1,5 +1,6 @@
 'use client';
 
+import { RECORDED_COURSES_ENABLED } from '@/lib/features';
 import { ArrowUpRight } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { useT } from '@/i18n/t';
@@ -21,8 +22,8 @@ const LEARN_LINKS = [
   { href: '/free-class', l: { en: 'Free Class Registration', bn: 'ফ্রি ক্লাস রেজিস্ট্রেশন' } },
   { href: '/quiz/placement-test', l: { en: 'Free Level Test', bn: 'ফ্রি লেভেল টেস্ট' } },
   { href: '/courses/one-to-one', l: { en: 'One-to-One Sessions', bn: 'ওয়ান-টু-ওয়ান সেশন' } },
-  { href: '/recorded', l: { en: 'Recorded Courses', bn: 'রেকর্ডেড কোর্স' } },
   { href: '/blog', l: { en: 'Blog', bn: 'ব্লগ' } },
+  ...(RECORDED_COURSES_ENABLED ? [{ href: '/recorded', l: { en: 'Recorded Courses', bn: 'রেকর্ডেড কোর্স' } }] : []),
 ] as const;
 
 const SOCIALS = [
